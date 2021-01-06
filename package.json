@@ -1,0 +1,16 @@
+{
+	"name": "revisions-extended",
+	"version": "1.0.0",
+	"description": "Extended functionality for the WordPress revision system.",
+	"author": "WordPress.org",
+	"license": "GPL-2.0-or-later",
+	"private": true,
+	"dependencies": {
+		"@wordpress/env": "^3.0.0"
+	},
+	"scripts": {
+		"setup": "composer install",
+		"lint:php": "composer run lint",
+		"format:php": "composer run format"
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"config": {
+		"WP_DEBUG": true,
+		"SCRIPT_DEBUG": true
+	},
+	"phpVersion": "5.6",
+	"core": "WordPress/WordPress#master",
+	"plugins": [
+		"./revisions-extended"
+	]
+}

@@ -1,0 +1,23 @@
+{
+	"name": "wporg/revisions-extended",
+	"description": "Extended functionality for the WordPress revision system.",
+	"homepage": "https://wordpress.org",
+	"license": "GPL-2.0-or-later",
+	"support": {
+		"issues": "https://github.com/coreymckrill/revisions-extended/issues"
+	},
+	"config": {
+		"platform": {
+			"php": "5.6"
+		}
+	},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+		"wp-coding-standards/wpcs": "2.*",
+		"phpcompatibility/phpcompatibility-wp": "*"
+	},
+	"scripts": {
+		"format": "phpcbf -p",
+		"lint": "phpcs"
+	}
+}
