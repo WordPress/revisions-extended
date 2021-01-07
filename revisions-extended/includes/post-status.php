@@ -16,7 +16,7 @@ add_action( 'init', __NAMESPACE__ . '\register' );
  */
 function register() {
 	register_post_status(
-		'pending-revision',
+		'revex_pending',
 		array(
 			'label'                     => __( 'Pending Revision', 'revisions-extended' ),
 			'labels'                    => (object) array(
@@ -40,7 +40,7 @@ function register() {
 	);
 
 	register_post_status(
-		'future-revision',
+		'revex_future',
 		array(
 			'label'                     => __( 'Scheduled Revision', 'revisions-extended' ),
 			'labels'                    => (object) array(
