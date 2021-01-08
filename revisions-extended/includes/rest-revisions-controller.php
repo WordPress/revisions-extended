@@ -124,11 +124,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		);
 	}
 
-	public function get_items_permissions_check( $request ) {}
-
 	public function get_items( $request ) {}
-
-	public function get_item_permissions_check( $request ) {}
 
 	public function get_item( $request ) {}
 
@@ -139,8 +135,6 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 	public function update_item_permissions_check( $request ) {}
 
 	public function update_item( $request ) {}
-
-	public function delete_item_permissions_check( $request ) {}
 
 	public function delete_item( $request ) {}
 }
