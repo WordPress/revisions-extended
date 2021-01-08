@@ -27,6 +27,7 @@ add_action( 'plugins_loaded', __NAMESPACE__ . '\load_files' );
  */
 function load_files() {
 	require_once get_includes_path() . 'post-status.php';
+	require_once get_includes_path() . 'revision.php';
 }
 
 /**

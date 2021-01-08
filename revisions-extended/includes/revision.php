@@ -1,13 +1,15 @@
 <?php
 
-namespace RevisionsExtended\WordPress;
+namespace RevisionsExtended\Revision;
 
 use WP_Error, WP_Post;
 
 defined( 'WPINC' ) || die();
 
 /**
- * Returns all revisions of specified post.
+ * Returns revisions of specified post.
+ *
+ * Specify a value for $args['post_status'] to get other types of revisions.
  *
  * Modified from wp_get_post_revisions in wp-includes/revision.php in Core.
  *
@@ -18,7 +20,7 @@ defined( 'WPINC' ) || die();
  *
  * @return array An array of revisions, or an empty array if none.
  */
-function wp_get_post_revisions( $post_id = 0, $args = null ) {
+function get_post_revisions( $post_id = 0, $args = null ) {
 	$post = get_post( $post_id );
 	if ( ! $post || empty( $post->ID ) ) {
 		return array();
@@ -67,7 +69,7 @@ function wp_get_post_revisions( $post_id = 0, $args = null ) {
  *
  * @return int|WP_Error WP_Error or 0 if error, new revision ID if success.
  */
-function _wp_put_post_revision( $post = null, $autosave = false, $type = 'default' ) {
+function put_post_revision( $post = null, $autosave = false, $type = 'default' ) {
 	if ( is_object( $post ) ) {
 		$post = get_object_vars( $post );
 	} elseif ( ! is_array( $post ) ) {
@@ -84,6 +86,11 @@ function _wp_put_post_revision( $post = null, $autosave = false, $type = 'defaul
 
 	$post = _wp_post_revision_data( $post, $autosave );
 	// Begin changes from Core.
+	/**
+	 * The _wp_post_revision_data function sets the post status of the revision to 'inherit'. We could
+	 * do a modified version of that function to set a different post status, but we'd still have to modify
+	 * _wp_put_post_revision as well, so it seems better to just do it here.
+	 */
 	switch ( $type ) {
 		case 'pending':
 			$post['post_status'] = 'revex_pending';
