@@ -3,6 +3,7 @@
 namespace RevisionsExtended\Revision;
 
 use WP_Error, WP_Post;
+use function RevisionsExtended\Post_Status\validate_revision_status;
 
 defined( 'WPINC' ) || die();
 
@@ -64,12 +65,12 @@ function get_post_revisions( $post_id = 0, $args = null ) {
  *
  * @param int|WP_Post|array|null $post     Post ID, post object OR post array.
  * @param bool                   $autosave Optional. Is the revision an autosave?
- * @param string                 $type     Optional. The type of revision. 'default', 'pending', or 'scheduled'.
+ * @param string                 $status   Optional. The revision status.
  *                                         (Change from Core.)
  *
  * @return int|WP_Error WP_Error or 0 if error, new revision ID if success.
  */
-function put_post_revision( $post = null, $autosave = false, $type = 'default' ) {
+function put_post_revision( $post = null, $autosave = false, $status = '' ) {
 	if ( is_object( $post ) ) {
 		$post = get_object_vars( $post );
 	} elseif ( ! is_array( $post ) ) {
@@ -91,13 +92,8 @@ function put_post_revision( $post = null, $autosave = false, $type = 'default' )
 	 * do a modified version of that function to set a different post status, but we'd still have to modify
 	 * _wp_put_post_revision as well, so it seems better to just do it here.
 	 */
-	switch ( $type ) {
-		case 'pending':
-			$post['post_status'] = 'revex_pending';
-			break;
-		case 'scheduled':
-			$post['post_status'] = 'revex_future';
-			break;
+	if ( validate_revision_status( $status ) ) {
+		$post['post_status'] = $status;
 	}
 	// End changes from Core.
 	$post = wp_slash( $post ); // Since data is from DB.

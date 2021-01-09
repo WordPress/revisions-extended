@@ -36,6 +36,7 @@ function register() {
 			'exclude_from_search'       => false,
 			'show_in_admin_all_list'    => false,
 			'show_in_admin_status_list' => false,
+			'revisions_extended'        => true,
 		)
 	);
 
@@ -60,6 +61,24 @@ function register() {
 			'exclude_from_search'       => false,
 			'show_in_admin_all_list'    => false,
 			'show_in_admin_status_list' => false,
+			'revisions_extended'        => true,
 		)
 	);
+}
+
+
+function get_revision_statuses() {
+	return get_post_stati(
+		array(
+			'revisions_extended' => true,
+		),
+		'objects'
+	);
+}
+
+
+function validate_revision_status( $status ) {
+	$statuses = wp_list_pluck( get_revision_statuses(), 'name' );
+
+	return in_array( $status, $statuses, true );
 }

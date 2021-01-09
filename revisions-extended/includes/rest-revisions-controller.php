@@ -4,6 +4,8 @@ namespace RevisionsExtended;
 
 use WP_Error;
 use WP_REST_Controller, WP_REST_Revisions_Controller, WP_REST_Request, WP_REST_Server;
+use function RevisionsExtended\Post_Status\get_revision_statuses;
+use function RevisionsExtended\Revision\put_post_revision;
 
 defined( 'WPINC' ) || die();
 
@@ -14,9 +16,6 @@ defined( 'WPINC' ) || die();
  * @see WP_REST_Controller
  */
 class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
-
-	const STATUSES = array( 'inherit', 'revex_pending', 'revex_future' );
-
 	/**
 	 * Parent post type.
 	 *
@@ -179,13 +178,51 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		return $this->parent_controller->update_item_permissions_check( $request );
 	}
 
-	public function create_item( $request ) {}
+	public function create_item( $request ) {
+		$post = get_post( $request['parent'] );
+
+		if ( is_wp_error( $post ) ) {
+			return $post;
+		}
+
+		$public_statuses = get_post_stati( array( 'public' => true ) );
+
+		if ( ! in_array( get_post_status( $post ), $public_statuses, true ) ) {
+			return new WP_Error(
+				'rest_invalid_post',
+				__( 'Revisions cannot be created for posts with non-public statuses', 'revisions-extended' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		// TODO prevent multiple pending revisions for the same post, and multiple scheduled revisions for a post at the same date/time.
+
+		$prepared_post              = $this->parent_controller->prepare_item_for_database( $request );
+		$prepared_post->ID          = $post->ID;
+		$prepared_post->post_author = get_current_user_id();
+
+		$revision_id = $this->create_post_revision( (array) $prepared_post );
+
+		if ( is_wp_error( $revision_id ) ) {
+			return $revision_id;
+		}
+
+		$revision = get_post( $revision_id );
+		$request->set_param( 'context', 'edit' );
+
+		$response = $this->prepare_item_for_response( $revision, $request );
+		$response = rest_ensure_response( $response );
+
+		return $response;
+	}
 
 	public function update_item_permissions_check( $request ) {
 		return $this->create_item_permissions_check( $request );
 	}
 
-	public function update_item( $request ) {}
+	public function update_item( $request ) {
+		// TODO
+	}
 
 	/**
 	 * Retrieves the revision's schema, conforming to JSON Schema.
@@ -198,7 +235,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		$schema['properties']['status'] = array(
 			'description' => __( 'A named status for the object.' ),
 			'type'        => 'string',
-			'enum'        => self::STATUSES,
+			'enum'        => wp_list_pluck( get_revision_statuses(), 'name' ),
 			'context'     => array( 'view', 'edit' ),
 		);
 
@@ -218,7 +255,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			'description' => __( 'Limit result set to revisions assigned one or more statuses.', 'revisions-extended' ),
 			'type'        => 'array',
 			'items'       => array(
-				'enum' => self::STATUSES,
+				'enum' => wp_list_pluck( get_revision_statuses(), 'name' ),
 				'type' => 'string',
 			),
 		);
@@ -229,14 +266,8 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 	public function filter_rest_revision_query( $args, $request ) {
 		$registered = $this->get_collection_params();
 
-		$parameter_mappings = array(
-			'status' => 'post_status',
-		);
-
-		foreach ( $parameter_mappings as $api_param => $wp_param ) {
-			if ( isset( $registered[ $api_param ], $request[ $api_param ] ) ) {
-				$args[ $wp_param ] = $request[ $api_param ];
-			}
+		if ( isset( $registered['status'], $request['status'] ) ) {
+			$args['post_status'] = $request['status'];
 		}
 
 		return $args;
@@ -250,5 +281,18 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		}
 
 		return $response;
+	}
+
+	public function create_post_revision( $post_data ) {
+		$post_id = (int) $post_data['ID'];
+		$post    = get_post( $post_id );
+
+		if ( is_wp_error( $post ) ) {
+			return $post;
+		}
+
+		$post_data['post_author'] = get_current_user_id();
+
+		return put_post_revision( $post_data, false, $post_data['post_status'] );
 	}
 }
