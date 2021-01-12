@@ -7,5 +7,8 @@
 	"core": "WordPress/WordPress#master",
 	"plugins": [
 		"./revisions-extended"
-	]
+	],
+	"mappings": {
+		"wp-content/mu-plugins": "./wp-env/mu-plugins"
+	}
 }
