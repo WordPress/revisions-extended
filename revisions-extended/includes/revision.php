@@ -68,7 +68,7 @@ function get_post_revisions( $post_id = 0, $args = null ) {
  * @param string                 $status   Optional. The revision status.
  *                                         (Change from Core.)
  *
- * @return int|WP_Error WP_Error or 0 if error, new revision ID if success.
+ * @return int|WP_Error WP_Error if error, new revision ID if success. (Change from Core.)
  */
 function put_post_revision( $post = null, $autosave = false, $status = '' ) {
 	if ( is_object( $post ) ) {
@@ -98,7 +98,7 @@ function put_post_revision( $post = null, $autosave = false, $status = '' ) {
 	// End changes from Core.
 	$post = wp_slash( $post ); // Since data is from DB.
 
-	$revision_id = wp_insert_post( $post );
+	$revision_id = wp_insert_post( $post, true ); // Changed from Core.
 	if ( is_wp_error( $revision_id ) ) {
 		return $revision_id;
 	}
@@ -118,9 +118,3 @@ function put_post_revision( $post = null, $autosave = false, $status = '' ) {
 
 	return $revision_id;
 }
-
-/*
-function wp_switch_to_scheduled_post_revision( $revision_id ) {
-	// TODO Get the revision, update the status from scheduled to inherit, then use wp_restore_post_revision
-}
- */

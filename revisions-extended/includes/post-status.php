@@ -66,7 +66,11 @@ function register() {
 	);
 }
 
-
+/**
+ * Get array of revision-specific post status objects.
+ *
+ * @return object[]
+ */
 function get_revision_statuses() {
 	return get_post_stati(
 		array(
@@ -76,7 +80,15 @@ function get_revision_statuses() {
 	);
 }
 
-
+/**
+ * Check if a given status is a valid revision status.
+ *
+ * Note that this does not include the 'inherit' status used by the Core revision system.
+ *
+ * @param string $status
+ *
+ * @return bool
+ */
 function validate_revision_status( $status ) {
 	$statuses = wp_list_pluck( get_revision_statuses(), 'name' );
 

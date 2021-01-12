@@ -2,8 +2,9 @@
 
 namespace RevisionsExtended;
 
-use WP_Error;
-use WP_REST_Controller, WP_REST_Revisions_Controller, WP_REST_Request, WP_REST_Server;
+use WP_Error, WP_Post;
+use WP_HTTP_Response;
+use WP_REST_Controller, WP_REST_Revisions_Controller, WP_REST_Request, WP_REST_Response, WP_REST_Server;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
 use function RevisionsExtended\Revision\put_post_revision;
 
@@ -53,7 +54,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 	/**
 	 * Registers the routes for revisions based on post types supporting revisions.
 	 *
-	 * @see register_rest_route()
+	 * @return void
 	 */
 	public function register_routes() {
 		register_rest_route(
@@ -150,6 +151,13 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		);
 	}
 
+	/**
+	 * Callback for retrieving a collection of revision posts.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_Error|WP_Post|WP_REST_Response
+	 */
 	public function get_items( $request ) {
 		add_filter( 'rest_revision_query', array( $this, 'filter_rest_revision_query' ), 10, 2 );
 		add_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ), 10, 3 );
@@ -160,6 +168,13 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		return $response;
 	}
 
+	/**
+	 * Callback for retrieving a specific revision post.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_Error|WP_Post|WP_REST_Response
+	 */
 	public function get_item( $request ) {
 		add_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ), 10, 3 );
 		$response = parent::get_item( $request );
@@ -168,6 +183,13 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		return $response;
 	}
 
+	/**
+	 * Callback for deleting a specific revision post.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_Error|WP_Post|WP_REST_Response
+	 */
 	public function delete_item( $request ) {
 		add_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ), 10, 3 );
 		$response = parent::delete_item( $request );
@@ -180,37 +202,38 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 	 * Checks if a given request has access to create a revision.
 	 *
 	 * Revisions inherit permissions from the parent post,
-	 * check if the current user has permission to edit the post.
+	 * check if the current user has permission to create a post.
 	 *
 	 * Modified from WP_REST_Autosaves_Controller::create_item_permissions_check.
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
+	 *
 	 * @return true|WP_Error True if the request has access to create the item, WP_Error object otherwise.
 	 */
 	public function create_item_permissions_check( $request ) {
-		$id = $request->get_param( 'parent' );
-
-		if ( empty( $id ) ) {
-			return new WP_Error(
-				'rest_post_invalid_id',
-				__( 'Invalid item ID.' ),
-				array( 'status' => 404 )
-			);
+		$parent = $this->get_parent( $request->get_param( 'parent' ) );
+		if ( is_wp_error( $parent ) ) {
+			return $parent;
 		}
 
-		return $this->parent_controller->update_item_permissions_check( $request );
+		return $this->parent_controller->create_item_permissions_check( $request );
 	}
 
+	/**
+	 * Callback for creating a new revision post.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public function create_item( $request ) {
-		$post = get_post( $request['parent'] );
-
-		if ( is_wp_error( $post ) ) {
-			return $post;
+		$parent = $this->get_parent( $request['parent'] );
+		if ( is_wp_error( $parent ) ) {
+			return $parent;
 		}
 
 		$public_statuses = get_post_stati( array( 'public' => true ) );
-
-		if ( ! in_array( get_post_status( $post ), $public_statuses, true ) ) {
+		if ( ! in_array( get_post_status( $parent ), $public_statuses, true ) ) {
 			return new WP_Error(
 				'rest_invalid_post',
 				__( 'Revisions cannot be created for posts with non-public statuses.', 'revisions-extended' ),
@@ -220,11 +243,12 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 
 		// TODO prevent multiple pending revisions for the same post, and multiple scheduled revisions for a post at the same date/time.
 
-		$prepared_post              = $this->parent_controller->prepare_item_for_database( $request );
-		$prepared_post->ID          = $post->ID;
+		$prepared_post = $this->parent_controller->prepare_item_for_database( $request );
+
+		// The revision author should be the current user rather than the parent post author.
 		$prepared_post->post_author = get_current_user_id();
 
-		$revision_id = $this->create_post_revision( (array) $prepared_post );
+		$revision_id = put_post_revision( (array) $prepared_post, false, $prepared_post['post_status'] );
 
 		if ( is_wp_error( $revision_id ) ) {
 			return $revision_id;
@@ -239,19 +263,50 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		return $response;
 	}
 
+	/**
+	 * Checks if a given request has access to update a revision.
+	 *
+	 * Revisions inherit permissions from the parent post,
+	 * check if the current user has permission to edit the post.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return true|WP_Error
+	 */
 	public function update_item_permissions_check( $request ) {
-		return $this->create_item_permissions_check( $request );
+		$parent = $this->get_parent( $request->get_param( 'parent' ) );
+		if ( is_wp_error( $parent ) ) {
+			return $parent;
+		}
+
+		$revision = $this->get_revision( $request['id'] );
+		if ( is_wp_error( $revision ) ) {
+			return $revision;
+		}
+
+		return $this->parent_controller->update_item_permissions_check( $request );
 	}
 
+	/**
+	 * Callback for updating a specific revision post.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public function update_item( $request ) {
-		$post = get_post( $request['parent'] );
+		$parent = $this->get_parent( $request['parent'] );
+		if ( is_wp_error( $parent ) ) {
+			return $parent;
+		}
 
-		if ( is_wp_error( $post ) ) {
-			return $post;
+		$revision = $this->get_revision( $request['id'] );
+		if ( is_wp_error( $revision ) ) {
+			return $revision;
 		}
 
 		$prepared_post     = $this->parent_controller->prepare_item_for_database( $request );
-		$prepared_post->ID = $post->ID;
+		$prepared_post->ID = $revision->ID;
 
 		// Convert the post object to an array and add slashes, wp_update_post() expects escaped array.
 		$revision_id = wp_update_post( wp_slash( (array) $prepared_post ), true );
@@ -260,7 +315,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			return $revision_id;
 		}
 
-		$revision = get_post( $revision_id );
+		$revision = $this->get_revision( $revision_id );
 		$request->set_param( 'context', 'edit' );
 
 		$response = $this->prepare_item_for_response( $revision, $request );
@@ -316,6 +371,14 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		return $query_params;
 	}
 
+	/**
+	 * Modify the query args for retrieving revision posts.
+	 *
+	 * @param array $args
+	 * @param WP_REST_Request $request
+	 *
+	 * @return array
+	 */
 	public function filter_rest_revision_query( $args, $request ) {
 		$registered = $this->get_collection_params();
 
@@ -326,6 +389,15 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		return $args;
 	}
 
+	/**
+	 * Modify the revision data being prepared for the database.
+	 *
+	 * @param WP_REST_Response $response
+	 * @param WP_Post $post
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response
+	 */
 	public function filter_rest_prepare_revision( $response, $post, $request ) {
 		$fields = $this->get_fields_for_response( $request );
 
@@ -334,18 +406,5 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		}
 
 		return $response;
-	}
-
-	public function create_post_revision( $post_data ) {
-		$post_id = (int) $post_data['ID'];
-		$post    = get_post( $post_id );
-
-		if ( is_wp_error( $post ) ) {
-			return $post;
-		}
-
-		$post_data['post_author'] = get_current_user_id();
-
-		return put_post_revision( $post_data, false, $post_data['post_status'] );
 	}
 }
