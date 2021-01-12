@@ -3,8 +3,7 @@
 namespace RevisionsExtended;
 
 use WP_Error, WP_Post;
-use WP_HTTP_Response;
-use WP_REST_Controller, WP_REST_Revisions_Controller, WP_REST_Request, WP_REST_Response, WP_REST_Server;
+use WP_REST_Controller, WP_REST_Posts_Controller, WP_REST_Revisions_Controller, WP_REST_Request, WP_REST_Response, WP_REST_Server;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
 use function RevisionsExtended\Revision\put_post_revision;
 
@@ -41,14 +40,21 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since 4.7.0
-	 *
 	 * @param string $parent_post_type Post type of the parent.
 	 */
 	public function __construct( $parent_post_type ) {
 		parent::__construct( $parent_post_type );
 
-		$this->namespace = 'revisions-extended/v1';
+		$this->parent_post_type  = $parent_post_type;
+		$this->namespace         = 'revisions-extended/v1';
+		$this->rest_base         = 'revisions';
+		$post_type_object        = get_post_type_object( $parent_post_type );
+		$this->parent_base       = ! empty( $post_type_object->rest_base ) ? $post_type_object->rest_base : $post_type_object->name;
+		$this->parent_controller = $post_type_object->get_rest_controller();
+
+		if ( ! $this->parent_controller ) {
+			$this->parent_controller = new WP_REST_Posts_Controller( $parent_post_type );
+		}
 	}
 
 	/**
@@ -359,11 +365,11 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		$query_params = parent::get_collection_params();
 
 		$query_params['status'] = array(
-			'default'     => 'inherit',
+			'default'     => array( 'any' ),
 			'description' => __( 'Limit result set to revisions assigned one or more statuses.', 'revisions-extended' ),
 			'type'        => 'array',
 			'items'       => array(
-				'enum' => wp_list_pluck( get_revision_statuses(), 'name' ),
+				'enum' => array_merge( array( 'any' ), wp_list_pluck( get_revision_statuses(), 'name' ) ),
 				'type' => 'string',
 			),
 		);
@@ -382,8 +388,10 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 	public function filter_rest_revision_query( $args, $request ) {
 		$registered = $this->get_collection_params();
 
-		if ( isset( $registered['status'], $request['status'] ) ) {
+		if ( isset( $registered['status'], $request['status'] ) && ! in_array( 'any', $request['status'], true ) ) {
 			$args['post_status'] = $request['status'];
+		} else {
+			$args['post_status'] = wp_list_pluck( get_revision_statuses(), 'name' );
 		}
 
 		return $args;
