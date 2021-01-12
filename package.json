@@ -11,6 +11,11 @@
 	"scripts": {
 		"setup": "composer install",
 		"lint:php": "composer run lint",
-		"format:php": "composer run format"
+		"format:php": "composer run format",
+		"lint:js": "wp-scripts lint-js",
+		"test:unit": "wp-scripts test-unit-js"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^12.6.1"
 	}
 }
