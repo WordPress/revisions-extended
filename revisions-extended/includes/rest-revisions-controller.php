@@ -125,6 +125,29 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 				'schema' => array( $this, 'get_public_item_schema' ),
 			)
 		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->parent_base . '/(?P<parent>[\d]+)/' . $this->rest_base . '/(?P<id>[\d]+)/approve',
+			array(
+				'args'   => array(
+					'parent' => array(
+						'description' => __( 'The ID for the parent of the object.', 'revisions-extended' ),
+						'type'        => 'integer',
+					),
+					'id'     => array(
+						'description' => __( 'Unique identifier for the object.', 'revisions-extended' ),
+						'type'        => 'integer',
+					),
+				),
+				array(
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'approve_item' ),
+					'permission_callback' => array( $this, 'approve_item_permissions_check' ),
+				),
+				'schema' => array( $this->parent_controller, 'get_public_item_schema' ),
+			)
+		);
 	}
 
 	public function get_items( $request ) {
@@ -190,7 +213,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		if ( ! in_array( get_post_status( $post ), $public_statuses, true ) ) {
 			return new WP_Error(
 				'rest_invalid_post',
-				__( 'Revisions cannot be created for posts with non-public statuses', 'revisions-extended' ),
+				__( 'Revisions cannot be created for posts with non-public statuses.', 'revisions-extended' ),
 				array( 'status' => 403 )
 			);
 		}
@@ -221,6 +244,36 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 	}
 
 	public function update_item( $request ) {
+		$post = get_post( $request['parent'] );
+
+		if ( is_wp_error( $post ) ) {
+			return $post;
+		}
+
+		$prepared_post     = $this->parent_controller->prepare_item_for_database( $request );
+		$prepared_post->ID = $post->ID;
+
+		// Convert the post object to an array and add slashes, wp_update_post() expects escaped array.
+		$revision_id = wp_update_post( wp_slash( (array) $prepared_post ), true );
+
+		if ( is_wp_error( $revision_id ) ) {
+			return $revision_id;
+		}
+
+		$revision = get_post( $revision_id );
+		$request->set_param( 'context', 'edit' );
+
+		$response = $this->prepare_item_for_response( $revision, $request );
+		$response = rest_ensure_response( $response );
+
+		return $response;
+	}
+
+	public function approve_item_permissions_check( $request ) {
+		// TODO
+	}
+
+	public function approve_item( $request ) {
 		// TODO
 	}
 
