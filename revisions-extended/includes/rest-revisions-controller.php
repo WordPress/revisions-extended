@@ -183,10 +183,30 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 	 */
 	public function get_item( $request ) {
 		add_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ), 10, 3 );
-		$response = parent::get_item( $request );
+
+		$parent = $this->get_parent( $request['parent'] );
+		if ( is_wp_error( $parent ) ) {
+			return $parent;
+		}
+
+		$revision = $this->get_revision( $request['id'] );
+		if ( is_wp_error( $revision ) ) {
+			return $revision;
+		}
+
+		if ( ! in_array( $revision->post_status, wp_list_pluck( get_revision_statuses(), 'name' ), true ) ) {
+			return new WP_Error(
+				'rest_invalid_revision',
+				__( 'This type of revision cannot be retrieved with this endpoint. Use the Core endpoint instead.', 'revisions-extended' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$response = $this->prepare_item_for_response( $revision, $request );
+
 		remove_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ) );
 
-		return $response;
+		return rest_ensure_response( $response );
 	}
 
 	/**
