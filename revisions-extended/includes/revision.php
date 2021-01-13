@@ -132,7 +132,61 @@ function put_post_revision( $post = null, $autosave = false ) {
 }
 
 /**
- * Ensure pending/scheduled revision posts use the same naming convention as normal revisions.
+ * Update a post with the contents of a revision.
+ *
+ * Uses the same mechanism as for restoring a past revision, but if the revision is pending/scheduled,
+ * it will be converted to a standard revision first, using the current time for the post date.
+ *
+ * @param int $revision_id
+ *
+ * @return int|WP_Error
+ */
+function update_post_from_revision( $revision_id ) {
+	$revision = wp_get_post_revision( $revision_id );
+	if ( is_null( $revision ) ) {
+		return new WP_Error(
+			'invalid_revision_id',
+			__( 'Invalid revision ID.', 'revisions-extended' )
+		);
+	}
+
+	$status = get_post_status( $revision );
+	if ( 'inherit' !== $status ) {
+		$postarr = array(
+			'ID'            => $revision->ID,
+			'post_status'   => 'inherit',
+			// Set the revision's post date to the current time.
+			'post_date'     => '0000-00-00 00:00:00',
+			'post_date_gmt' => '0000-00-00 00:00:00',
+		);
+
+		$update = wp_update_post( wp_slash( $postarr ), true );
+
+		if ( is_wp_error( $update ) ) {
+			return $update;
+		}
+	}
+
+	$result = wp_restore_post_revision( $revision_id );
+
+	// Restore failed.
+	if ( is_null( $result ) ) {
+		return new WP_Error(
+			'revision_error',
+			__( 'The revision could not be restored.', 'revisions-extended' )
+		);
+	}
+
+	// Restore succeeded, but there were no fields to update.
+	if ( ! $result ) {
+		$result = $revision->post_parent;
+	}
+
+	return $result;
+}
+
+/**
+ * Ensure pending/scheduled revision posts use the same slug naming convention as normal revisions.
  *
  * @param string|null $override
  * @param string $slug
