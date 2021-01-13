@@ -210,14 +210,17 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 	}
 
 	/**
-	 * Callback for deleting a specific revision post.
+	 * Checks if a given request has access to delete a revision.
 	 *
-	 * @param WP_REST_Request $request
+	 * @param WP_REST_Request $request Full details about the request.
 	 *
-	 * @return WP_Error|WP_Post|WP_REST_Response
+	 * @return true|WP_Error True if the request has access to delete the item, WP_Error object otherwise.
 	 */
-	public function delete_item( $request ) {
-		add_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ), 10, 3 );
+	public function delete_item_permissions_check( $request ) {
+		$parent = $this->get_parent( $request['parent'] );
+		if ( is_wp_error( $parent ) ) {
+			return $parent;
+		}
 
 		$revision = $this->get_revision( $request['id'] );
 		if ( is_wp_error( $revision ) ) {
@@ -232,8 +235,19 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			);
 		}
 
-		$response = parent::delete_item( $request );
+		return parent::delete_item_permissions_check( $request );
+	}
 
+	/**
+	 * Callback for deleting a specific revision post.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_Error|WP_Post|WP_REST_Response
+	 */
+	public function delete_item( $request ) {
+		add_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ), 10, 3 );
+		$response = parent::delete_item( $request );
 		remove_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ) );
 
 		return $response;

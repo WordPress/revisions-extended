@@ -32,6 +32,7 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\initialize_rest_routes', 100 );
  * @return void
  */
 function load_files() {
+	require_once get_includes_path() . 'capabilities.php';
 	require_once get_includes_path() . 'post-status.php';
 	require_once get_includes_path() . 'rest-revisions-controller.php';
 	require_once get_includes_path() . 'revision.php';
