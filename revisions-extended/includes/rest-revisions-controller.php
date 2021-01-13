@@ -83,7 +83,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'create_item' ),
 					'permission_callback' => array( $this, 'create_item_permissions_check' ),
-					'args'                => $this->parent_controller->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
+					'args'                => $this->get_valid_parent_endpoint_args( WP_REST_Server::CREATABLE ),
 				),
 				'schema' => array( $this, 'get_public_item_schema' ),
 			)
@@ -115,7 +115,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( $this, 'update_item' ),
 					'permission_callback' => array( $this, 'update_item_permissions_check' ),
-					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
+					'args'                => $this->get_valid_parent_endpoint_args( WP_REST_Server::EDITABLE ),
 				),
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
@@ -155,6 +155,31 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 				'schema' => array( $this->parent_controller, 'get_public_item_schema' ),
 			)
 		);
+	}
+
+	/**
+	 * Get the subset of the parent post type's endpoint args that are valid for our purposes.
+	 *
+	 * @param string $method
+	 *
+	 * @return array
+	 */
+	protected function get_valid_parent_endpoint_args( $method ) {
+		$revision_fields   = array_map(
+			function( $item ) {
+				return str_replace( 'post_', '', $item );
+			},
+			array_keys( _wp_post_revision_fields() )
+		);
+		$revision_fields[] = 'status';
+		$revision_fields[] = 'date';
+		$revision_fields[] = 'date_gmt';
+
+		$parent_endpoint_args = $this->parent_controller->get_endpoint_args_for_item_schema( $method );
+
+		$parent_endpoint_args['status']['enum'] = wp_list_pluck( get_revision_statuses(), 'name' );
+
+		return array_intersect_key( $parent_endpoint_args, array_fill_keys( $revision_fields, '' ) );
 	}
 
 	/**
@@ -297,13 +322,17 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		}
 
 		// TODO prevent multiple pending revisions for the same post, and multiple scheduled revisions for a post at the same date/time.
+		// TODO should default values from the published post be included?
 
 		$prepared_post = $this->parent_controller->prepare_item_for_database( $request );
 
 		// The revision author should be the current user rather than the parent post author.
 		$prepared_post->post_author = get_current_user_id();
 
-		$revision_id = put_post_revision( (array) $prepared_post, false, $prepared_post['post_status'] );
+		// `put_post_revision` expects the ID property to be the ID of the parent post.
+		$prepared_post->ID = $parent->ID;
+
+		$revision_id = put_post_revision( $prepared_post, false );
 
 		if ( is_wp_error( $revision_id ) ) {
 			return $revision_id;
@@ -312,10 +341,11 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		$revision = get_post( $revision_id );
 		$request->set_param( 'context', 'edit' );
 
+		add_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ), 10, 3 );
 		$response = $this->prepare_item_for_response( $revision, $request );
-		$response = rest_ensure_response( $response );
+		remove_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ) );
 
-		return $response;
+		return rest_ensure_response( $response );
 	}
 
 	/**
