@@ -23,4 +23,4 @@ function enqueue_assets() {
 		false
 	);
 }
-add_action('init', __NAMESPACE__ . '\enqueue_assets');
+add_action('enqueue_block_editor_assets', __NAMESPACE__ . '\enqueue_assets');

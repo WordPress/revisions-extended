@@ -6,13 +6,15 @@
 	"license": "GPL-2.0-or-later",
 	"private": true,
 	"dependencies": {
-		"@wordpress/env": "^3.0.0"
+		"@wordpress/env": "^3.0.0",
+		"@wordpress/icons": "^2.9.0"
 	},
 	"scripts": {
 		"setup": "composer install",
 		"lint:php": "composer run lint",
 		"format:php": "composer run format",
 		"build": "wp-scripts build revisions-extended/src/index.js --output-path=revisions-extended/build",
+		"start": "wp-scripts start revisions-extended/src/index.js --output-path=revisions-extended/build",
 		"lint:js": "wp-scripts lint-js",
 		"test:unit": "wp-scripts test-unit-js"
 	},
