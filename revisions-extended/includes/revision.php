@@ -139,7 +139,7 @@ function put_post_revision( $post = null, $autosave = false ) {
  *
  * @param int $revision_id
  *
- * @return int|WP_Error
+ * @return int|WP_Error The ID of the updated post. Otherwise a WP_Error.
  */
 function update_post_from_revision( $revision_id ) {
 	$revision = wp_get_post_revision( $revision_id );

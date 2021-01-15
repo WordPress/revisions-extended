@@ -6,6 +6,7 @@ use WP_Error, WP_Post;
 use WP_REST_Controller, WP_REST_Posts_Controller, WP_REST_Revisions_Controller, WP_REST_Request, WP_REST_Response, WP_REST_Server;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
 use function RevisionsExtended\Revision\put_post_revision;
+use function RevisionsExtended\Revision\update_post_from_revision;
 
 defined( 'WPINC' ) || die();
 
@@ -135,7 +136,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->parent_base . '/(?P<parent>[\d]+)/' . $this->rest_base . '/(?P<id>[\d]+)/approve',
+			'/' . $this->parent_base . '/(?P<parent>[\d]+)/' . $this->rest_base . '/(?P<id>[\d]+)/publish',
 			array(
 				'args'   => array(
 					'parent' => array(
@@ -149,8 +150,8 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 				),
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'approve_item' ),
-					'permission_callback' => array( $this, 'approve_item_permissions_check' ),
+					'callback'            => array( $this, 'publish_item' ),
+					'permission_callback' => array( $this, 'publish_item_permissions_check' ),
 				),
 				'schema' => array( $this->parent_controller, 'get_public_item_schema' ),
 			)
@@ -341,7 +342,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			return $revision_id;
 		}
 
-		$revision = get_post( $revision_id );
+		$revision = $this->get_revision( $revision_id );
 		$request->set_param( 'context', 'edit' );
 
 		add_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ), 10, 3 );
@@ -372,6 +373,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			return $revision;
 		}
 
+		// This actually checks if the user can edit the parent post.
 		if ( ! current_user_can( 'edit_post', $revision->ID ) ) {
 			return new WP_Error(
 				'rest_cannot_edit',
@@ -382,6 +384,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 
 		$post_type_object = get_post_type_object( 'revision' );
 
+		// Separate from the above check, we want to make sure the user can edit the revision post itself as well.
 		if ( get_current_user_id() !== $revision->post_author && ! current_user_can( $post_type_object->cap->edit_others_posts ) ) {
 			return new WP_Error(
 				'rest_cannot_edit_others',
@@ -442,12 +445,64 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		return rest_ensure_response( $response );
 	}
 
-	public function approve_item_permissions_check( $request ) {
-		// TODO
+	/**
+	 * Checks if a given request has access to update a post from a revision.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return true|WP_Error
+	 */
+	public function publish_item_permissions_check( $request ) {
+		$parent = $this->get_parent( $request->get_param( 'parent' ) );
+		if ( is_wp_error( $parent ) ) {
+			return $parent;
+		}
+
+		if ( ! current_user_can( 'edit_post', $parent->ID ) ) {
+			return new WP_Error(
+				'rest_cannot_edit',
+				__( 'Sorry, you are not allowed to edit this post.', 'revisions-extended' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
+
+		$revision = $this->get_revision( $request['id'] );
+		if ( is_wp_error( $revision ) ) {
+			return $revision;
+		}
+
+		return true;
 	}
 
-	public function approve_item( $request ) {
-		// TODO
+	/**
+	 * "Publish" a revision as the new version of a post.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function publish_item( $request ) {
+		$parent = $this->get_parent( $request->get_param( 'parent' ) );
+		if ( is_wp_error( $parent ) ) {
+			return $parent;
+		}
+
+		$revision = $this->get_revision( $request['id'] );
+		if ( is_wp_error( $revision ) ) {
+			return $revision;
+		}
+
+		$result = update_post_from_revision( $revision->ID );
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		$post = $this->get_parent( $result );
+		$request->set_param( 'context', 'edit' );
+
+		$response = $this->parent_controller->prepare_item_for_response( $post, $request );
+
+		return rest_ensure_response( $response );
 	}
 
 	/**
