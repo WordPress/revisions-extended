@@ -36,6 +36,7 @@ function load_files() {
 	require_once get_includes_path() . 'post-status.php';
 	require_once get_includes_path() . 'rest-revisions-controller.php';
 	require_once get_includes_path() . 'revision.php';
+	require_once get_includes_path() . 'block-editor-modifier.php';
 }
 
 /**
