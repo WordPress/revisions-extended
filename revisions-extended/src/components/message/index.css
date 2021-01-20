@@ -1,0 +1,18 @@
+.revision-extended-message {
+	width: 100%;
+	padding: 8px;
+}
+
+.revision-extended-message-is-warning {
+	background: var(--global--alert-yellow);
+}
+
+.revision-extended-message-is-error {
+	background: var(--global--alert-red);
+	color: #fff;
+}
+
+.revision-extended-message-is-success {
+	background: var(--global--alert-green);
+	color: #fff;
+}

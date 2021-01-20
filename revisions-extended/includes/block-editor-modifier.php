@@ -22,5 +22,12 @@ function enqueue_assets() {
 		$block_info['version'],
 		false
 	);
+
+	wp_enqueue_style(
+		'revisions-extended-script',
+		plugins_url('build/index.css', dirname(__FILE__, 1) ),
+		[],
+		$block_info['version']
+	);
 }
 add_action('enqueue_block_editor_assets', __NAMESPACE__ . '\enqueue_assets');
