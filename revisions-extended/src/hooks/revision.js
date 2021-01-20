@@ -66,37 +66,75 @@ const updateRevision = async (
 	} );
 };
 
-export const useRevision = () => {
-	const getScheduledRevisions = async ( data ) => {
+const trashRevision = async ( { postType, postId, revisionId } ) => {
+	return await executeFetch( async () => {
+		return await apiFetch( {
+			path: `${ getRestApiUrl( postType, postId ) }/${ revisionId }`,
+			method: 'DELETE',
+		} );
+	} );
+};
+
+const publishRevision = async ( { postType, postId, revisionId } ) => {
+	return await executeFetch( async () => {
+		return await apiFetch( {
+			path: `${ getRestApiUrl(
+				postType,
+				postId
+			) }/${ revisionId }/publish`,
+			method: 'POST',
+		} );
+	} );
+};
+
+const useScheduledRevision = () => {
+	const get = async ( data ) => {
 		return await getPostRevisions( data, POST_STATUS_SCHEDULED );
 	};
 
-	const getPendingRevisions = async ( data ) => {
-		return await getPostRevisions( data, POST_STATUS_PENDING );
-	};
-
-	const createScheduledRevision = async ( data ) => {
+	const create = async ( data ) => {
 		return await createRevision( data, POST_STATUS_SCHEDULED );
 	};
 
-	const createPendingRevision = async ( data ) => {
-		return await createRevision( data, POST_STATUS_PENDING );
-	};
-
-	const updateScheduledRevision = async ( data ) => {
+	const update = async ( data ) => {
 		return await updateRevision( data, POST_STATUS_SCHEDULED );
 	};
 
-	const updatePendingRevision = async ( data ) => {
+	const trash = async ( data ) => {
+		return await trashRevision( data );
+	};
+
+	const publish = async ( data ) => {
+		return await publishRevision( data );
+	};
+
+	return {
+		get,
+		create,
+		update,
+		trash,
+		publish,
+	};
+};
+
+const usePendingRevision = () => {
+	const get = async ( data ) => {
+		return await getPostRevisions( data, POST_STATUS_PENDING );
+	};
+
+	const create = async ( data ) => {
+		return await createRevision( data, POST_STATUS_PENDING );
+	};
+
+	const update = async ( data ) => {
 		return await updateRevision( data, POST_STATUS_PENDING );
 	};
 
 	return {
-		getScheduledRevisions,
-		getPendingRevisions,
-		createScheduledRevision,
-		createPendingRevision,
-		updateScheduledRevision,
-		updatePendingRevision,
+		get,
+		create,
+		update,
 	};
 };
+
+export { useScheduledRevision, usePendingRevision };

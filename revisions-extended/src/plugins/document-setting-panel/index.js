@@ -8,41 +8,32 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
  * WordPress dependencies
  */
 import { registerPlugin } from '@wordpress/plugins';
-import { __ } from '@wordpress/i18n';
 import { format } from '@wordpress/date';
 import { PanelRow } from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
-import { NewRevisionView, UpdateRevisionView } from './views';
-import { SuccessMessage, ErrorMessage } from '../../components';
+import {
+	NewRevisionView,
+	UpdateRevisionView,
+	DeleteRevisionView,
+	PublishRevisionView,
+} from './views';
+import { RevisionList } from '../../components';
 import { pluginName, pluginNamespace } from '../../utils';
-import { usePost, useRevision } from '../../hooks';
+import { usePost, useScheduledRevision } from '../../hooks';
 
 const COMPONENT_NAMESPACE = `${ pluginNamespace }-document-slot`;
 
 const PluginDocumentSettingPanelDemo = () => {
 	const [ revisions, setRevisions ] = useState( [] );
-	const [ createSuccess, setCreateSuccess ] = useState( false );
-	const [ createFail, setCreateFail ] = useState( false );
-	const [ createIsBusy, setCreateIsBusy ] = useState( false );
-	const {
-		content,
-		savedPost,
-		getEditedPostAttribute,
-		isPublished,
-		isRevision,
-	} = usePost();
-	const {
-		createScheduledRevision,
-		updateScheduledRevision,
-		getScheduledRevisions,
-	} = useRevision();
+	const { savedPost, getEditedPostAttribute, isPublished } = usePost();
+	const { get: getRevisions } = useScheduledRevision();
 
 	useEffect( () => {
 		const getAllRevisions = async () => {
-			const { error, data } = await getScheduledRevisions( {
+			const { error, data } = await getRevisions( {
 				postType: savedPost.type,
 				postId: savedPost.id,
 			} );
@@ -63,17 +54,6 @@ const PluginDocumentSettingPanelDemo = () => {
 		return null;
 	}
 
-	const btnClickHandler = async ( fn, props ) => {
-		setCreateIsBusy( true );
-		const { error } = await fn( props );
-		if ( error ) {
-			setCreateFail( true );
-		} else {
-			setCreateSuccess( true );
-		}
-		setCreateIsBusy( false );
-	};
-
 	return (
 		<PluginDocumentSettingPanel
 			name={ COMPONENT_NAMESPACE }
@@ -86,51 +66,19 @@ const PluginDocumentSettingPanelDemo = () => {
 					{ format( 'r', getEditedPostAttribute( 'date' ) ) }
 				</PanelRow>
 			) }
-
-			{ createSuccess && (
-				<SuccessMessage>
-					{ __(
-						'Successfully updated revision.',
-						'revisions-extended'
-					) }
-				</SuccessMessage>
-			) }
-			{ createFail && (
-				<ErrorMessage>
-					{ __( 'Failed to update revision.', 'revisions-extended' ) }
-				</ErrorMessage>
-			) }
-
-			{ revisions.map( ( i ) => (
-				<div key={ i.id }>{ i.slug }</div>
-			) ) }
-
-			{ isRevision ? (
-				<UpdateRevisionView
-					isBusy={ createIsBusy }
-					onBtnClick={ async () =>
-						btnClickHandler( updateScheduledRevision, {
-							postType: savedPost.type,
-							postId: savedPost.parent,
-							date: savedPost.date,
-							revisionId: savedPost.id,
-							content,
-						} )
-					}
-				/>
-			) : (
-				<NewRevisionView
-					isBusy={ createIsBusy }
-					onBtnClick={ async () =>
-						btnClickHandler( createScheduledRevision, {
-							postType: savedPost.type,
-							postId: savedPost.id,
-							date: savedPost.date,
-							content,
-						} )
-					}
-				/>
-			) }
+			<RevisionList items={ revisions } />
+			<PanelRow>
+				<NewRevisionView />
+			</PanelRow>
+			<PanelRow>
+				<UpdateRevisionView />
+			</PanelRow>
+			<PanelRow>
+				<DeleteRevisionView />
+			</PanelRow>
+			<PanelRow>
+				<PublishRevisionView />
+			</PanelRow>
 		</PluginDocumentSettingPanel>
 	);
 };

@@ -14,32 +14,31 @@ import { Button } from '@wordpress/components';
  */
 import { usePost, useScheduledRevision } from '../../../hooks';
 
-const UpdateRevisionView = () => {
+const DeleteRevisionView = () => {
 	const [ isBusy, setBusy ] = useState( false );
-	const { content, savedPost } = usePost();
-	const { update } = useScheduledRevision();
+	const { trash } = useScheduledRevision();
+	const { savedPost } = usePost();
 
 	return (
 		<Button
 			isBusy={ isBusy }
-			isPrimary
+			isTertiary
+			isDestructive
 			onClick={ async () => {
 				setBusy( true );
-				const res = await update( {
+				const res = await trash( {
 					postType: savedPost.type,
-					postId: savedPost.parent,
-					date: savedPost.date,
-					revisionId: savedPost.id,
-					content,
+					postId: savedPost.id,
+					revisionId: 154,
 				} );
 
 				console.log( res );
 				setBusy( false );
 			} }
 		>
-			{ __( 'Update Revision', 'revisions-extended' ) }
+			{ __( 'Delete Revision', 'revisions-extended' ) }
 		</Button>
 	);
 };
 
-export default UpdateRevisionView;
+export default DeleteRevisionView;

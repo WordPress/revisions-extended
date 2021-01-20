@@ -1,12 +1,40 @@
 /**
+ * External dependencies
+ */
+import { useState } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 
-const NewRevisionView = ( { onBtnClick, isBusy } ) => {
+/**
+ * Internal dependencies
+ */
+import { usePost, useScheduledRevision } from '../../../hooks';
+
+const NewRevisionView = () => {
+	const [ isBusy, setBusy ] = useState( false );
+	const { content, savedPost } = usePost();
+	const { create } = useScheduledRevision();
+
 	return (
-		<Button isPrimary isBusy={ isBusy } onClick={ onBtnClick }>
+		<Button
+			isBusy={ isBusy }
+			isPrimary
+			onClick={ async () => {
+				setBusy( true );
+				const res = await create( {
+					postType: savedPost.type,
+					postId: savedPost.id,
+					date: savedPost.date,
+					content,
+				} );
+				console.log( res );
+				setBusy( false );
+			} }
+		>
 			{ __( 'Schedule Revision', 'revisions-extended' ) }
 		</Button>
 	);
