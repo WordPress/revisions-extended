@@ -90,12 +90,12 @@ function put_post_revision( $post = null, $autosave = false ) {
 	}
 
 	// Begin changes from Core.
-	// if ( ! validate_revision_status( $post['post_status'] ) ) {
-	// 	return new WP_Error(
-	// 		'invalid_revision_status',
-	// 		__( 'Invalid revision status.', 'revisions-extended' ),
-	// 	);
-	// }
+	if ( ! validate_revision_status( $post['post_status'] ) ) {
+		return new WP_Error(
+			'invalid_revision_status',
+			__( 'Invalid revision status.', 'revisions-extended' ),
+		);
+	}
 
 	/**
 	 * The _wp_post_revision_data function overrides some fields that need to be different
