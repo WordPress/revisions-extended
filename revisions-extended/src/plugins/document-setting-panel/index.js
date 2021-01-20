@@ -15,11 +15,11 @@ import { PanelRow } from '@wordpress/components';
  * Internal dependencies
  */
 import {
-	NewRevisionView,
-	UpdateRevisionView,
-	DeleteRevisionView,
-	PublishRevisionView,
-} from './views';
+	NewRevision,
+	UpdateRevision,
+	DeleteRevision,
+	PublishRevision,
+} from './components';
 import { RevisionList } from '../../components';
 import { pluginName, pluginNamespace } from '../../utils';
 import { usePost, useScheduledRevision } from '../../hooks';
@@ -28,7 +28,12 @@ const COMPONENT_NAMESPACE = `${ pluginNamespace }-document-slot`;
 
 const PluginDocumentSettingPanelDemo = () => {
 	const [ revisions, setRevisions ] = useState( [] );
-	const { savedPost, getEditedPostAttribute, isPublished } = usePost();
+	const {
+		savedPost,
+		getEditedPostAttribute,
+		isPublished,
+		isRevision,
+	} = usePost();
 	const { get: getRevisions } = useScheduledRevision();
 
 	useEffect( () => {
@@ -67,18 +72,27 @@ const PluginDocumentSettingPanelDemo = () => {
 				</PanelRow>
 			) }
 			<RevisionList items={ revisions } />
-			<PanelRow>
-				<NewRevisionView />
-			</PanelRow>
-			<PanelRow>
-				<UpdateRevisionView />
-			</PanelRow>
-			<PanelRow>
-				<DeleteRevisionView />
-			</PanelRow>
-			<PanelRow>
-				<PublishRevisionView />
-			</PanelRow>
+
+			{ ! isRevision && (
+				<PanelRow>
+					<NewRevision />
+				</PanelRow>
+			) }
+			{ isRevision && (
+				<PanelRow>
+					<UpdateRevision />
+				</PanelRow>
+			) }
+			{ isRevision && (
+				<PanelRow>
+					<DeleteRevision />
+				</PanelRow>
+			) }
+			{ isRevision && (
+				<PanelRow>
+					<PublishRevision />
+				</PanelRow>
+			) }
 		</PluginDocumentSettingPanel>
 	);
 };

@@ -14,7 +14,7 @@ import { Button } from '@wordpress/components';
  */
 import { usePost, useScheduledRevision } from '../../../hooks';
 
-const UpdateRevisionView = () => {
+const UpdateRevision = () => {
 	const [ isBusy, setBusy ] = useState( false );
 	const { content, savedPost } = usePost();
 	const { update } = useScheduledRevision();
@@ -42,4 +42,4 @@ const UpdateRevisionView = () => {
 	);
 };
 
-export default UpdateRevisionView;
+export default UpdateRevision;

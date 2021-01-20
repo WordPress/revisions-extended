@@ -14,7 +14,7 @@ import { Button } from '@wordpress/components';
  */
 import { usePost, useScheduledRevision } from '../../../hooks';
 
-const PublishRevisionView = () => {
+const PublishRevision = () => {
 	const [ isBusy, setBusy ] = useState( false );
 	const { publish } = useScheduledRevision();
 	const { savedPost } = usePost();
@@ -27,8 +27,8 @@ const PublishRevisionView = () => {
 				setBusy( true );
 				const res = await publish( {
 					postType: savedPost.type,
-					postId: savedPost.id,
-					revisionId: 154,
+					postId: savedPost.parent,
+					revisionId: savedPost.id,
 				} );
 				console.log( res );
 				setBusy( false );
@@ -39,4 +39,4 @@ const PublishRevisionView = () => {
 	);
 };
 
-export default PublishRevisionView;
+export default PublishRevision;

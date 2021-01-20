@@ -19,7 +19,6 @@ export const usePost = () => {
 			changingToScheduled: store.isEditedPostBeingScheduled(),
 			savedPost: store.getCurrentPost(),
 			content: store.getEditedPostContent(),
-
 			getEditedPostAttribute: store.getEditedPostAttribute,
 		};
 	}, [] );

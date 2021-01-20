@@ -14,7 +14,7 @@ import { Button } from '@wordpress/components';
  */
 import { usePost, useScheduledRevision } from '../../../hooks';
 
-const DeleteRevisionView = () => {
+const DeleteRevision = () => {
 	const [ isBusy, setBusy ] = useState( false );
 	const { trash } = useScheduledRevision();
 	const { savedPost } = usePost();
@@ -28,8 +28,8 @@ const DeleteRevisionView = () => {
 				setBusy( true );
 				const res = await trash( {
 					postType: savedPost.type,
-					postId: savedPost.id,
-					revisionId: 154,
+					postId: savedPost.parent,
+					revisionId: savedPost.id,
 				} );
 
 				console.log( res );
@@ -41,4 +41,4 @@ const DeleteRevisionView = () => {
 	);
 };
 
-export default DeleteRevisionView;
+export default DeleteRevision;
