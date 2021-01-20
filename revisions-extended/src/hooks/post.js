@@ -17,8 +17,10 @@ export const usePost = () => {
 				store.getEditedPostAttribute( 'type' ) === pluginCustomPostType,
 			isPublished: store.isCurrentPostPublished(),
 			changingToScheduled: store.isEditedPostBeingScheduled(),
-			post: store.getCurrentPost(),
+			savedPost: store.getCurrentPost(),
 			content: store.getEditedPostContent(),
+
+			getEditedPostAttribute: store.getEditedPostAttribute,
 		};
 	}, [] );
 };
