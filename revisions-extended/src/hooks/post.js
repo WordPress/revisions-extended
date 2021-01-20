@@ -3,12 +3,18 @@
  */
 import { useSelect } from '@wordpress/data';
 
+/**
+ * Internal dependencies
+ */
+import { pluginCustomPostType } from '../utils';
+
 export const usePost = () => {
 	return useSelect( ( select ) => {
 		const store = select( 'core/editor' );
 
 		return {
-			isRevision: store.getEditedPostAttribute( 'type' ) === 'revision',
+			isRevision:
+				store.getEditedPostAttribute( 'type' ) === pluginCustomPostType,
 			isPublished: store.isCurrentPostPublished(),
 			changingToScheduled: store.isEditedPostBeingScheduled(),
 			post: store.getCurrentPost(),

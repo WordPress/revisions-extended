@@ -50,41 +50,53 @@ const PluginDocumentSettingPanelDemo = () => {
 			className={ COMPONENT_NAMESPACE }
 		>
 			<PanelRow>Date: { format( 'r', post.date ) }</PanelRow>
-			{ createSuccess && <SuccessMessage>Success</SuccessMessage> }
-			{ createFail && <ErrorMessage>Failed</ErrorMessage> }
-
-			{ isRevision ? (
-				<Button
-					isPrimary
-					isBusy={ createIsBusy }
-					onClick={ async () =>
-						btnClickHandler( updateRevision, {
-							postType: post.type,
-							postId: post.parent,
-							date: post.date,
-							revisionId: post.id,
-							content,
-						} )
-					}
-				>
-					{ __( 'Update Revision', 'revisions-extended' ) }
-				</Button>
-			) : (
-				<Button
-					isPrimary
-					isBusy={ createIsBusy }
-					onClick={ async () =>
-						btnClickHandler( createRevision, {
-							postType: post.type,
-							postId: post.id,
-							date: post.date,
-							content,
-						} )
-					}
-				>
-					{ __( 'Schedule Revision', 'revisions-extended' ) }
-				</Button>
+			{ createSuccess && (
+				<SuccessMessage>
+					{ __(
+						'Successfully updated revision.',
+						'revisions-extended'
+					) }
+				</SuccessMessage>
 			) }
+			{ createFail && (
+				<ErrorMessage>
+					{ __( 'Failed to update revision.', 'revisions-extended' ) }
+				</ErrorMessage>
+			) }
+			<PanelRow>
+				{ isRevision ? (
+					<Button
+						isPrimary
+						isBusy={ createIsBusy }
+						onClick={ async () =>
+							btnClickHandler( updateRevision, {
+								postType: post.type,
+								postId: post.parent,
+								date: post.date,
+								revisionId: post.id,
+								content,
+							} )
+						}
+					>
+						{ __( 'Update Revision', 'revisions-extended' ) }
+					</Button>
+				) : (
+					<Button
+						isPrimary
+						isBusy={ createIsBusy }
+						onClick={ async () =>
+							btnClickHandler( createRevision, {
+								postType: post.type,
+								postId: post.id,
+								date: post.date,
+								content,
+							} )
+						}
+					>
+						{ __( 'Schedule Revision', 'revisions-extended' ) }
+					</Button>
+				) }
+			</PanelRow>
 		</PluginDocumentSettingPanel>
 	);
 };
