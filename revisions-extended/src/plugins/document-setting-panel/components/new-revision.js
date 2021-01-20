@@ -25,13 +25,17 @@ const NewRevision = () => {
 			isPrimary
 			onClick={ async () => {
 				setBusy( true );
-				const res = await create( {
+				const { error, data } = await create( {
 					postType: savedPost.type,
 					postId: savedPost.id,
 					date: savedPost.date,
 					content,
 				} );
-				console.log( res );
+
+				if ( ! error ) {
+					// We should navigate to the custom post type
+				}
+
 				setBusy( false );
 			} }
 		>
