@@ -60,9 +60,9 @@ const PluginDocumentSettingPanelDemo = () => {
 					onClick={ async () =>
 						btnClickHandler( updateRevision, {
 							postType: post.type,
-							postId: post.id,
+							postId: post.parent,
 							date: post.date,
-							revisionId: 75,
+							revisionId: post.id,
 							content,
 						} )
 					}
