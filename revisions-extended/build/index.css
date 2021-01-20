@@ -1,18 +1,18 @@
-.revision-extended-message {
+.revisions-extended-message {
 	width: 100%;
 	padding: 8px;
 }
 
-.revision-extended-message-is-warning {
+.revisions-extended-message-is-warning {
 	background: var(--global--alert-yellow);
 }
 
-.revision-extended-message-is-error {
+.revisions-extended-message-is-error {
 	background: var(--global--alert-red);
 	color: #fff;
 }
 
-.revision-extended-message-is-success {
+.revisions-extended-message-is-success {
 	background: var(--global--alert-green);
 	color: #fff;
 }
@@ -24,4 +24,3 @@
 	--global--alert-green: #4ab866
 }
 
-/*# sourceMappingURL=index.css.map*/

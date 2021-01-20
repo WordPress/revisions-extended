@@ -6,7 +6,7 @@ import './index.css';
 const Message = ( { children, type } ) => {
 	return (
 		<div
-			className={ `revision-extended-message revision-extended-message-${ type }` }
+			className={ `revisions-extended-message revisions-extended-message-${ type }` }
 		>
 			{ children }
 		</div>
