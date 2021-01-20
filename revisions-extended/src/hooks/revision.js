@@ -8,9 +8,19 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import { getRestApiUrl } from '../utils';
 
-const POST_STATUS_SCHEDULED = 'revex_future';
+/**
+ * Module Constants
+ */
+const POST_STATUS_SCHEDULED = 'revex_future'; // Matches API
 const POST_STATUS_PENDING = 'revex_pending';
 
+/**
+ * This function normalizes the apiFetch response
+ *
+ * @param {Function} fn Asynchronous api call
+ *
+ * @return {Object} Response object
+ */
 const executeFetch = async ( fn ) => {
 	try {
 		return {
@@ -23,6 +33,16 @@ const executeFetch = async ( fn ) => {
 	}
 };
 
+/**
+ * Get all the post revisions for a specific post type
+ *
+ * @param {Object} data - Data sent to api
+ * @param {string} data.postType - The type of the post.
+ * @param {string} data.postId - The id of the post.
+ * @param {string} status
+ *
+ * @return {Object} Api response
+ */
 const getPostRevisions = async ( data, status ) => {
 	const { postType, postId } = data;
 
@@ -34,6 +54,16 @@ const getPostRevisions = async ( data, status ) => {
 	} );
 };
 
+/**
+ * Creates a revision for a specific post type
+ *
+ * @param {Object} data Data sent to api
+ * @param {string} data.postType - The type of the post.
+ * @param {string} data.postId - The id of the post.
+ * @param {string} status
+ *
+ * @return {Object} Api response
+ */
 const createRevision = async ( data, status ) => {
 	const { postType, postId } = data;
 
@@ -49,6 +79,18 @@ const createRevision = async ( data, status ) => {
 	} );
 };
 
+/**
+ * Updates a revision for a specific post type
+ *
+ * @param {Object} data - Data sent to api
+ * @param {string} data.postType - The type of the post.
+ * @param {string} data.postId - The id of the post.
+ * @param {string} data.content - The content of the post.
+ * @param {string} data.revisionId - The revision id of the post.
+ * @param {string} status
+ *
+ * @return {Object} Api response
+ */
 const updateRevision = async (
 	{ postType, postId, content, revisionId },
 	status
@@ -66,6 +108,16 @@ const updateRevision = async (
 	} );
 };
 
+/**
+ * Trashes a revision
+ *
+ * @param {Object} data - Data sent to api
+ * @param {string} data.postType - The type of the post.
+ * @param {string} data.postId - The is of the post.
+ * @param {string} data.revisionId - The revision id.
+ *
+ * @return {Object} Api response
+ */
 const trashRevision = async ( { postType, postId, revisionId } ) => {
 	return await executeFetch( async () => {
 		return await apiFetch( {
@@ -75,6 +127,16 @@ const trashRevision = async ( { postType, postId, revisionId } ) => {
 	} );
 };
 
+/**
+ * Publishes a revision, changing it into a past
+ *
+ * @param {Object} data - Data sent to api
+ * @param {string} data.postType - The type of the id.
+ * @param {string} data.postId - The id of the post.
+ * @param {string} data.revisionId - The revision id.
+ *
+ * @return {Object} Api response
+ */
 const publishRevision = async ( { postType, postId, revisionId } ) => {
 	return await executeFetch( async () => {
 		return await apiFetch( {
@@ -100,20 +162,12 @@ const useScheduledRevision = () => {
 		return await updateRevision( data, POST_STATUS_SCHEDULED );
 	};
 
-	const trash = async ( data ) => {
-		return await trashRevision( data );
-	};
-
-	const publish = async ( data ) => {
-		return await publishRevision( data );
-	};
-
 	return {
 		get,
 		create,
 		update,
-		trash,
-		publish,
+		trash: trashRevision,
+		publish: publishRevision,
 	};
 };
 
@@ -134,6 +188,8 @@ const usePendingRevision = () => {
 		get,
 		create,
 		update,
+		trash: trashRevision,
+		publish: publishRevision,
 	};
 };
 
