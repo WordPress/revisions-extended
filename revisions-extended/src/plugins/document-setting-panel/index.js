@@ -7,7 +7,6 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
  * WordPress dependencies
  */
 import { registerPlugin } from '@wordpress/plugins';
-import { format } from '@wordpress/date';
 import { PanelRow } from '@wordpress/components';
 
 /**
@@ -26,12 +25,7 @@ import { usePost } from '../../hooks';
 const COMPONENT_NAMESPACE = `${ pluginNamespace }-document-slot`;
 
 const PluginDocumentSettingPanelDemo = () => {
-	const {
-		savedPost,
-		getEditedPostAttribute,
-		isPublished,
-		isRevision,
-	} = usePost();
+	const { isPublished, isRevision } = usePost();
 
 	if ( ! isPublished ) {
 		return null;
@@ -43,13 +37,6 @@ const PluginDocumentSettingPanelDemo = () => {
 			title={ pluginName }
 			className={ COMPONENT_NAMESPACE }
 		>
-			{ savedPost.date !== getEditedPostAttribute( 'date' ) && (
-				<PanelRow>
-					Scheduled for:{ ' ' }
-					{ format( 'r', getEditedPostAttribute( 'date' ) ) }
-				</PanelRow>
-			) }
-
 			{ ! isRevision && <NewRevision /> }
 
 			{ isRevision && (
