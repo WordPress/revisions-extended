@@ -19,73 +19,76 @@ import { SuccessMessage, ErrorMessage } from '../../components';
 import { pluginName, pluginNamespace } from '../../utils';
 import { usePost, useRevision } from '../../hooks';
 
-const COMPONENT_NAMESPACE = `${pluginNamespace}-document-slot`;
+const COMPONENT_NAMESPACE = `${ pluginNamespace }-document-slot`;
 
 const PluginDocumentSettingPanelDemo = () => {
-	const [createSuccess, setCreateSuccess] = useState(false);
-	const [createFail, setCreateFail] = useState(false);
-	const [createIsBusy, setCreateIsBusy] = useState();
+	const [ createSuccess, setCreateSuccess ] = useState( false );
+	const [ createFail, setCreateFail ] = useState( false );
+	const [ createIsBusy, setCreateIsBusy ] = useState();
 	const { content, post, isPublished, isRevision } = usePost();
 	const { createRevision, updateRevision } = useRevision();
 
-	if (!isPublished) {
+	if ( ! isPublished ) {
 		return null;
 	}
 
-	const btnClickHandler = async (fn, props) => {
-		const { error } = await fn(props);
-
-		error ? setCreateFail(true) : setCreateSuccess(true);
-
-		setCreateIsBusy(false);
+	const btnClickHandler = async ( fn, props ) => {
+		setCreateIsBusy( true );
+		const { error } = await fn( props );
+		if ( error ) {
+			setCreateFail( true );
+		} else {
+			setCreateSuccess( true );
+		}
+		setCreateIsBusy( false );
 	};
 
 	return (
 		<PluginDocumentSettingPanel
-			name={COMPONENT_NAMESPACE}
-			title={pluginName}
-			className={COMPONENT_NAMESPACE}
+			name={ COMPONENT_NAMESPACE }
+			title={ pluginName }
+			className={ COMPONENT_NAMESPACE }
 		>
-			<PanelRow>Date: {format('r', post.date)}</PanelRow>
-			{createSuccess && <SuccessMessage>Success</SuccessMessage>}
-			{createFail && <ErrorMessage>Failed</ErrorMessage>}
+			<PanelRow>Date: { format( 'r', post.date ) }</PanelRow>
+			{ createSuccess && <SuccessMessage>Success</SuccessMessage> }
+			{ createFail && <ErrorMessage>Failed</ErrorMessage> }
 
-			{isRevision ? (
+			{ isRevision ? (
 				<Button
 					isPrimary
-					isBusy={createIsBusy}
-					onClick={async () =>
-						btnClickHandler(updateRevision, {
+					isBusy={ createIsBusy }
+					onClick={ async () =>
+						btnClickHandler( updateRevision, {
 							postType: post.type,
 							postId: post.id,
 							date: post.date,
 							revisionId: 75,
 							content,
-						})
+						} )
 					}
 				>
-					{__('Update Revision', pluginNamespace)}
+					{ __( 'Update Revision', 'revisions-extended' ) }
 				</Button>
 			) : (
 				<Button
 					isPrimary
-					isBusy={createIsBusy}
-					onClick={async () =>
-						btnClickHandler(createRevision, {
+					isBusy={ createIsBusy }
+					onClick={ async () =>
+						btnClickHandler( createRevision, {
 							postType: post.type,
 							postId: post.id,
 							date: post.date,
 							content,
-						})
+						} )
 					}
 				>
-					{__('Schedule Revision', pluginNamespace)}
+					{ __( 'Schedule Revision', 'revisions-extended' ) }
 				</Button>
-			)}
+			) }
 		</PluginDocumentSettingPanel>
 	);
 };
 
-registerPlugin(COMPONENT_NAMESPACE, {
+registerPlugin( COMPONENT_NAMESPACE, {
 	render: PluginDocumentSettingPanelDemo,
-});
+} );

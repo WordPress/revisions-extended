@@ -13,24 +13,27 @@ import { pluginNamespace } from '../../utils';
 import { usePost } from '../../hooks';
 import './index.css';
 
-const COMPONENT_NAMESPACE = `${pluginNamespace}-post-status`;
+const COMPONENT_NAMESPACE = `${ pluginNamespace }-post-status`;
 
 const OurPluginPostStatusInfo = () => {
 	const { changingToScheduled } = usePost();
 
-	if (!changingToScheduled) {
+	if ( ! changingToScheduled ) {
 		return null;
 	}
 
 	return (
 		<PluginPostStatusInfo>
 			<WarningMessage>
-				{__('You have selected a date in the future.', pluginNamespace)}
+				{ __(
+					'You have selected a date in the future.',
+					'revisions-extended'
+				) }
 			</WarningMessage>
 		</PluginPostStatusInfo>
 	);
 };
 
-registerPlugin(COMPONENT_NAMESPACE, {
+registerPlugin( COMPONENT_NAMESPACE, {
 	render: OurPluginPostStatusInfo,
-});
+} );
