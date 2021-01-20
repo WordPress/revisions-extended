@@ -36,7 +36,7 @@ const PluginDocumentSettingPanelDemo = () => {
 	} = usePost();
 	const {
 		createScheduledRevision,
-		updateRevision,
+		updateScheduledRevision,
 		getScheduledRevisions,
 	} = useRevision();
 
@@ -109,7 +109,7 @@ const PluginDocumentSettingPanelDemo = () => {
 				<UpdateRevisionView
 					isBusy={ createIsBusy }
 					onBtnClick={ async () =>
-						btnClickHandler( updateRevision, {
+						btnClickHandler( updateScheduledRevision, {
 							postType: savedPost.type,
 							postId: savedPost.parent,
 							date: savedPost.date,
@@ -126,7 +126,6 @@ const PluginDocumentSettingPanelDemo = () => {
 							postType: savedPost.type,
 							postId: savedPost.id,
 							date: savedPost.date,
-							status: 'revex_future',
 							content,
 						} )
 					}
