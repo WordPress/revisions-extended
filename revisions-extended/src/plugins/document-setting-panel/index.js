@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 /**
@@ -23,9 +23,10 @@ import { usePost, useRevision } from '../../hooks';
 const COMPONENT_NAMESPACE = `${ pluginNamespace }-document-slot`;
 
 const PluginDocumentSettingPanelDemo = () => {
+	const [ revisions, setRevisions ] = useState( [] );
 	const [ createSuccess, setCreateSuccess ] = useState( false );
 	const [ createFail, setCreateFail ] = useState( false );
-	const [ createIsBusy, setCreateIsBusy ] = useState();
+	const [ createIsBusy, setCreateIsBusy ] = useState( false );
 	const {
 		content,
 		savedPost,
@@ -33,7 +34,30 @@ const PluginDocumentSettingPanelDemo = () => {
 		isPublished,
 		isRevision,
 	} = usePost();
-	const { createRevision, updateRevision } = useRevision();
+	const {
+		createScheduledRevision,
+		updateRevision,
+		getScheduledRevisions,
+	} = useRevision();
+
+	useEffect( () => {
+		const getAllRevisions = async () => {
+			const { error, data } = await getScheduledRevisions( {
+				postType: savedPost.type,
+				postId: savedPost.id,
+			} );
+
+			if ( error ) {
+				// TO DO, we have an error
+			} else {
+				setRevisions( data );
+			}
+		};
+
+		if ( savedPost.id ) {
+			getAllRevisions();
+		}
+	}, [] );
 
 	if ( ! isPublished ) {
 		return null;
@@ -76,6 +100,11 @@ const PluginDocumentSettingPanelDemo = () => {
 					{ __( 'Failed to update revision.', 'revisions-extended' ) }
 				</ErrorMessage>
 			) }
+
+			{ revisions.map( ( i ) => (
+				<div key={ i.id }>{ i.slug }</div>
+			) ) }
+
 			{ isRevision ? (
 				<UpdateRevisionView
 					isBusy={ createIsBusy }
@@ -93,10 +122,11 @@ const PluginDocumentSettingPanelDemo = () => {
 				<NewRevisionView
 					isBusy={ createIsBusy }
 					onBtnClick={ async () =>
-						btnClickHandler( createRevision, {
+						btnClickHandler( createScheduledRevision, {
 							postType: savedPost.type,
 							postId: savedPost.id,
 							date: savedPost.date,
+							status: 'revex_future',
 							content,
 						} )
 					}
