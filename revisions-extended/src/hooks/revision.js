@@ -123,6 +123,9 @@ const trashRevision = async ( { postType, postId, revisionId } ) => {
 		return await apiFetch( {
 			path: `${ getRestApiUrl( postType, postId ) }/${ revisionId }`,
 			method: 'DELETE',
+			data: {
+				force: true,
+			},
 		} );
 	} );
 };
