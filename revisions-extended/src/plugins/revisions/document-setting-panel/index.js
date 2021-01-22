@@ -1,12 +1,11 @@
 /**
  * External dependencies
  */
-import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { PluginDocumentSettingPanel as Panel } from '@wordpress/edit-post';
 
 /**
  * WordPress dependencies
  */
-import { registerPlugin } from '@wordpress/plugins';
 import { PanelRow } from '@wordpress/components';
 
 /**
@@ -19,20 +18,13 @@ import {
 	DeleteRevision,
 	PublishRevision,
 } from './components';
-import { pluginName, pluginNamespace } from '../../utils';
-import { usePost } from '../../hooks';
+import { pluginName, pluginNamespace } from '../../../utils';
 
 const COMPONENT_NAMESPACE = `${ pluginNamespace }-document-slot`;
 
-const PluginDocumentSettingPanelDemo = () => {
-	const { isPublished, isRevision } = usePost();
-
-	if ( ! isPublished ) {
-		return null;
-	}
-
+const DocumentSettingPanel = () => {
 	return (
-		<PluginDocumentSettingPanel
+		<Panel
 			name={ COMPONENT_NAMESPACE }
 			title={ pluginName }
 			className={ COMPONENT_NAMESPACE }
@@ -60,10 +52,8 @@ const PluginDocumentSettingPanelDemo = () => {
 					<PublishRevision />
 				</PanelRow>
 			) }
-		</PluginDocumentSettingPanel>
+		</Panel>
 	);
 };
 
-registerPlugin( COMPONENT_NAMESPACE, {
-	render: PluginDocumentSettingPanelDemo,
-} );
+export default DocumentSettingPanel;

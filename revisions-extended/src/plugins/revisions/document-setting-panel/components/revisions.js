@@ -6,8 +6,8 @@ import { useState, useEffect } from 'react';
 /**
  * Internal dependencies
  */
-import { RevisionList } from '../../../components';
-import { usePost, useScheduledRevision } from '../../../hooks';
+import { RevisionList } from '../../../../components';
+import { usePost, useScheduledRevision } from '../../../../hooks';
 
 const Revisions = () => {
 	const [ revisions, setRevisions ] = useState( [] );

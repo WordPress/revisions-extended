@@ -1,3 +1,7 @@
-import './document-setting-panel';
-import './plugin-post-status-info';
-import './plugin-sidebar';
+/**
+ * Internal dependencies
+ */
+import './revisions'
+
+// Overrides Gutenberg functionality
+import './update-button-modifier';

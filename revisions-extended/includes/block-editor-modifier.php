@@ -23,14 +23,6 @@ function enqueue_assets() {
 		false
 	);
 
-	wp_enqueue_script(
-		'revisions-extended-editor-script',
-		plugins_url('src/block-editor-modification.js', dirname(__FILE__, 1) ),
-		$block_info['dependencies'],
-		$block_info['version'],
-		false
-	);
-
 	wp_enqueue_style(
 		'revisions-extended-script',
 		plugins_url('build/index.css', dirname(__FILE__, 1) ),
@@ -38,12 +30,20 @@ function enqueue_assets() {
 		$block_info['version']
 	);
 
-	wp_enqueue_style(
-		'revisions-extended-styles',
-		plugins_url('src/block-editor-modification.css', dirname(__FILE__, 1) ),
-		[],
-		$block_info['version']
-	);
+	// wp_enqueue_script(
+	// 	'revisions-extended-editor-script',
+	// 	plugins_url('src/block-editor-modification.js', dirname(__FILE__, 1) ),
+	// 	$block_info['dependencies'],
+	// 	$block_info['version'],
+	// 	false
+	// );
+
+	// wp_enqueue_style(
+	// 	'revisions-extended-styles',
+	// 	plugins_url('src/block-editor-modification.css', dirname(__FILE__, 1) ),
+	// 	[],
+	// 	$block_info['version']
+	// );
 }
 
 add_action('enqueue_block_editor_assets', __NAMESPACE__ . '\enqueue_assets');

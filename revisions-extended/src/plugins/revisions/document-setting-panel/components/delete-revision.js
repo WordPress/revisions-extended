@@ -12,9 +12,9 @@ import { Button } from '@wordpress/components';
 /**
  * Internal dependencies
  */
-import { usePost, useScheduledRevision } from '../../../hooks';
+import { usePost, useScheduledRevision } from '../../../../hooks';
 
-const DeleteRevision = () => {
+const DeleteRevisionView = () => {
 	const [ isBusy, setBusy ] = useState( false );
 	const { trash } = useScheduledRevision();
 	const { savedPost } = usePost();
@@ -41,4 +41,4 @@ const DeleteRevision = () => {
 	);
 };
 
-export default DeleteRevision;
+export default DeleteRevisionView;

@@ -13,8 +13,7 @@ export const usePost = () => {
 		const store = select( 'core/editor' );
 
 		return {
-			isRevision:
-				store.getEditedPostAttribute( 'type' ) === pluginCustomPostType,
+			isRevision: store.getEditedPostAttribute( 'type' ) === pluginCustomPostType,
 			isPublished: store.isCurrentPostPublished(),
 			changingToScheduled: store.isEditedPostBeingScheduled(),
 			savedPost: store.getCurrentPost(),
