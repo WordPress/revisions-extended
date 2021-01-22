@@ -29,8 +29,8 @@ function modify_revision_post_type( $post_type, $post_type_object ) {
 		$post_type_object->add_supports();
 
 		$post_type_object->show_in_rest          = true;
-		$post_type_object->rest_base             = 'revisions';
-		$post_type_object->rest_controller_class = '\RevisionsExtended\REST_Revisions_Controller';
+		$post_type_object->rest_base             = 'revision-posts';
+		$post_type_object->rest_controller_class = '\\RevisionsExtended\\REST_Revision_Post_Controller';
 	}
 }
 
