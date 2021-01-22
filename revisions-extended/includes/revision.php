@@ -2,7 +2,7 @@
 
 namespace RevisionsExtended\Revision;
 
-use WP_Error, WP_Post;
+use WP_Error, WP_Post, WP_Post_Type;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
 use function RevisionsExtended\Post_Status\validate_revision_status;
 
@@ -11,7 +11,28 @@ defined( 'WPINC' ) || die();
 /**
  * Actions and filters.
  */
+add_action( 'registered_post_type', __NAMESPACE__ . '\modify_revision_post_type', 10, 2 );
 add_filter( 'pre_wp_unique_post_slug', __NAMESPACE__ . '\filter_pre_wp_unique_post_slug', 10, 5 );
+
+/**
+ * Change the properties of the built-in revision post type so it's editable in the block editor.
+ *
+ * @param string $post_type
+ * @param WP_Post_Type $post_type_object
+ *
+ * @return void
+ */
+function modify_revision_post_type( $post_type, $post_type_object ) {
+	if ( 'revision' === $post_type ) {
+		$post_type_object->show_ui  = true;
+		$post_type_object->supports = array( 'title', 'editor', 'author', 'excerpt' );
+		$post_type_object->add_supports();
+
+		$post_type_object->show_in_rest          = true;
+		$post_type_object->rest_base             = 'revisions';
+		$post_type_object->rest_controller_class = '\RevisionsExtended\REST_Revisions_Controller';
+	}
+}
 
 /**
  * Returns revisions of specified post.
