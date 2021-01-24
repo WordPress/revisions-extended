@@ -49,7 +49,7 @@ function get_post_revisions( $post_id = 0, $args = null ) {
 		$args,
 		array(
 			'post_parent' => $post->ID,
-			'post_type'   => 'revision',
+			'post_type'   => 'revex_revision', // Changed from Core.
 			// Changed from Core.
 		)
 	);
@@ -85,7 +85,7 @@ function put_post_revision( $post = null, $autosave = false ) {
 		return new WP_Error( 'invalid_post', __( 'Invalid post ID.' ) );
 	}
 
-	if ( isset( $post['post_type'] ) && 'revision' === $post['post_type'] ) {
+	if ( isset( $post['post_type'] ) && in_array( $post['post_type'], array( 'revision', 'revex_revision' ), true ) ) { // Changed from Core.
 		return new WP_Error( 'post_type', __( 'Cannot create a revision of a revision' ) );
 	}
 
@@ -102,8 +102,9 @@ function put_post_revision( $post = null, $autosave = false ) {
 	 * for pending/scheduled revisions. We could override that function, but we'd still need
 	 * to override this one as well, so we might as well just do it in one place.
 	 */
-	$keep_props = array( 'post_status', 'post_date', 'post_date_gmt' );
-	$keep       = array_intersect_key( $post, array_fill_keys( $keep_props, '' ) );
+	$keep_props        = array( 'post_status', 'post_date', 'post_date_gmt' );
+	$keep              = array_intersect_key( $post, array_fill_keys( $keep_props, '' ) );
+	$keep['post_type'] = 'revex_revision';
 	// End changes from Core.
 
 	$post = _wp_post_revision_data( $post, $autosave );
@@ -142,11 +143,18 @@ function put_post_revision( $post = null, $autosave = false ) {
  * @return int|WP_Error The ID of the updated post. Otherwise a WP_Error.
  */
 function update_post_from_revision( $revision_id ) {
-	$revision = wp_get_post_revision( $revision_id );
+	$revision = get_post( $revision_id );
 	if ( is_null( $revision ) ) {
 		return new WP_Error(
 			'invalid_revision_id',
 			__( 'Invalid revision ID.', 'revisions-extended' )
+		);
+	}
+
+	if ( 'revex_revision' !== get_post_type( $revision ) ) {
+		return new WP_Error(
+			'invalid_revision',
+			__( 'Invalid revision.', 'revisions-extended' )
 		);
 	}
 
@@ -155,6 +163,7 @@ function update_post_from_revision( $revision_id ) {
 		$postarr = array(
 			'ID'            => $revision->ID,
 			'post_status'   => 'inherit',
+			'post_type'     => 'revision',
 			// Set the revision's post date to the current time.
 			'post_date'     => '0000-00-00 00:00:00',
 			'post_date_gmt' => '0000-00-00 00:00:00',
@@ -199,7 +208,7 @@ function update_post_from_revision( $revision_id ) {
 function filter_pre_wp_unique_post_slug( $override, $slug, $post_ID, $post_status, $post_type ) {
 	$statuses = wp_list_pluck( get_revision_statuses(), 'name' );
 
-	if ( 'revision' === $post_type && in_array( $post_status, $statuses, true ) ) {
+	if ( 'revex_revision' === $post_type && in_array( $post_status, $statuses, true ) ) {
 		$override = $slug;
 	}
 
