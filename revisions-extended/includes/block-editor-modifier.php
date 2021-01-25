@@ -6,7 +6,8 @@ namespace RevisionsExtended\BlockEditorModifier;
  * 
  */
 function get_block_info( $fileName ) {
-	$block_deps_path =  dirname(__DIR__, 1) . '/build/'. $fileName .'.asset.php';
+	$dir = dirname(__DIR__, 1);
+	$block_deps_path =   "{$dir}/build/{$fileName}.asset.php";
 
 	if ( ! file_exists( $block_deps_path ) ) {
 		return null;
@@ -27,16 +28,16 @@ function enqueue_the_assets( $fileName ) {
 		$block_version = $block_info['version'];
 
 		wp_enqueue_script(
-			'revisions-extended-'. $fileName .'-script',
-			plugins_url('build/'. $fileName .'.js', dirname(__FILE__, 1) ),
+			"revisions-extended-{$fileName}-script",
+			plugins_url("build/{$fileName}.js", dirname(__FILE__, 1) ),
 			$block_info['dependencies'],
 			$block_version,
 			false
 		);
 
 		wp_enqueue_style(
-			'revisions-extended-'. $fileName .'-style',
-			plugins_url('build/'. $fileName .'css', dirname(__FILE__, 1) ),
+			"revisions-extended-{$fileName}-style",
+			plugins_url("build/{$fileName}.css", dirname(__FILE__, 1) ),
 			[],
 			$block_version
 		);
@@ -63,6 +64,7 @@ function enqueue_assets( ) {
 		//This shouldn't be queued on the custom post type
 		enqueue_the_assets( 'editor-modifications');
 	}
+	
 }
 
 add_action('enqueue_block_editor_assets', __NAMESPACE__ . '\enqueue_assets');

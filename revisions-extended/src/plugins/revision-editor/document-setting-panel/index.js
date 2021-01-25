@@ -13,8 +13,6 @@ import { PanelRow } from '@wordpress/components';
  */
 import {
 	Revisions,
-	NewRevision,
-	UpdateRevision,
 	DeleteRevision,
 	PublishRevision,
 } from './components';
@@ -29,15 +27,11 @@ const DocumentSettingPanel = () => {
 			title={ pluginName }
 			className={ COMPONENT_NAMESPACE }
 		>
-			<NewRevision />
 
 			<PanelRow>
 				<Revisions />
 			</PanelRow>
 
-			<PanelRow>
-				<UpdateRevision />
-			</PanelRow>
 
 			<PanelRow>
 				<DeleteRevision />

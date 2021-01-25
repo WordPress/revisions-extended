@@ -14,6 +14,7 @@ import { subscribe, select, dispatch } from '@wordpress/data';
  */
 import { pluginNamespace } from '../../../utils';
 import { usePost } from '../../../hooks';
+import { NewRevision } from '../../../components';
 
 /**
  * Module constants
@@ -21,6 +22,18 @@ import { usePost } from '../../../hooks';
 const COMPONENT_NAMESPACE = `${ pluginNamespace }-document-update-button-modifier`;
 const EDITOR_STORE = 'core/editor';
 const REDIRECT_URL = 'google.com';
+
+
+	// // We can listen to the state and update things as necessary
+	// subscribe( () => {
+	// 	if ( postIsDirty() ) {
+	// 		// updatePost({
+	// 		//     status: 'something'
+	// 		// });
+	// 	}
+	// } );
+
+
 
 /**
  * Return whether the post has been edited and not saved yet.
@@ -38,69 +51,54 @@ const updatePost = ( postProps ) => {
 	return select( EDITOR_STORE ).editPost( postProps );
 };
 
-/**
- * Overrides Gutenberg `savePost` function.
- */
-const overrideGutenbergSavePost = () => {
-	// We can override the editor function as an option
-	dispatch( EDITOR_STORE ).savePost = () => {
-		console.log( 'We have interception.' );
-	};
+const getStashedSaveFunction = () => {
+	return window.gutenbergOriginalSaveFunction;
 };
 
-/**
- * Redirects user to different page
- */
-const redirectUser = () => {
-	window.location.href = REDIRECT_URL;
+const stashSaveFunction = () => {
+	window.gutenbergOriginalSaveFunction = dispatch( EDITOR_STORE ).savePost;
 };
 
 const UpdateButtonModifier = () => {
-	const [ prevIsSaving, setIsSaving ] = useState( false );
+	const [ wasPublished, setWasPublished ] = useState( false );
 	const [ showPopup, setShowPopup ] = useState( false );
 
-    const { changingToScheduled, isPublished } = usePost();
-   
-	const isSaving = select( EDITOR_STORE ).isSavingPost();
+	const { changingToScheduled, isPublished } = usePost();
+	const saveSuccess = select( EDITOR_STORE ).didPostSaveRequestSucceed();
+
 	useEffect( () => {
-		// This will only make sense if we intercept in the backend and stop the publishing.
-		const saveSuccess = select( EDITOR_STORE ).didPostSaveRequestSucceed();
-
-		// I wonder if there's a better way to see if it just saved.
-		if ( prevIsSaving && ! isSaving && saveSuccess ) {
-			// We can automatically redirect
-			// redirectUser();
-
-			// We can also just open a window for more context
+		if (
+			wasPublished &&
+			! isPublished &&
+			changingToScheduled &&
+			saveSuccess
+		) {
 			setShowPopup( true );
 		}
 
-		setIsSaving( true );
-    }, [ isSaving ] );
-    
-    	// only modify if changing published to scheduled.
-	if ( ! isPublished || ! changingToScheduled ) {
-		return null;
-	}
+		setWasPublished( isPublished );
+	}, [ saveSuccess ] );
 
-	// We can listen to the state and update things as necessary
-	subscribe( () => {
-		if ( postIsDirty() ) {
-			// updatePost({
-			//     status: 'something'
-			// });
+	useEffect( () => {
+		if ( isPublished && changingToScheduled ) {
+			dispatch( EDITOR_STORE ).savePost = () => {
+				setShowPopup( true );
+			};
+		} else {
+			if ( ! getStashedSaveFunction() ) {
+				stashSaveFunction();
+			}
+
+			dispatch( EDITOR_STORE ).savePost = getStashedSaveFunction();
 		}
-	} );
+	}, [ isPublished, changingToScheduled ] );
 
+	// only modify if changing published to scheduled.
 	if ( showPopup ) {
 		return (
-			<Modal onRequestClose={ () => setShowPopup( false ) }>
-				<div>
-					Your revision has been saved. You can edit your revision
-					[here] or view all your revisions [here].
-				</div>
-
-				<div>// Add some links/buttons</div>
+			<Modal title="Revisions Extended" onRequestClose={ () => setShowPopup( false ) } icons="plugins">
+                <p>You have selected a date in the future for a published post.</p>
+				<NewRevision/>
 			</Modal>
 		);
 	}
@@ -108,4 +106,4 @@ const UpdateButtonModifier = () => {
 	return null;
 };
 
-export default UpdateButtonModifier; 
+export default UpdateButtonModifier;

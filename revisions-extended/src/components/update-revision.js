@@ -12,12 +12,12 @@ import { Button } from '@wordpress/components';
 /**
  * Internal dependencies
  */
-import { usePost, useScheduledRevision } from '../../../../hooks';
+import { usePost, useScheduledRevision } from '../hooks';
 
-const NewRevision = () => {
+const UpdateRevision = () => {
 	const [ isBusy, setBusy ] = useState( false );
 	const { content, savedPost } = usePost();
-	const { create } = useScheduledRevision();
+	const { update } = useScheduledRevision();
 
 	return (
 		<Button
@@ -25,23 +25,21 @@ const NewRevision = () => {
 			isPrimary
 			onClick={ async () => {
 				setBusy( true );
-				const { error, data } = await create( {
+				const res = await update( {
 					postType: savedPost.type,
-					postId: savedPost.id,
+					postId: savedPost.parent,
 					date: savedPost.date,
+					revisionId: savedPost.id,
 					content,
 				} );
 
-				if ( ! error ) {
-					// We should navigate to the custom post type
-				}
-
+				console.log( res );
 				setBusy( false );
 			} }
 		>
-			{ __( 'Schedule Revision', 'revisions-extended' ) }
+			{ __( 'Update Revision', 'revisions-extended' ) }
 		</Button>
 	);
 };
 
-export default NewRevision;
+export default UpdateRevision;
