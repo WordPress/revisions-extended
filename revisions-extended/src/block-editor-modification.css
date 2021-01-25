@@ -1,7 +1,0 @@
-.interface-pinned-items > [aria-label='Settings'] {
-	display: none;
-}
-
-.interface-complementary-area__pin-unpin-item {
-	display: none !important;
-}

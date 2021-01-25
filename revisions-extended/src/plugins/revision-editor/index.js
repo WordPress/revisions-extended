@@ -27,3 +27,5 @@ registerPlugin( `${ pluginNamespace }-plugin-sidebar`, {
 registerPlugin( `${ pluginNamespace }-button-modifier`, {
 	render: ButtonModifierPlugin,
 } );
+
+alert('revision-editor');

@@ -8,7 +8,6 @@ import { PluginPostStatusInfo as PostStatusInfo } from '@wordpress/edit-post';
  * Internal dependencies
  */
 import { WarningMessage } from '../../../components';
-import { pluginNamespace } from '../../../utils';
 import { usePost } from '../../../hooks';
 import './index.css';
 

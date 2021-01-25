@@ -29,29 +29,23 @@ const DocumentSettingPanel = () => {
 			title={ pluginName }
 			className={ COMPONENT_NAMESPACE }
 		>
-			{ ! isRevision && <NewRevision /> }
+			<NewRevision />
 
-			{ isRevision && (
-				<PanelRow>
-					<Revisions />
-				</PanelRow>
-			) }
+			<PanelRow>
+				<Revisions />
+			</PanelRow>
 
-			{ isRevision && (
-				<PanelRow>
-					<UpdateRevision />
-				</PanelRow>
-			) }
-			{ isRevision && (
-				<PanelRow>
-					<DeleteRevision />
-				</PanelRow>
-			) }
-			{ isRevision && (
-				<PanelRow>
-					<PublishRevision />
-				</PanelRow>
-			) }
+			<PanelRow>
+				<UpdateRevision />
+			</PanelRow>
+
+			<PanelRow>
+				<DeleteRevision />
+			</PanelRow>
+
+			<PanelRow>
+				<PublishRevision />
+			</PanelRow>
 		</Panel>
 	);
 };

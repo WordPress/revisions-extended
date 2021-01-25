@@ -13,8 +13,8 @@
 		"setup": "composer install",
 		"lint:php": "composer run lint",
 		"format:php": "composer run format",
-		"build": "wp-scripts build revisions-extended/src/index.js --output-path=revisions-extended/build",
-		"start": "wp-scripts start revisions-extended/src/index.js --output-path=revisions-extended/build",
+		"build": "wp-scripts build revisions-extended/src/editor-modifications.js revisions-extended/src/revision-editor.js --output-path=revisions-extended/build/",
+		"start": "wp-scripts start revisions-extended/src/editor-modifications.js revisions-extended/src/revision-editor.js --output-path=revisions-extended/build",
 		"lint:js": "wp-scripts lint-js",
 		"test:unit": "wp-scripts test-unit-js"
 	},

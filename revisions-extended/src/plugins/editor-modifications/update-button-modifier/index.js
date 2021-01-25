@@ -6,15 +6,14 @@ import { useEffect, useState } from 'react';
 /**
  * WordPress dependencies
  */
-import { registerPlugin } from '@wordpress/plugins';
 import { Modal } from '@wordpress/components';
 import { subscribe, select, dispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
-import { pluginNamespace } from '../../utils';
-import { usePost } from '../../hooks';
+import { pluginNamespace } from '../../../utils';
+import { usePost } from '../../../hooks';
 
 /**
  * Module constants
@@ -109,6 +108,4 @@ const UpdateButtonModifier = () => {
 	return null;
 };
 
-registerPlugin( COMPONENT_NAMESPACE, {
-	render: UpdateButtonModifier,
-} );
+export default UpdateButtonModifier; 
