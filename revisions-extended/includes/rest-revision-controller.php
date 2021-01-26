@@ -14,25 +14,7 @@ defined( 'WPINC' ) || die();
  *
  * @see WP_REST_Posts_Controller
  */
-class REST_Revision_Post_Controller extends WP_REST_Posts_Controller {
-	/**
-	 * Constructor.
-	 *
-	 * @param string $post_type Post type.
-	 */
-	public function __construct( $post_type ) {
-		parent::__construct( $post_type );
-
-		//$this->namespace = 'revisions-extended/v1';
-
-		//$this->post_type = $post_type;
-		//$this->namespace = 'revisions-extended/v1';
-		//$obj             = get_post_type_object( $post_type );
-		//$this->rest_base = ! empty( $obj->rest_base ) ? $obj->rest_base : $obj->name;
-
-		//$this->meta = new WP_REST_Post_Meta_Fields( $this->post_type );
-	}
-
+class REST_Revision_Controller extends WP_REST_Posts_Controller {
 	/**
 	 * Registers the routes for the objects of the controller.
 	 *
@@ -120,29 +102,62 @@ class REST_Revision_Post_Controller extends WP_REST_Posts_Controller {
 			return $post;
 		}
 
-		$revisions_controller = $this->get_revisions_controller( get_post_type( $post->post_parent ) );
-		$request['parent']    = $post->post_parent;
+		$request['parent'] = $post->post_parent;
+		$controller        = $this->get_revisions_controller( get_post_type( $post->post_parent ) );
 
-		return $revisions_controller->get_item_permissions_check( $request );
+		return $controller->get_item_permissions_check( $request );
 	}
 
 	/**
-	 * Retrieves a single post.
+	 * Checks if a given request has access to update a revision.
 	 *
-	 * @param WP_REST_Request $request Full details about the request.
+	 * Revisions inherit permissions from the parent post,
+	 * check if the current user has permission to edit the post.
 	 *
-	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+	 * @param WP_REST_Request $request
+	 *
+	 * @return true|WP_Error
 	 */
-	public function get_item( $request ) {
+	public function update_item_permissions_check( $request ) {
 		$post = $this->get_post( $request['id'] );
 		if ( is_wp_error( $post ) ) {
 			return $post;
 		}
 
-		$revisions_controller = $this->get_revisions_controller( get_post_type( $post->post_parent ) );
-		$request['parent']    = $post->post_parent;
+		if ( 'inherit' === get_post_status( $post ) ) {
+			return new WP_Error(
+				'rest_cannot_edit',
+				__( 'Sorry, you are not allowed to edit this revision.', 'revisions-extended' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
 
-		return $revisions_controller->get_item( $request );
+		$get_item = $this->get_item_permissions_check( $request );
+		if ( is_wp_error( $get_item ) ) {
+			return $get_item;
+		}
+
+		// This actually checks if the user can edit the parent post.
+		if ( ! $this->check_update_permission( $post ) ) {
+			return new WP_Error(
+				'rest_cannot_edit',
+				__( 'Sorry, you are not allowed to edit revisions of this post.', 'revisions-extended' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
+
+		$post_type_object = get_post_type_object( 'revision' );
+
+		// Separate from the above check, we want to make sure the user can edit the revision post itself as well.
+		if ( get_current_user_id() !== $post->post_author && ! current_user_can( $post_type_object->cap->edit_others_posts ) ) {
+			return new WP_Error(
+				'rest_cannot_edit_others',
+				__( 'Sorry, you are not allowed to edit revisions created by other users.', 'revisions-extended' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
+
+		return true;
 	}
 
 	/**
@@ -158,8 +173,8 @@ class REST_Revision_Post_Controller extends WP_REST_Posts_Controller {
 			return $post;
 		}
 
-		$revisions_controller = $this->get_revisions_controller( get_post_type( $post->post_parent ) );
 		$request['parent']    = $post->post_parent;
+		$revisions_controller = $this->get_revisions_controller( get_post_type( $post->post_parent ) );
 
 		return $revisions_controller->delete_item_permissions_check( $request );
 	}
@@ -201,6 +216,19 @@ class REST_Revision_Post_Controller extends WP_REST_Posts_Controller {
 		}
 
 		return $post_status;
+	}
+
+	/**
+	 * Retrieves the revision's schema, conforming to JSON Schema.
+	 *
+	 * @return array Item schema data.
+	 */
+	public function get_item_schema() {
+		$schema = parent::get_item_schema();
+
+		$schema['properties']['status']['enum'] = wp_list_pluck( get_revision_statuses(), 'name' );
+
+		return $schema;
 	}
 
 	/**
