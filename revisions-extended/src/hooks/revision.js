@@ -6,7 +6,7 @@ import apiFetch from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-import { getRestApiUrl } from '../utils';
+import { getRestApiUrl, getRestApiUrlV2 } from '../utils';
 
 /**
  * Module Constants
@@ -115,13 +115,13 @@ const updateRevision = async (
  * @param {string} data.postType - The type of the post.
  * @param {string} data.postId - The is of the post.
  * @param {string} data.revisionId - The revision id.
- *
+ * @param revisionId
  * @return {Object} Api response
  */
-const trashRevision = async ( { postType, postId, revisionId } ) => {
+const trashRevision = async ( revisionId ) => {
 	return await executeFetch( async () => {
 		return await apiFetch( {
-			path: `${ getRestApiUrl( postType, postId ) }/${ revisionId }`,
+			path: getRestApiUrlV2( revisionId ),
 			method: 'DELETE',
 			data: {
 				force: true,
