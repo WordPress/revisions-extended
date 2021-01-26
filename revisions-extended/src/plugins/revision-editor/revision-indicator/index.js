@@ -18,6 +18,7 @@ import { usePost } from '../../../hooks';
 const RevisionIndicator = () => {
 	const { isRevision, savedPost } = usePost();
 
+	console.log( isRevision );
 	if ( ! isRevision ) {
 		return null;
 	}
