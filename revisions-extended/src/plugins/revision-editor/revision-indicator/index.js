@@ -16,12 +16,8 @@ import { dispatch } from '@wordpress/data';
 import { usePost } from '../../../hooks';
 
 const RevisionIndicator = () => {
-	const { isRevision, savedPost } = usePost();
-
-	if ( ! isRevision ) {
-		return null;
-	}
-
+    const { savedPost } = usePost();
+    
 	useEffect( () => {
 		dispatch( 'core/notices' ).createNotice(
 			'warning',

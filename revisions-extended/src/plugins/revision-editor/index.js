@@ -8,6 +8,7 @@ import { registerPlugin } from '@wordpress/plugins';
  */
 import DocumentSettingPanel from './document-setting-panel';
 import RevisionIndicator from './revision-indicator';
+import TrashModifier from './trash-modifier';
 import { pluginNamespace } from '../../utils';
 
 registerPlugin( `${ pluginNamespace }-document-setting-panel`, {
@@ -16,4 +17,8 @@ registerPlugin( `${ pluginNamespace }-document-setting-panel`, {
 
 registerPlugin( `${ pluginNamespace }-revision-indicator`, {
 	render: RevisionIndicator,
+} );
+
+registerPlugin( `${ pluginNamespace }-trash-modifier`, {
+	render: TrashModifier,
 } );
