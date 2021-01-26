@@ -12,9 +12,7 @@ import { pluginCustomPostType } from '../utils';
  * Overrides Gutenberg `savePost` function.
  */
 
-
 export const usePost = () => {
-
 	return useSelect( ( select ) => {
 		const store = select( 'core/editor' );
 

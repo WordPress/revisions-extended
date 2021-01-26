@@ -20,8 +20,8 @@ const GUTENBERG_BUTTON_CLASS = '.editor-post-publish-button';
 
 const ButtonModifierPlugin = () => {
 	const { isRevision } = usePost();
-    let updateBtn;
-    
+	let updateBtn;
+
 	if ( ! isRevision ) {
 		return null;
 	}

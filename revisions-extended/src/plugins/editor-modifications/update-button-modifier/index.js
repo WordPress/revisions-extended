@@ -27,7 +27,8 @@ let updateBtnElement;
 
 /**
  * Return whether the post has been edited and not saved yet.
- * @returns {bool}
+ *
+ * @return {bool}
  */
 const postIsDirty = () => {
 	return select( EDITOR_STORE ).isEditedPostDirty();
@@ -90,7 +91,7 @@ const UpdateButtonModifier = () => {
 			setNewRevision( data );
 			setShowSuccess( true );
 		}
-    };
+	};
 
 	useEffect( () => {
 		if ( ! getStashProp( PROP_FN_SAVE ) ) {
@@ -137,8 +138,8 @@ const UpdateButtonModifier = () => {
 						href={ `/wp-admin/post.php?post=${ newRevision.id }&action=edit` }
 					>
 						Continue editing your
-					</a>
-					{ ' ' }revision.
+					</a>{ ' ' }
+					revision.
 				</p>
 				<p>
 					<a href="/revisions">View all your revisions </a>
