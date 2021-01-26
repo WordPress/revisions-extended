@@ -14,7 +14,7 @@ import { Icon, check } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
-import { usePost } from '../../../hooks';
+import { usePost, useScheduledRevision } from '../../../hooks';
 
 /**
  * Module constants
@@ -23,6 +23,7 @@ const EDITOR_STORE = 'core/editor';
 
 const PROP_BTN_TEXT = 'btnText';
 const PROP_FN_SAVE = 'savePost';
+let updateBtnElement;
 
 /**
  * Return whether the post has been edited and not saved yet.
@@ -45,18 +46,53 @@ const stashGutenbergData = ( data ) => {
 	};
 };
 
+const setSavePostFunction = ( fn ) => {
+	dispatch( EDITOR_STORE ).savePost = fn;
+};
+
+const setBtnText = () => {
+	if ( updateBtnElement ) {
+		updateBtnElement.innerText = __(
+			'Schedule Revision',
+			'revisions-extended'
+		);
+	}
+};
 
 const UpdateButtonModifier = () => {
-	const [ wasPublished, setWasPublished ] = useState( false );
 	const [ showPopup, setShowPopup ] = useState( false );
+	const [ newRevision, setNewRevision ] = useState( {} );
+	const {
+		savedPost,
+		changingToScheduled,
+		isPublished,
+		getEditedPostAttribute,
+	} = usePost();
+	const { create } = useScheduledRevision();
 
-	const { changingToScheduled, isPublished } = usePost();
-	const saveSuccess = select( EDITOR_STORE ).didPostSaveRequestSucceed();
-	const updateBtnElement = document.querySelector(
+	updateBtnElement = document.querySelector(
 		'.editor-post-publish-button__button'
-    );
-    
-    console.log( select( EDITOR_STORE ).getCurrentPost() );
+	);
+
+	const _savePost = async () => {
+		const { data, error } = await create( {
+			postType: savedPost.type,
+			postId: savedPost.id,
+			title: getEditedPostAttribute( 'title' ),
+			content: getEditedPostAttribute( 'content' ),
+		} );
+
+		if ( error ) {
+			console.log( 'Error' );
+		}
+
+		if ( data ) {
+			setNewRevision( data );
+			setShowPopup( true );
+		}
+	};
+
+	console.log( savedPost );
 
 	useEffect( () => {
 		if ( ! getStashProp( PROP_FN_SAVE ) ) {
@@ -70,53 +106,21 @@ const UpdateButtonModifier = () => {
 				btnText: updateBtnElement.innerText,
 			} );
 		}
-	}, [ select( EDITOR_STORE ).getCurrentPost() ] );
+	}, [ savedPost ] );
 
 	useEffect( () => {
-		if (
-			wasPublished &&
-			! isPublished &&
-			changingToScheduled &&
-			saveSuccess
-		) {
-			setShowPopup( true );
-		}
-
-		setWasPublished( isPublished );
-	}, [ saveSuccess ] );
-
-	useEffect( () => {
+		let btnText, savePost;
 		// We want to intercept when the post is published and changing to a future date
 		if ( isPublished && changingToScheduled ) {
-			updateBtnElement.innerText = __(
-				'Schedule Revision',
-				'revisions-extended'
-			);
-
-			dispatch( EDITOR_STORE ).savePost = () => {
-				// Save using apiFetch
-
-                // wp.data.dispatch('core/editor').refreshPost()
-				// // Show confirmation
-                // setShowPopup( true );
-                
-                wp.data.dispatch('core').savePost();
-
-		    wp.data.dispatch('core').saveEntityRecord( 'postType', 'page', {
-                status: "publish",
-                content:'something',
-                title: "Banana"
-            } );
-  
-
-			};
+			btnText = __( 'Schedule Revision', 'revisions-extended' );
+			savePost = _savePost;
 		} else {
-			if ( updateBtnElement ) {
-				updateBtnElement.innerText = getStashProp( PROP_BTN_TEXT );
-			}
-
-			dispatch( EDITOR_STORE ).savePost = getStashProp( PROP_FN_SAVE );
+			btnText = getStashProp( PROP_BTN_TEXT );
+			savePost = getStashProp( PROP_FN_SAVE );
 		}
+
+		setBtnText( btnText );
+		setSavePostFunction( savePost );
 	}, [ isPublished, changingToScheduled ] );
 
 	// only modify if changing published to scheduled.
@@ -131,18 +135,18 @@ const UpdateButtonModifier = () => {
 					<Icon icon={ check } /> Successfully save your revision.
 				</p>
 				<p>
-					<a href="/revisions/232">Continue editing your</a>{ ' ' }
-					revisions.
+					<a
+						href={ `/wp-admin/post.php?post=${ newRevision.id }&action=edit` }
+					>
+						Continue editing your
+					</a>
+					revision.
 				</p>
 				<p>
 					<a href="/revisions">View all your revisions </a>
 				</p>
 				<p>
-					<a
-						href="/revisions"
-					>
-						View original post
-					</a>
+					<a href="/revisions">View original post</a>
 				</p>
 			</Modal>
 		);
@@ -152,4 +156,3 @@ const UpdateButtonModifier = () => {
 };
 
 export default UpdateButtonModifier;
-
