@@ -6,34 +6,23 @@ import { useEffect, useState } from 'react';
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
-import { subscribe, select, dispatch } from '@wordpress/data';
+import { select, dispatch } from '@wordpress/data';
+import { Icon, check } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
-import { pluginNamespace } from '../../../utils';
 import { usePost } from '../../../hooks';
-import { NewRevision } from '../../../components';
 
 /**
  * Module constants
  */
-const COMPONENT_NAMESPACE = `${ pluginNamespace }-document-update-button-modifier`;
 const EDITOR_STORE = 'core/editor';
-const REDIRECT_URL = 'google.com';
 
-
-	// // We can listen to the state and update things as necessary
-	// subscribe( () => {
-	// 	if ( postIsDirty() ) {
-	// 		// updatePost({
-	// 		//     status: 'something'
-	// 		// });
-	// 	}
-	// } );
-
-
+const PROP_BTN_TEXT = 'btnText';
+const PROP_FN_SAVE = 'savePost';
 
 /**
  * Return whether the post has been edited and not saved yet.
@@ -43,21 +32,19 @@ const postIsDirty = () => {
 	return select( EDITOR_STORE ).isEditedPostDirty();
 };
 
-/**
- * Update properties on post object.
- * @param {Object} postProps
- */
-const updatePost = ( postProps ) => {
-	return select( EDITOR_STORE ).editPost( postProps );
+const getStashProp = ( prop ) => {
+	return window.revisionPluginStash
+		? window.revisionPluginStash[ prop ]
+		: undefined;
 };
 
-const getStashedSaveFunction = () => {
-	return window.gutenbergOriginalSaveFunction;
+const stashGutenbergData = ( data ) => {
+	window.revisionPluginStash = {
+		...window.revisionPluginStash,
+		...data,
+	};
 };
 
-const stashSaveFunction = () => {
-	window.gutenbergOriginalSaveFunction = dispatch( EDITOR_STORE ).savePost;
-};
 
 const UpdateButtonModifier = () => {
 	const [ wasPublished, setWasPublished ] = useState( false );
@@ -65,6 +52,25 @@ const UpdateButtonModifier = () => {
 
 	const { changingToScheduled, isPublished } = usePost();
 	const saveSuccess = select( EDITOR_STORE ).didPostSaveRequestSucceed();
+	const updateBtnElement = document.querySelector(
+		'.editor-post-publish-button__button'
+    );
+    
+    console.log( select( EDITOR_STORE ).getCurrentPost() );
+
+	useEffect( () => {
+		if ( ! getStashProp( PROP_FN_SAVE ) ) {
+			stashGutenbergData( {
+				savePost: dispatch( EDITOR_STORE ).savePost,
+			} );
+		}
+
+		if ( updateBtnElement && ! getStashProp( PROP_BTN_TEXT ) ) {
+			stashGutenbergData( {
+				btnText: updateBtnElement.innerText,
+			} );
+		}
+	}, [ select( EDITOR_STORE ).getCurrentPost() ] );
 
 	useEffect( () => {
 		if (
@@ -80,25 +86,64 @@ const UpdateButtonModifier = () => {
 	}, [ saveSuccess ] );
 
 	useEffect( () => {
+		// We want to intercept when the post is published and changing to a future date
 		if ( isPublished && changingToScheduled ) {
+			updateBtnElement.innerText = __(
+				'Schedule Revision',
+				'revisions-extended'
+			);
+
 			dispatch( EDITOR_STORE ).savePost = () => {
-				setShowPopup( true );
+				// Save using apiFetch
+
+                // wp.data.dispatch('core/editor').refreshPost()
+				// // Show confirmation
+                // setShowPopup( true );
+                
+                wp.data.dispatch('core').savePost();
+
+		    wp.data.dispatch('core').saveEntityRecord( 'postType', 'page', {
+                status: "publish",
+                content:'something',
+                title: "Banana"
+            } );
+  
+
 			};
 		} else {
-			if ( ! getStashedSaveFunction() ) {
-				stashSaveFunction();
+			if ( updateBtnElement ) {
+				updateBtnElement.innerText = getStashProp( PROP_BTN_TEXT );
 			}
 
-			dispatch( EDITOR_STORE ).savePost = getStashedSaveFunction();
+			dispatch( EDITOR_STORE ).savePost = getStashProp( PROP_FN_SAVE );
 		}
 	}, [ isPublished, changingToScheduled ] );
 
 	// only modify if changing published to scheduled.
 	if ( showPopup ) {
 		return (
-			<Modal title="Revisions Extended" onRequestClose={ () => setShowPopup( false ) } icons="plugins">
-                <p>You have selected a date in the future for a published post.</p>
-				<NewRevision/>
+			<Modal
+				title="Revisions Extended"
+				onRequestClose={ () => setShowPopup( false ) }
+				icons="plugins"
+			>
+				<p>
+					<Icon icon={ check } /> Successfully save your revision.
+				</p>
+				<p>
+					<a href="/revisions/232">Continue editing your</a>{ ' ' }
+					revisions.
+				</p>
+				<p>
+					<a href="/revisions">View all your revisions </a>
+				</p>
+				<p>
+					<a
+						href="/revisions"
+					>
+						View original post
+					</a>
+				</p>
 			</Modal>
 		);
 	}
@@ -107,3 +152,4 @@ const UpdateButtonModifier = () => {
 };
 
 export default UpdateButtonModifier;
+
