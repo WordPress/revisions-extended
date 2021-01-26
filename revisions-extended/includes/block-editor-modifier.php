@@ -49,15 +49,15 @@ function enqueue_the_assets( $fileName ) {
  */
 function enqueue_assets( ) {
 	// Enqueue our block script with WordPress.
-	$isCustomPost = false;
+	$isEditingRevision = false;
 
 	if( isset( $_REQUEST["post"] ) ) {
 		$post = get_post( $_REQUEST["post"] );
-		
-		$isCustomPost = $post->post_type === 'page'; // SHOULD BE CHANGED TO OUR CUSTOM POST TYPE
+
+		$isEditingRevision = $post->post_type === 'revision';
 	}
 
-	if( $isCustomPost ) {
+	if( $isEditingRevision ) {
 		// We only queue up the management assets when we are viewing out our post type and it isn't a new post
 		enqueue_the_assets( 'revision-editor' );
 	} else {

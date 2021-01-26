@@ -8,7 +8,6 @@ import { registerPlugin } from '@wordpress/plugins';
  */
 import DocumentSettingPanel from './document-setting-panel';
 import PluginSidebar from './plugin-sidebar';
-import ButtonModifierPlugin from './button-modifier';
 import { pluginNamespace } from '../../utils';
 
 registerPlugin( `${ pluginNamespace }-document-setting-panel`, {
@@ -17,8 +16,4 @@ registerPlugin( `${ pluginNamespace }-document-setting-panel`, {
 
 registerPlugin( `${ pluginNamespace }-plugin-sidebar`, {
 	render: PluginSidebar,
-} );
-
-registerPlugin( `${ pluginNamespace }-button-modifier`, {
-	render: ButtonModifierPlugin,
 } );
