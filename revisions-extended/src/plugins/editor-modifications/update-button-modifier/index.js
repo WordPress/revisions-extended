@@ -60,7 +60,7 @@ const setBtnText = () => {
 };
 
 const UpdateButtonModifier = () => {
-	const [ showPopup, setShowPopup ] = useState( false );
+	const [ showSuccess, setShowSuccess ] = useState( false );
 	const [ newRevision, setNewRevision ] = useState( {} );
 	const {
 		savedPost,
@@ -88,11 +88,9 @@ const UpdateButtonModifier = () => {
 
 		if ( data ) {
 			setNewRevision( data );
-			setShowPopup( true );
+			setShowSuccess( true );
 		}
-	};
-
-	console.log( savedPost );
+    };
 
 	useEffect( () => {
 		if ( ! getStashProp( PROP_FN_SAVE ) ) {
@@ -124,11 +122,11 @@ const UpdateButtonModifier = () => {
 	}, [ isPublished, changingToScheduled ] );
 
 	// only modify if changing published to scheduled.
-	if ( showPopup ) {
+	if ( showSuccess ) {
 		return (
 			<Modal
 				title="Revisions Extended"
-				onRequestClose={ () => setShowPopup( false ) }
+				onRequestClose={ () => setshowSuccess( false ) }
 				icons="plugins"
 			>
 				<p>
@@ -140,7 +138,7 @@ const UpdateButtonModifier = () => {
 					>
 						Continue editing your
 					</a>
-					revision.
+					{ ' ' }revision.
 				</p>
 				<p>
 					<a href="/revisions">View all your revisions </a>
