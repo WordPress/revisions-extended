@@ -2,14 +2,16 @@
  * External dependencies
  */
 import { registerPlugin } from '@wordpress/plugins';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import UpdateButtonModifier from './update-button-modifier';
 import PluginPostStatusInfo from './plugin-post-status-info';
-import { usePost } from '../../hooks';
+
 import { pluginNamespace } from '../../utils';
+import { usePost } from '../../hooks';
 
 const MainPlugin = () => {
 	const { isPublished } = usePost();
@@ -18,13 +20,12 @@ const MainPlugin = () => {
 		return null;
 	}
 
-	registerPlugin( `${ pluginNamespace }-update-button-modifier`, {
-		render: UpdateButtonModifier,
-	} );
-
-	registerPlugin( `${ pluginNamespace }-post-status-info`, {
-		render: PluginPostStatusInfo,
-	} );
+	return (
+		<Fragment>
+			<UpdateButtonModifier />
+			<PluginPostStatusInfo />
+		</Fragment>
+	);
 };
 
 registerPlugin( `${ pluginNamespace }-main-plugin`, {
