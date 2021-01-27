@@ -7,20 +7,23 @@ import { useEffect, useState } from 'react';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Modal } from '@wordpress/components';
+import {
+	Modal,
+	Notice,
+	__experimentalText as Text,
+} from '@wordpress/components';
 import { select, dispatch } from '@wordpress/data';
-import { Icon, check } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
 import { usePost, useScheduledRevision } from '../../../hooks';
+import './index.css';
 
 /**
  * Module constants
  */
 const EDITOR_STORE = 'core/editor';
-
 const PROP_BTN_TEXT = 'btnText';
 const PROP_FN_SAVE = 'savePost';
 
@@ -81,7 +84,10 @@ const UpdateButtonModifier = () => {
 		} );
 
 		if ( error ) {
-			console.log( 'Error' );
+			dispatch( 'core/notices' ).createNotice(
+				'error',
+				__( 'Erroring creating revision.' )
+			);
 		}
 
 		if ( data ) {
@@ -130,26 +136,34 @@ const UpdateButtonModifier = () => {
 		return (
 			<Modal
 				title="Revisions Extended"
-				onRequestClose={ () => setShowSuccess( false ) }
 				icons="plugins"
+				isDismissible={ false }
+				className="update-button-modifier-notice"
 			>
-				<p>
-					<Icon icon={ check } /> Successfully save your revision.
-				</p>
-				<p>
-					<a
-						href={ `/wp-admin/post.php?post=${ newRevision.id }&action=edit` }
-					>
-						Continue editing your
-					</a>{ ' ' }
-					revision.
-				</p>
-				<p>
-					<a href="/revisions">View all your revisions </a>
-				</p>
-				<p>
-					<a href="/revisions">View original post</a>
-				</p>
+				<Notice status="success" isDismissible={ false }>
+					Successfully saved your revision.
+				</Notice>
+				<div className="update-button-modifier-notice__content">
+					<Text variant="title.small" as="h3">
+						Next Steps
+					</Text>
+					<Text as="h4">Select of on the following actions:</Text>
+					<ul>
+						<li>
+							<a
+								href={ `/wp-admin/post.php?post=${ newRevision.id }&action=edit` }
+							>
+								Continue editing your revision.
+							</a>
+						</li>
+						<li>
+							<a href="/revisions">View all your revisions </a>
+						</li>
+						<li>
+							<a href="/revisions">View original post</a>
+						</li>
+					</ul>
+				</div>
 			</Modal>
 		);
 	}

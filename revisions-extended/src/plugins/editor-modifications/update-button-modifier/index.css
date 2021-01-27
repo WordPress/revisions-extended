@@ -1,0 +1,16 @@
+.update-button-modifier-notice  .components-notice {
+	margin: 0;
+}
+
+.update-button-modifier-notice__content {
+	margin-top: 24px;
+}
+
+.update-button-modifier-notice ul li a {
+	display: block;
+	margin: 16px 0;
+}
+
+.update-button-modifier-notice ul li a:last-child {
+	margin-bottom: 0;
+}
