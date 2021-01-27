@@ -127,7 +127,7 @@ const UpdateButtonModifier = () => {
 		return (
 			<Modal
 				title="Revisions Extended"
-				onRequestClose={ () => setshowSuccess( false ) }
+				onRequestClose={ () => setShowSuccess( false ) }
 				icons="plugins"
 			>
 				<p>
