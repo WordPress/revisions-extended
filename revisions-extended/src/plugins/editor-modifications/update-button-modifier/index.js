@@ -12,12 +12,12 @@ import {
 	Notice,
 	__experimentalText as Text,
 } from '@wordpress/components';
-import { select, dispatch, controls } from '@wordpress/data';
+import { select, dispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
-import { usePost, useScheduledRevision } from '../../../hooks';
+import { usePost, useScheduledRevision, useInterface } from '../../../hooks';
 import './index.css';
 
 /**
@@ -62,13 +62,14 @@ const getEditUrl = ( postId ) => {
 const UpdateButtonModifier = () => {
 	const [ showSuccess, setShowSuccess ] = useState( false );
 	const [ newRevision, setNewRevision ] = useState( {} );
+	const { create } = useScheduledRevision();
+	const { clearLocalChanges } = useInterface();
 	const {
 		savedPost,
 		changingToScheduled,
 		isPublished,
 		getEditedPostAttribute,
 	} = usePost();
-	const { create } = useScheduledRevision();
 
 	const _savePost = async () => {
 		const { data, error } = await create( {
@@ -78,13 +79,6 @@ const UpdateButtonModifier = () => {
 			title: getEditedPostAttribute( 'title' ),
 			content: getEditedPostAttribute( 'content' ),
 		} );
-
-		// Clear the potential backup from browser.
-		await controls.select(
-			EDITOR_STORE,
-			'localAutosaveClear',
-			savedPost.id
-		);
 
 		if ( error ) {
 			dispatch( 'core/notices' ).createNotice(
@@ -134,6 +128,15 @@ const UpdateButtonModifier = () => {
 		setSavePostFunction( savePost );
 	}, [ isPublished, changingToScheduled ] );
 
+	const onLeave = ( e ) => {
+		e.preventDefault();
+
+		// Clear out any weird autosaves.
+		clearLocalChanges( savedPost.id );
+
+		window.location.href = e.target.href;
+	};
+
 	if ( showSuccess ) {
 		return (
 			<Modal
@@ -152,15 +155,23 @@ const UpdateButtonModifier = () => {
 					<Text as="h4">Select of on the following actions:</Text>
 					<ul>
 						<li>
-							<a href={ getEditUrl( newRevision.id ) }>
+							<a
+								href={ getEditUrl( newRevision.id ) }
+								onClick={ onLeave }
+							>
 								Continue editing your revision.
 							</a>
 						</li>
 						<li>
-							<a href="/revisions">View all your revisions </a>
+							<a href="/revisions" onClick={ onLeave }>
+								View all your revisions{ ' ' }
+							</a>
 						</li>
 						<li>
-							<a href={ getEditUrl( savedPost.id ) }>
+							<a
+								href={ getEditUrl( savedPost.id ) }
+								onClick={ onLeave }
+							>
 								Reload original post
 							</a>
 						</li>
