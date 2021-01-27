@@ -1,13 +1,8 @@
 /**
- * External dependencies
- */
-import { useEffect } from 'react';
-
-/**
  * WordPress Dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { dispatch, controls } from '@wordpress/data';
+import { dispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -33,8 +28,7 @@ const TrashModifier = () => {
 
 		if ( data ) {
 			// To something here
-			console.log( ' go back' );
-			history.back();
+			window.history.back();
 		}
 	};
 

@@ -6,7 +6,6 @@ import { useEffect } from 'react';
 /**
  * WordPress Dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { dispatch } from '@wordpress/data';
 
 /**
