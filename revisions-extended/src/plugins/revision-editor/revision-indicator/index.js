@@ -22,7 +22,7 @@ const RevisionIndicator = () => {
 		const [ id ] = savedPost.slug.split( '-' );
 		dispatch( 'core/notices' ).createNotice(
 			'warning',
-			`You are currently editing a <u>revision</u> for post #<a href="/wp-admin/post.php?post=${ id }&action=edit">${ id }</a>.`,
+			`You are currently editing a <u>scheduled revision</u> for post #<a href="/wp-admin/post.php?post=${ id }&action=edit">${ id }</a>.`,
 			{
 				__unstableHTML: true,
 				id: 'revisions-extended-notice',

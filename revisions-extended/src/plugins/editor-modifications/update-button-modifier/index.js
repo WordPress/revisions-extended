@@ -79,6 +79,7 @@ const UpdateButtonModifier = () => {
 		const { data, error } = await create( {
 			postType: savedPost.type,
 			postId: savedPost.id,
+			date: getEditedPostAttribute( 'date' ),
 			title: getEditedPostAttribute( 'title' ),
 			content: getEditedPostAttribute( 'content' ),
 		} );
