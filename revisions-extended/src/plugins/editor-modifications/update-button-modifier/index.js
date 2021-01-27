@@ -12,7 +12,7 @@ import {
 	Notice,
 	__experimentalText as Text,
 } from '@wordpress/components';
-import { select, dispatch } from '@wordpress/data';
+import { select, dispatch, controls } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -26,15 +26,6 @@ import './index.css';
 const EDITOR_STORE = 'core/editor';
 const PROP_BTN_TEXT = 'btnText';
 const PROP_FN_SAVE = 'savePost';
-
-/**
- * Return whether the post has been edited and not saved yet.
- *
- * @return {bool}
- */
-const postIsDirty = () => {
-	return select( EDITOR_STORE ).isEditedPostDirty();
-};
 
 const getStashProp = ( prop ) => {
 	return window.revisionPluginStash
@@ -64,16 +55,19 @@ const setBtnText = ( text ) => {
 	}
 };
 
+const getEditUrl = ( postId ) => {
+	return `/wp-admin/post.php?post=${ postId }&action=edit`;
+};
+
 const UpdateButtonModifier = () => {
 	const [ showSuccess, setShowSuccess ] = useState( false );
-	const [ newRevision, setNewRevision ] = useState( {} );
+	const { create } = useScheduledRevision();
 	const {
 		savedPost,
 		changingToScheduled,
 		isPublished,
 		getEditedPostAttribute,
 	} = usePost();
-	const { create } = useScheduledRevision();
 
 	const _savePost = async () => {
 		const { data, error } = await create( {
@@ -84,6 +78,13 @@ const UpdateButtonModifier = () => {
 			content: getEditedPostAttribute( 'content' ),
 		} );
 
+		// Clear the potential backup from browser.
+		await controls.select(
+			EDITOR_STORE,
+			'localAutosaveClear',
+			savedPost.id
+		);
+
 		if ( error ) {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
@@ -92,7 +93,6 @@ const UpdateButtonModifier = () => {
 		}
 
 		if ( data ) {
-			setNewRevision( data );
 			setShowSuccess( true );
 		}
 	};
@@ -132,7 +132,6 @@ const UpdateButtonModifier = () => {
 		setSavePostFunction( savePost );
 	}, [ isPublished, changingToScheduled ] );
 
-	// only modify if changing published to scheduled.
 	if ( showSuccess ) {
 		return (
 			<Modal
@@ -151,9 +150,7 @@ const UpdateButtonModifier = () => {
 					<Text as="h4">Select of on the following actions:</Text>
 					<ul>
 						<li>
-							<a
-								href={ `/wp-admin/post.php?post=${ newRevision.id }&action=edit` }
-							>
+							<a href={ getEditUrl( newRevision.id ) }>
 								Continue editing your revision.
 							</a>
 						</li>
@@ -161,7 +158,9 @@ const UpdateButtonModifier = () => {
 							<a href="/revisions">View all your revisions </a>
 						</li>
 						<li>
-							<a href="/revisions">View original post</a>
+							<a href={ getEditUrl( savedPost.id ) }>
+								Reload original post
+							</a>
 						</li>
 					</ul>
 				</div>

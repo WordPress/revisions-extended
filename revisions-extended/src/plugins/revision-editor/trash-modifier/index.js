@@ -7,7 +7,7 @@ import { useEffect } from 'react';
  * WordPress Dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { dispatch } from '@wordpress/data';
+import { dispatch, controls } from '@wordpress/data';
 
 /**
  * Internal dependencies
