@@ -77,6 +77,7 @@ const UpdateButtonModifier = () => {
 			postId: savedPost.id,
 			date: getEditedPostAttribute( 'date' ),
 			title: getEditedPostAttribute( 'title' ),
+			excerpt: getEditedPostAttribute( 'excerpt' ),
 			content: getEditedPostAttribute( 'content' ),
 		} );
 
