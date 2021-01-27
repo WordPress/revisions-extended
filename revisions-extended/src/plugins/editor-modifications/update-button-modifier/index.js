@@ -61,13 +61,14 @@ const getEditUrl = ( postId ) => {
 
 const UpdateButtonModifier = () => {
 	const [ showSuccess, setShowSuccess ] = useState( false );
-	const { create } = useScheduledRevision();
+	const [ newRevision, setNewRevision ] = useState( {} );
 	const {
 		savedPost,
 		changingToScheduled,
 		isPublished,
 		getEditedPostAttribute,
 	} = usePost();
+	const { create } = useScheduledRevision();
 
 	const _savePost = async () => {
 		const { data, error } = await create( {
@@ -93,6 +94,7 @@ const UpdateButtonModifier = () => {
 		}
 
 		if ( data ) {
+			setNewRevision( data );
 			setShowSuccess( true );
 		}
 	};
