@@ -23,7 +23,6 @@ const EDITOR_STORE = 'core/editor';
 
 const PROP_BTN_TEXT = 'btnText';
 const PROP_FN_SAVE = 'savePost';
-let updateBtnElement;
 
 /**
  * Return whether the post has been edited and not saved yet.
@@ -51,12 +50,14 @@ const setSavePostFunction = ( fn ) => {
 	dispatch( EDITOR_STORE ).savePost = fn;
 };
 
-const setBtnText = () => {
-	if ( updateBtnElement ) {
-		updateBtnElement.innerText = __(
-			'Schedule Revision',
-			'revisions-extended'
-		);
+const getBtnElement = () => {
+	return document.querySelector( '.editor-post-publish-button__button' );
+};
+
+const setBtnText = ( text ) => {
+	const btn = getBtnElement();
+	if ( btn && text ) {
+		btn.innerText = text;
 	}
 };
 
@@ -70,10 +71,6 @@ const UpdateButtonModifier = () => {
 		getEditedPostAttribute,
 	} = usePost();
 	const { create } = useScheduledRevision();
-
-	updateBtnElement = document.querySelector(
-		'.editor-post-publish-button__button'
-	);
 
 	const _savePost = async () => {
 		const { data, error } = await create( {
@@ -100,18 +97,24 @@ const UpdateButtonModifier = () => {
 			} );
 		}
 
-		if ( updateBtnElement && ! getStashProp( PROP_BTN_TEXT ) ) {
+		const btnRef = getBtnElement();
+
+		if (
+			btnRef &&
+			! getStashProp( PROP_BTN_TEXT ) &&
+			! select( 'core/editor' ).isSavingPost()
+		) {
 			stashGutenbergData( {
-				btnText: updateBtnElement.innerText,
+				btnText: btnRef.innerText,
 			} );
 		}
 	}, [ savedPost ] );
 
 	useEffect( () => {
 		let btnText, savePost;
-		// We want to intercept when the post is published and changing to a future date
+
 		if ( isPublished && changingToScheduled ) {
-			btnText = __( 'Schedule Revision', 'revisions-extended' );
+			btnText = __( 'Create Revision', 'revisions-extended' );
 			savePost = _savePost;
 		} else {
 			btnText = getStashProp( PROP_BTN_TEXT );
