@@ -11,7 +11,7 @@ import { PanelRow } from '@wordpress/components';
 /**
  * Internal dependencies
  */
-import { Revisions, DeleteRevision, PublishRevision } from './components';
+import { Revisions, PublishRevision } from './components';
 import { pluginName, pluginNamespace } from '../../../utils';
 
 const COMPONENT_NAMESPACE = `${ pluginNamespace }-document-slot`;
@@ -25,10 +25,6 @@ const DocumentSettingPanel = () => {
 		>
 			<PanelRow>
 				<Revisions />
-			</PanelRow>
-
-			<PanelRow>
-				<DeleteRevision />
 			</PanelRow>
 
 			<PanelRow>
