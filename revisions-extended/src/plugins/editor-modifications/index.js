@@ -8,13 +8,25 @@ import { registerPlugin } from '@wordpress/plugins';
  */
 import UpdateButtonModifier from './update-button-modifier';
 import PluginPostStatusInfo from './plugin-post-status-info';
-
+import { usePost } from '../../hooks';
 import { pluginNamespace } from '../../utils';
 
-registerPlugin( `${ pluginNamespace }-update-button-modifier`, {
-	render: UpdateButtonModifier,
-} );
+const MainPlugin = () => {
+	const { isPublished } = usePost();
 
-registerPlugin( `${ pluginNamespace }-post-status-info`, {
-	render: PluginPostStatusInfo,
+	if ( ! isPublished ) {
+		return null;
+	}
+
+	registerPlugin( `${ pluginNamespace }-update-button-modifier`, {
+		render: UpdateButtonModifier,
+	} );
+
+	registerPlugin( `${ pluginNamespace }-post-status-info`, {
+		render: PluginPostStatusInfo,
+	} );
+};
+
+registerPlugin( `${ pluginNamespace }-main-plugin`, {
+	render: MainPlugin,
 } );
