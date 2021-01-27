@@ -91,6 +91,15 @@ const UpdateButtonModifier = () => {
 		}
 	};
 
+	const onLeave = ( e ) => {
+		e.preventDefault();
+
+		// Clear out any weird autosaves.
+		clearLocalChanges( savedPost.id );
+
+		window.location.href = e.target.href;
+	};
+
 	useEffect( () => {
 		if ( ! getStashProp( PROP_FN_SAVE ) ) {
 			stashGutenbergData( {
@@ -125,15 +134,6 @@ const UpdateButtonModifier = () => {
 		setBtnText( btnText );
 		setSavePostFunction( savePost );
 	}, [ isPublished, changingToScheduled ] );
-
-	const onLeave = ( e ) => {
-		e.preventDefault();
-
-		// Clear out any weird autosaves.
-		clearLocalChanges( savedPost.id );
-
-		window.location.href = e.target.href;
-	};
 
 	if ( newRevision ) {
 		return (
