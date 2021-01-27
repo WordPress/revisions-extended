@@ -19,12 +19,12 @@ const RevisionIndicator = () => {
 	const { savedPost } = usePost();
 
 	useEffect( () => {
+		const [ id ] = savedPost.slug.split( '-' );
 		dispatch( 'core/notices' ).createNotice(
 			'warning',
-			__(
-				`You are currently editing a revision for post #${ savedPost.slug }`
-			),
+			`You are currently editing a <u>revision</u> for post #<a href="/wp-admin/post.php?post=${ id }&action=edit">${ id }</a>.`,
 			{
+				__unstableHTML: true,
 				id: 'revisions-extended-notice',
 				isDismissible: false,
 			}
