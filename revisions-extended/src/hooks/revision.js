@@ -111,11 +111,7 @@ const updateRevision = async (
 /**
  * Trashes a revision
  *
- * @param {Object} data - Data sent to api
- * @param {string} data.postType - The type of the post.
- * @param {string} data.postId - The is of the post.
- * @param {string} data.revisionId - The revision id.
- * @param revisionId
+ * @param {string} revisionId - The revision id.
  * @return {Object} Api response
  */
 const trashRevision = async ( revisionId ) => {
