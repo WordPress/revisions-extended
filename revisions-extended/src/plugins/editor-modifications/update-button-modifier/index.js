@@ -12,7 +12,7 @@ import {
 	Notice,
 	__experimentalText as Text,
 } from '@wordpress/components';
-import { select, dispatch } from '@wordpress/data';
+import { dispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -67,6 +67,7 @@ const UpdateButtonModifier = () => {
 		savedPost,
 		changingToScheduled,
 		isPublished,
+		isSavingPost,
 		getEditedPostAttribute,
 	} = usePost();
 
@@ -109,11 +110,7 @@ const UpdateButtonModifier = () => {
 
 		const btnRef = getBtnElement();
 
-		if (
-			btnRef &&
-			! getStashProp( PROP_BTN_TEXT ) &&
-			! select( 'core/editor' ).isSavingPost()
-		) {
+		if ( btnRef && ! getStashProp( PROP_BTN_TEXT ) && ! isSavingPost ) {
 			stashGutenbergData( {
 				btnText: btnRef.innerText,
 			} );
