@@ -60,8 +60,7 @@ const getEditUrl = ( postId ) => {
 };
 
 const UpdateButtonModifier = () => {
-	const [ showSuccess, setShowSuccess ] = useState( false );
-	const [ newRevision, setNewRevision ] = useState( {} );
+	const [ newRevision, setNewRevision ] = useState();
 	const { create } = useScheduledRevision();
 	const { clearLocalChanges } = useInterface();
 	const {
@@ -89,7 +88,6 @@ const UpdateButtonModifier = () => {
 
 		if ( data ) {
 			setNewRevision( data );
-			setShowSuccess( true );
 		}
 	};
 
@@ -137,7 +135,7 @@ const UpdateButtonModifier = () => {
 		window.location.href = e.target.href;
 	};
 
-	if ( showSuccess ) {
+	if ( newRevision ) {
 		return (
 			<Modal
 				title="Revisions Extended"
