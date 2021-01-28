@@ -11,8 +11,8 @@ import { getRestApiUrl, getRestApiUrlV2 } from '../utils';
 /**
  * Module Constants
  */
-const POST_STATUS_SCHEDULED = 'revex_future'; // Matches API
-const POST_STATUS_PENDING = 'revex_pending';
+const POST_STATUS_SCHEDULED = 'future'; // Matches API
+const POST_STATUS_PENDING = 'pending';
 
 /**
  * This function normalizes the apiFetch response
