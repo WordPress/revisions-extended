@@ -227,6 +227,11 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 		$schema = parent::get_item_schema();
 
 		$schema['properties']['status']['enum'] = wp_list_pluck( get_revision_statuses(), 'name' );
+		$schema['properties']['parent']         = array(
+			'description' => __( 'The ID for the parent of the object.' ),
+			'type'        => 'integer',
+			'context'     => array( 'view', 'edit' ),
+		);
 
 		return $schema;
 	}
