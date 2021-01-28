@@ -3,6 +3,10 @@
 	display: block;
 }
 
-.revisions-extended-revision-list li a:first-child {
+.revisions-extended-revision-list li:first-child a {
 	padding-top: 0;
 }
+
+.revisions-extended-revision-list li:last-child a {
+	padding-bottom: 0;
+} 
