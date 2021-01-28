@@ -55,6 +55,10 @@ const DocumentSettingsPanel = () => {
 		[ revisions ]
 	);
 
+	if ( revisions.length < 1 ) {
+		return null;
+	}
+
 	return (
 		<PluginDocumentSettingPanel
 			name="scheduled-revisions"
