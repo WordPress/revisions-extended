@@ -2,7 +2,6 @@
  * External dependencies
  */
 import { registerPlugin } from '@wordpress/plugins';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -12,7 +11,7 @@ import PluginPostStatusInfo from './plugin-post-status-info';
 import DocumentSettingsPanel from './document-settings-panel';
 
 import { pluginNamespace } from '../../utils';
-import { usePost } from '../../hooks';
+import { InterfaceProvider, usePost } from '../../hooks';
 
 const MainPlugin = () => {
 	const { isPublished } = usePost();
@@ -22,11 +21,11 @@ const MainPlugin = () => {
 	}
 
 	return (
-		<Fragment>
+		<InterfaceProvider>
 			<UpdateButtonModifier />
 			<PluginPostStatusInfo />
 			<DocumentSettingsPanel />
-		</Fragment>
+		</InterfaceProvider>
 	);
 };
 

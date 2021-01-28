@@ -59,7 +59,7 @@ const setBtnText = ( text ) => {
 const UpdateButtonModifier = () => {
 	const [ newRevision, setNewRevision ] = useState();
 	const { create } = useScheduledRevision();
-	const { clearLocalChanges } = useInterface();
+	const { clearLocalChanges, shouldCreateRevision } = useInterface();
 	const {
 		savedPost,
 		changingToScheduled,
@@ -118,7 +118,7 @@ const UpdateButtonModifier = () => {
 	useEffect( () => {
 		let btnText, savePost;
 
-		if ( isPublished && changingToScheduled ) {
+		if ( shouldCreateRevision ) {
 			btnText = __( 'Create Revision', 'revisions-extended' );
 			savePost = _savePost;
 		} else {
@@ -128,7 +128,7 @@ const UpdateButtonModifier = () => {
 
 		setBtnText( btnText );
 		setSavePostFunction( savePost );
-	}, [ isPublished, changingToScheduled ] );
+	}, [ isPublished, changingToScheduled, shouldCreateRevision ] );
 
 	if ( newRevision ) {
 		return (

@@ -3,29 +3,24 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PluginPostStatusInfo as PostStatusInfo } from '@wordpress/edit-post';
+import { CheckboxControl } from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
-import { WarningMessage } from '../../../components';
-import { usePost } from '../../../hooks';
+import { useInterface } from '../../../hooks';
 import './index.css';
 
 const PluginPostStatusInfo = () => {
-	const { changingToScheduled, isPublished } = usePost();
-
-	if ( ! isPublished || ! changingToScheduled ) {
-		return null;
-	}
+	const { shouldCreateRevision, setShouldCreateRevision } = useInterface();
 
 	return (
 		<PostStatusInfo>
-			<WarningMessage>
-				{ __(
-					'You have selected a date in the future.',
-					'revisions-extended'
-				) }
-			</WarningMessage>
+			<CheckboxControl
+				label={ __( 'Create new revision', 'revisions-extended' ) }
+				checked={ shouldCreateRevision }
+				onChange={ setShouldCreateRevision }
+			/>
 		</PostStatusInfo>
 	);
 };
