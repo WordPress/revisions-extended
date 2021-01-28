@@ -1,0 +1,8 @@
+.revisions-extended-revision-list li a {
+	padding: 4px 0;
+	display: block;
+}
+
+.revisions-extended-revision-list li a:first-child {
+	padding-top: 0;
+}

@@ -9,6 +9,7 @@ import { Fragment } from '@wordpress/element';
  */
 import UpdateButtonModifier from './update-button-modifier';
 import PluginPostStatusInfo from './plugin-post-status-info';
+import DocumentSettingsPanel from './document-settings-panel';
 
 import { pluginNamespace } from '../../utils';
 import { usePost } from '../../hooks';
@@ -24,6 +25,7 @@ const MainPlugin = () => {
 		<Fragment>
 			<UpdateButtonModifier />
 			<PluginPostStatusInfo />
+			<DocumentSettingsPanel />
 		</Fragment>
 	);
 };

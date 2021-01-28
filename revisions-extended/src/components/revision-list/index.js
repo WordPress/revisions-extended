@@ -1,9 +1,18 @@
+/**
+ * Internal dependencies
+ */
+import './index.css';
+
 const RevisionList = ( { items } ) => {
-	return items.map( ( i ) => (
-		<div key={ i.id }>
-			{ i.slug } (id: { i.id })
-		</div>
-	) );
+	return (
+		<ul className="revisions-extended-revision-list">
+			{ items.map( ( i ) => (
+				<li key={ i.href }>
+					<a href={ i.href }>{ i.text }</a>
+				</li>
+			) ) }
+		</ul>
+	);
 };
 
 export default RevisionList;

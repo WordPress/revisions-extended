@@ -18,6 +18,7 @@ import { dispatch } from '@wordpress/data';
  * Internal dependencies
  */
 import { usePost, useScheduledRevision, useInterface } from '../../../hooks';
+import { getEditUrl } from '../../../utils';
 import './index.css';
 
 /**
@@ -53,10 +54,6 @@ const setBtnText = ( text ) => {
 	if ( btn && text ) {
 		btn.innerText = text;
 	}
-};
-
-const getEditUrl = ( postId ) => {
-	return `/wp-admin/post.php?post=${ postId }&action=edit`;
 };
 
 const UpdateButtonModifier = () => {

@@ -14,3 +14,7 @@ export const getRestApiUrl = ( postType, parentId ) => {
 export const getRestApiUrlV2 = ( revisionId ) => {
 	return `wp/v2/revision/${ revisionId }`;
 };
+
+export const getEditUrl = ( postId ) => {
+	return `/wp-admin/post.php?post=${ postId }&action=edit`;
+};
