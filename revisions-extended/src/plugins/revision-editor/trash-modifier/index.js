@@ -9,12 +9,26 @@ import { dispatch } from '@wordpress/data';
  */
 import { useScheduledRevision, usePost } from '../../../hooks';
 
+/**
+ * Module constants
+ */
+const GUTENBERG_TRASH_BTN_CLASS = '.editor-post-trash';
+const GUTENBERG_BUSY_CLASS = 'is-busy';
+
 const TrashModifier = () => {
 	const { trash } = useScheduledRevision();
 	const { getEditedPostAttribute } = usePost();
 
 	dispatch( 'core/editor' ).trashPost = async () => {
-		const { data, error } = trash( getEditedPostAttribute( 'id' ) );
+		const trashBtnElement = document.querySelector(
+			GUTENBERG_TRASH_BTN_CLASS
+		);
+
+		trashBtnElement.classList.add( GUTENBERG_BUSY_CLASS );
+
+		const { data, error } = await trash( getEditedPostAttribute( 'id' ) );
+
+		trashBtnElement.classList.remove( GUTENBERG_BUSY_CLASS );
 
 		if ( error ) {
 			dispatch( 'core/notices' ).createNotice(
@@ -27,7 +41,6 @@ const TrashModifier = () => {
 		}
 
 		if ( data ) {
-			// To something here
 			window.history.back();
 		}
 	};
