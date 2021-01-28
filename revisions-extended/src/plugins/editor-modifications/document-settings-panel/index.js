@@ -7,14 +7,13 @@ import { useEffect, useState, useMemo } from 'react';
  * WordPress dependencies
  */
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
-import { format } from '@wordpress/date';
 
 /**
  * Internal dependencies
  */
 import { RevisionList } from '../../../components';
 import { useRevision, usePost } from '../../../hooks';
-import { getEditUrl } from '../../../utils';
+import { getEditUrl, getFormattedDate } from '../../../utils';
 
 const DocumentSettingsPanel = () => {
 	const [ revisions, setRevisions ] = useState( [] );
@@ -45,7 +44,7 @@ const DocumentSettingsPanel = () => {
 
 	const revisionMap = ( i ) => {
 		return {
-			text: format( 'D, F j, Y G:i a', i.date_gmt ),
+			text: getFormattedDate( i.date_gmt ),
 			href: getEditUrl( i.id ),
 		};
 	};

@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { format } from '@wordpress/date';
 
 export const pluginNamespace = 'revisions-extended';
 export const pluginName = __( 'Revisions Extended', 'revisions-extended' );
@@ -17,4 +18,8 @@ export const getRestApiUrlV2 = ( revisionId ) => {
 
 export const getEditUrl = ( postId ) => {
 	return `/wp-admin/post.php?post=${ postId }&action=edit`;
+};
+
+export const getFormattedDate = ( date ) => {
+	return format( 'D, F j, Y G:i a', date );
 };
