@@ -18,10 +18,9 @@ const RevisionIndicator = () => {
 	const { savedPost } = usePost();
 
 	useEffect( () => {
-		const [ id ] = savedPost.slug.split( '-' );
 		dispatch( 'core/notices' ).createNotice(
 			'warning',
-			`You are currently editing a <b>scheduled revision</b>. <a href="/wp-admin/post.php?post=${ id }&action=edit">View original post</a>.`,
+			`You are currently editing a <b>scheduled revision</b>. <a href="/wp-admin/post.php?post=${ savedPost.parent }&action=edit">View original post</a>.`,
 			{
 				__unstableHTML: true,
 				id: 'revisions-extended-notice',
