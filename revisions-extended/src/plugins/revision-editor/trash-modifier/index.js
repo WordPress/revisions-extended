@@ -7,7 +7,7 @@ import { dispatch } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import { useScheduledRevision, usePost } from '../../../hooks';
+import { useRevision, usePost } from '../../../hooks';
 
 /**
  * Module constants
@@ -16,7 +16,7 @@ const GUTENBERG_TRASH_BTN_CLASS = '.editor-post-trash';
 const GUTENBERG_BUSY_CLASS = 'is-busy';
 
 const TrashModifier = () => {
-	const { trash } = useScheduledRevision();
+	const { trash } = useRevision();
 	const { getEditedPostAttribute } = usePost();
 
 	dispatch( 'core/editor' ).trashPost = async () => {

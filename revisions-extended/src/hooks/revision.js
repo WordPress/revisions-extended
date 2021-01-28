@@ -80,35 +80,6 @@ const createRevision = async ( data, status ) => {
 };
 
 /**
- * Updates a revision for a specific post type
- *
- * @param {Object} data - Data sent to api
- * @param {string} data.postType - The type of the post.
- * @param {string} data.postId - The id of the post.
- * @param {string} data.content - The content of the post.
- * @param {string} data.revisionId - The revision id of the post.
- * @param {string} status
- *
- * @return {Object} Api response
- */
-const updateRevision = async (
-	{ postType, postId, content, revisionId },
-	status
-) => {
-	return await executeFetch( async () => {
-		return await apiFetch( {
-			path: `${ getRestApiUrl( postType, postId ) }/${ revisionId }`,
-			method: 'POST',
-			data: {
-				title: 'New Title',
-				content,
-				status,
-			},
-		} );
-	} );
-};
-
-/**
  * Trashes a revision
  *
  * @param {string} revisionId - The revision id.
@@ -148,48 +119,24 @@ const publishRevision = async ( { postType, postId, revisionId } ) => {
 	} );
 };
 
-const useScheduledRevision = () => {
+const useRevision = () => {
 	const get = async ( data ) => {
 		return await getPostRevisions( data, POST_STATUS_SCHEDULED );
 	};
 
 	const create = async ( data ) => {
-		return await createRevision( data, POST_STATUS_SCHEDULED );
-	};
-
-	const update = async ( data ) => {
-		return await updateRevision( data, POST_STATUS_SCHEDULED );
-	};
-
-	return {
-		get,
-		create,
-		update,
-		trash: trashRevision,
-		publish: publishRevision,
-	};
-};
-
-const usePendingRevision = () => {
-	const get = async ( data ) => {
-		return await getPostRevisions( data, POST_STATUS_PENDING );
-	};
-
-	const create = async ( data ) => {
-		return await createRevision( data, POST_STATUS_PENDING );
-	};
-
-	const update = async ( data ) => {
-		return await updateRevision( data, POST_STATUS_PENDING );
+		const status = data.changingToScheduled
+			? POST_STATUS_SCHEDULED
+			: POST_STATUS_PENDING;
+		return await createRevision( data, status );
 	};
 
 	return {
 		get,
 		create,
-		update,
 		trash: trashRevision,
 		publish: publishRevision,
 	};
 };
 
-export { useScheduledRevision, usePendingRevision };
+export { useRevision };

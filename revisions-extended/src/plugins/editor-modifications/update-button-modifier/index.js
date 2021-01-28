@@ -17,7 +17,7 @@ import { dispatch } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import { usePost, useScheduledRevision, useInterface } from '../../../hooks';
+import { usePost, useRevision, useInterface } from '../../../hooks';
 import { getEditUrl } from '../../../utils';
 import './index.css';
 
@@ -58,7 +58,7 @@ const setBtnText = ( text ) => {
 
 const UpdateButtonModifier = () => {
 	const [ newRevision, setNewRevision ] = useState();
-	const { create } = useScheduledRevision();
+	const { create } = useRevision();
 	const { clearLocalChanges, shouldCreateRevision } = useInterface();
 	const {
 		savedPost,
@@ -76,6 +76,7 @@ const UpdateButtonModifier = () => {
 			title: getEditedPostAttribute( 'title' ),
 			excerpt: getEditedPostAttribute( 'excerpt' ),
 			content: getEditedPostAttribute( 'content' ),
+			changingToScheduled,
 		} );
 
 		if ( error ) {

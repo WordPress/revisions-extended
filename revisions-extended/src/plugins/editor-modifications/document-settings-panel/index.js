@@ -13,13 +13,13 @@ import { format } from '@wordpress/date';
  * Internal dependencies
  */
 import { RevisionList } from '../../../components';
-import { useScheduledRevision, usePost } from '../../../hooks';
+import { useRevision, usePost } from '../../../hooks';
 import { getEditUrl } from '../../../utils';
 
 const DocumentSettingsPanel = () => {
 	const [ revisions, setRevisions ] = useState( [] );
 	const { savedPost } = usePost();
-	const { get } = useScheduledRevision();
+	const { get } = useRevision();
 
 	useEffect( () => {
 		const runQuery = async () => {
