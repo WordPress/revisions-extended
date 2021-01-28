@@ -84,7 +84,7 @@ const UpdateButtonModifier = () => {
 		if ( error ) {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
-				__( 'Erroring creating revision.' )
+				__( 'Error creating revision.' )
 			);
 		}
 
