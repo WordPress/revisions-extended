@@ -6,6 +6,11 @@
 	margin-top: 24px;
 }
 
+.update-button-modifier-notice ul {
+	list-style: disc;
+	padding-left: 16px;
+}
+
 .update-button-modifier-notice ul li a {
 	display: block;
 	margin: 16px 0;
