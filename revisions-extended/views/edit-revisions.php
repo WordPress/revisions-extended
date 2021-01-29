@@ -3,6 +3,7 @@
 namespace RevisionsExtended\Admin;
 
 use WP_Posts_List_Table;
+use function RevisionsExtended\Admin\get_subpage_url;
 
 defined( 'WPINC' ) || die();
 
@@ -35,7 +36,16 @@ $list_table->prepare_items();
 
 	<?php $list_table->views(); ?>
 
-	<form>
+	<form method="get">
+		<?php if ( 'post' !== $list_table->parent_post_type ) : ?>
+			<input type="hidden" name="post_type" value="<?php echo esc_attr( $list_table->parent_post_type ); ?>" />
+		<?php endif; ?>
+		<input type="hidden" name="page" value="<?php echo esc_attr( "{$list_table->parent_post_type}-updates" ); ?>" />
+		<?php if ( $post_id ) : ?>
+			<input type="hidden" name="p" value="<?php echo esc_attr( $post_id ); ?>" />
+		<?php endif; ?>
+
+		<?php $list_table->search_box( __( 'Search Updates', 'revisions-extended' ), 'revision' ); ?>
 		<?php $list_table->display(); ?>
 	</form>
 </div>

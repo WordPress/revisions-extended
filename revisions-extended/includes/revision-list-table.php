@@ -8,8 +8,17 @@ use function RevisionsExtended\Post_Status\get_revision_statuses;
 
 defined( 'WPINC' ) || die();
 
-
+/**
+ * Class Revision_List_Table
+ *
+ * A list table for Scheduled Updates revisions.
+ */
 class Revision_List_Table extends WP_List_Table {
+	/**
+	 * @var string
+	 */
+	public $parent_post_type;
+
 	/**
 	 * Revision_List_Table constructor.
 	 *
@@ -45,8 +54,10 @@ class Revision_List_Table extends WP_List_Table {
 		/** This filter is documented in wp-admin/includes/post.php */
 		$per_page = apply_filters( 'edit_posts_per_page', $per_page, $post_type );
 
-		$orderby = filter_input( INPUT_GET, 'orderby' );
-		$order   = filter_input( INPUT_GET, 'order' );
+		$orderby   = filter_input( INPUT_GET, 'orderby' );
+		$order     = filter_input( INPUT_GET, 'order' );
+		$search    = filter_input( INPUT_GET, 's' );
+		$parent_id = filter_input( INPUT_GET, 'p', FILTER_VALIDATE_INT );
 
 		$query_args = array(
 			'post_type'      => 'revision',
@@ -55,6 +66,14 @@ class Revision_List_Table extends WP_List_Table {
 			'orderby'        => $orderby ?: 'date ID',
 			'order'          => $order ?: 'asc',
 		);
+
+		if ( $search ) {
+			$query_args['s'] = $search;
+		}
+
+		if ( $parent_id ) {
+			$query_args['post_parent'] = $parent_id;
+		}
 
 		$query = new WP_Query( $query_args );
 
@@ -119,7 +138,7 @@ class Revision_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_columns() {
-		return array(
+		$columns = array(
 			'cb'        => '<input type="checkbox" />',
 			'title'     => _x( 'Title', 'column name', 'revisions-extended' ),
 			'author'    => _x( 'Author', 'column name', 'revisions-extended' ),
@@ -127,6 +146,13 @@ class Revision_List_Table extends WP_List_Table {
 			'scheduled' => _x( 'Scheduled for', 'column name', 'revisions-extended' ),
 			'modified'  => _x( 'Modified on', 'column name', 'revisions-extended' ),
 		);
+
+		$parent_id = filter_input( INPUT_GET, 'p', FILTER_VALIDATE_INT );
+		if ( $parent_id ) {
+			unset( $columns['parent'] );
+		}
+
+		return $columns;
 	}
 
 	/**
