@@ -45,12 +45,15 @@ class Revision_List_Table extends WP_List_Table {
 		/** This filter is documented in wp-admin/includes/post.php */
 		$per_page = apply_filters( 'edit_posts_per_page', $per_page, $post_type );
 
+		$orderby = filter_input( INPUT_GET, 'orderby' );
+		$order   = filter_input( INPUT_GET, 'order' );
+
 		$query_args = array(
 			'post_type'      => 'revision',
 			'post_status'    => 'future',
 			'posts_per_page' => $per_page,
-			'order'          => 'desc',
-			'orderby'        => 'date ID',
+			'orderby'        => $orderby ?: 'date ID',
+			'order'          => $order ?: 'desc',
 		);
 
 		$query = new WP_Query( $query_args );
@@ -123,6 +126,24 @@ class Revision_List_Table extends WP_List_Table {
 			'parent'    => _x( 'An update to', 'column name', 'revisions-extended' ),
 			'scheduled' => _x( 'Scheduled for', 'column name', 'revisions-extended' ),
 			'modified'  => _x( 'Modified on', 'column name', 'revisions-extended' ),
+		);
+	}
+
+	/**
+	 * Gets a list of sortable columns.
+	 *
+	 * The format is:
+	 * - `'internal-name' => 'orderby'`
+	 * - `'internal-name' => array( 'orderby', 'asc' )` - The second element sets the initial sorting order.
+	 * - `'internal-name' => array( 'orderby', true )`  - The second element makes the initial order descending.
+	 *
+	 * @return array
+	 */
+	protected function get_sortable_columns() {
+		return array(
+			'title'     => 'title',
+			'scheduled' => array( 'date', 'asc' ),
+			'modified'  => array( 'modified', true ),
 		);
 	}
 
