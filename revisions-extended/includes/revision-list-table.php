@@ -53,7 +53,7 @@ class Revision_List_Table extends WP_List_Table {
 			'post_status'    => 'future',
 			'posts_per_page' => $per_page,
 			'orderby'        => $orderby ?: 'date ID',
-			'order'          => $order ?: 'desc',
+			'order'          => $order ?: 'asc',
 		);
 
 		$query = new WP_Query( $query_args );
