@@ -74,3 +74,25 @@ function get_list_table() {
 
 	return new Revision_List_Table();
 }
+
+/**
+ * Get the full admin URL for an updates subpage for a given post type.
+ *
+ * @param string $parent_post_type
+ *
+ * @return string
+ */
+function get_subpage_url( $parent_post_type ) {
+	$url = add_query_arg(
+		array(
+			'page' => "$parent_post_type-updates",
+		),
+		admin_url( 'edit.php' )
+	);
+
+	if ( 'post' !== $parent_post_type ) {
+		$url = add_query_arg( 'post_type', $parent_post_type, $url );
+	}
+
+	return $url;
+}
