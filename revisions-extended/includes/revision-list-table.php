@@ -117,8 +117,12 @@ class Revision_List_Table extends WP_List_Table {
 	 */
 	public function get_columns() {
 		return array(
-			'cb'    => '<input type="checkbox" />',
-			'title' => _x( 'Title', 'column name', 'revisions-extended' ),
+			'cb'        => '<input type="checkbox" />',
+			'title'     => _x( 'Title', 'column name', 'revisions-extended' ),
+			'author'    => _x( 'Author', 'column name', 'revisions-extended' ),
+			'parent'    => _x( 'An update to', 'column name', 'revisions-extended' ),
+			'scheduled' => _x( 'Scheduled for', 'column name', 'revisions-extended' ),
+			'modified'  => _x( 'Modified on', 'column name', 'revisions-extended' ),
 		);
 	}
 
@@ -165,6 +169,7 @@ class Revision_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function column_title( $post ) {
+		// Actually checks the parent post.
 		$can_edit_post = current_user_can( 'edit_post', $post->ID );
 
 		if ( $can_edit_post ) {
@@ -215,5 +220,100 @@ class Revision_List_Table extends WP_List_Table {
 		echo "</strong>\n";
 
 		get_inline_data( $post );
+	}
+
+	/**
+	 * Render the Author column.
+	 *
+	 * @param WP_Post $post
+	 *
+	 * @return void
+	 */
+	public function column_author( $post ) {
+		echo get_the_author_meta( 'nicename', $post->post_author );
+	}
+
+	/**
+	 * Render the Parent column.
+	 *
+	 * @param WP_Post $post
+	 *
+	 * @return void
+	 */
+	public function column_parent( $post ) {
+		$parent = get_post( $post->post_parent );
+
+		if ( ! $parent ) {
+			esc_html_e( 'Error: No parent.', 'revisions-extended' );
+
+			return;
+		}
+
+		// Actually checks the parent post.
+		$can_edit_post = current_user_can( 'edit_post', $post->ID );
+		$title         = _draft_or_post_title( $parent );
+
+		if ( $can_edit_post ) {
+			$edit_url = add_query_arg(
+				array(
+					'post'   => $parent->ID,
+					'action' => 'edit',
+				),
+				admin_url( 'post.php' )
+			);
+
+			printf(
+				'<a class="row-title" href="%1$s" aria-label="%2$s">%3$s</a>',
+				esc_url( $edit_url ),
+				/* translators: %s: Post title. */
+				esc_attr( sprintf( __( '&#8220;%s&#8221; (Edit)' ), $title ) ),
+				$title
+			);
+		} else {
+			printf(
+				'<span>%s</span>',
+				$title
+			);
+		}
+
+		$parent_post_type_object = get_post_type_object( get_post_type( $parent ) );
+
+		printf(
+			'<a href="%1$s" class="view-item-link">%2$s</a>',
+			esc_url( get_permalink( $parent->ID ) ),
+			esc_html( $parent_post_type_object->labels->view_item )
+		);
+	}
+
+	/**
+	 * Render the Scheduled column.
+	 *
+	 * @param WP_Post $post
+	 *
+	 * @return void
+	 */
+	public function column_scheduled( $post ) {
+		printf(
+			/* translators: 1: Post date, 2: Post time. */
+			__( '%1$s at %2$s', 'revisions-extended' ),
+			get_the_date( get_option( 'date_format', 'Y/m/d' ), $post ),
+			get_the_time( get_option( 'time_format', 'g:i a' ), $post )
+		);
+	}
+
+	/**
+	 * Render the Modified column.
+	 *
+	 * @param WP_Post $post
+	 *
+	 * @return void
+	 */
+	public function column_modified( $post ) {
+		printf(
+			/* translators: 1: Post date, 2: Post time. */
+			__( '%1$s at %2$s', 'revisions-extended' ),
+			get_the_modified_date( get_option( 'date_format', 'Y/m/d' ), $post ),
+			get_the_modified_time( get_option( 'time_format', 'g:i a' ), $post )
+		);
 	}
 }
