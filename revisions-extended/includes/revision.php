@@ -13,6 +13,7 @@ defined( 'WPINC' ) || die();
  */
 add_action( 'registered_post_type', __NAMESPACE__ . '\modify_revision_post_type', 10, 2 );
 add_filter( 'pre_wp_unique_post_slug', __NAMESPACE__ . '\filter_pre_wp_unique_post_slug', 10, 5 );
+add_filter( 'wp_insert_post_data', __NAMESPACE__ . '\filter_wp_insert_post_data' );
 
 /**
  * Change the properties of the built-in revision post type so it's editable in the block editor.
@@ -225,4 +226,25 @@ function filter_pre_wp_unique_post_slug( $override, $slug, $post_ID, $post_statu
 	}
 
 	return $override;
+}
+
+/**
+ * Ensure the modified date for a scheduled revision is the current date, not the future publish date.
+ *
+ * @param array $data
+ *
+ * @return array
+ */
+function filter_wp_insert_post_data( $data ) {
+	if (
+		'revision' === $data['post_type']
+		&& 'future' === $data['post_status']
+		&& $data['post_date_gmt'] === $data['post_modified_gmt']
+		&& strtotime( $data['post_date_gmt'] ) > time()
+	) {
+		$data['post_modified']     = current_time( 'mysql' );
+		$data['post_modified_gmt'] = current_time( 'mysql', 1 );
+	}
+
+	return $data;
 }
