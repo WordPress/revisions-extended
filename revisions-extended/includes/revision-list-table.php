@@ -3,21 +3,32 @@
 namespace RevisionsExtended\Admin;
 
 use WP_List_Table, WP_Post, WP_Query;
+use function RevisionsExtended\Admin\get_subpage_url;
+use function RevisionsExtended\Post_Status\get_revision_statuses;
 
 defined( 'WPINC' ) || die();
 
 
 class Revision_List_Table extends WP_List_Table {
 	/**
+	 * Revision_List_Table constructor.
+	 *
+	 * @param array $args
+	 */
+	public function __construct( $args = array() ) {
+		global $typenow;
+		$this->parent_post_type = $typenow ?: 'post';
+
+		parent::__construct( $args );
+	}
+
+	/**
 	 * Checks the current user's permissions
 	 *
 	 * @return bool
 	 */
 	public function ajax_user_can() {
-		global $typenow;
-		$parent_post_type = $typenow ?: 'post';
-
-		return current_user_can( get_post_type_object( $parent_post_type )->cap->edit_posts );
+		return current_user_can( get_post_type_object( $this->parent_post_type )->cap->edit_posts );
 	}
 
 	/**
@@ -52,6 +63,48 @@ class Revision_List_Table extends WP_List_Table {
 				'per_page'    => $per_page,
 			)
 		);
+	}
+
+	/**
+	 * Gets the list of views available on this table.
+	 *
+	 * The format is an associative array:
+	 * - `'id' => 'link'`
+	 *
+	 * @return array
+	 */
+	protected function get_views() {
+		$view_links = array();
+
+		$revision_statuses = get_revision_statuses();
+		$posts_by_status   = (array) wp_count_posts( 'revision' );
+		$total_posts       = array_sum( array_intersect_key( $posts_by_status, $revision_statuses ) );
+
+		$all_inner_html = sprintf(
+			/* translators: %s: Number of posts. */
+			_nx(
+				'All <span class="count">(%s)</span>',
+				'All <span class="count">(%s)</span>',
+				$total_posts,
+				'posts',
+				'revisions-extended'
+			),
+			number_format_i18n( $total_posts )
+		);
+
+		$view_links['all'] = sprintf(
+			'<a href="%1$s"%2$s%3$s>%4$s</a>',
+			esc_url( get_subpage_url( $this->parent_post_type ) ),
+			' class="current"',
+			' aria-current="page"',
+			$all_inner_html
+		);
+
+		if ( count( $view_links ) > 1 ) {
+			return $view_links;
+		}
+
+		return array();
 	}
 
 	/**
