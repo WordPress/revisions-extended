@@ -2,13 +2,14 @@
 
 namespace RevisionsExtended\Admin;
 
-use WP_Posts_List_Table;
+use RevisionsExtended\Admin\Revision_List_Table;
 use function RevisionsExtended\Admin\get_subpage_url;
 
 defined( 'WPINC' ) || die();
 
 /** @var int $post_id */
-/** @var WP_Posts_List_Table $list_table */
+/** @var Revision_List_Table $list_table */
+/** @var array $messages */
 
 $list_table->prepare_items();
 ?>
@@ -33,6 +34,14 @@ $list_table->prepare_items();
 	</h1>
 
 	<hr class="wp-header-end">
+
+	<?php foreach ( $messages as $notice_type => $notices ) : ?>
+		<?php foreach ( $notices as $notice ) : ?>
+			<div class="is-dismissible notice notice-<?php echo esc_attr( $notice_type ); ?>">
+				<?php echo wp_kses_post( wpautop( $notice ) ); ?>
+			</div>
+		<?php endforeach; ?>
+	<?php endforeach; ?>
 
 	<?php $list_table->views(); ?>
 

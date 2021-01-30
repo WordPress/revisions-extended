@@ -54,9 +54,9 @@ class Revision_List_Table extends WP_List_Table {
 		/** This filter is documented in wp-admin/includes/post.php */
 		$per_page = apply_filters( 'edit_posts_per_page', $per_page, $post_type );
 
-		$orderby   = filter_input( INPUT_GET, 'orderby' );
-		$order     = filter_input( INPUT_GET, 'order' );
-		$search    = filter_input( INPUT_GET, 's' );
+		$orderby   = wp_unslash( filter_input( INPUT_GET, 'orderby' ) );
+		$order     = wp_unslash( filter_input( INPUT_GET, 'order' ) );
+		$search    = wp_unslash( filter_input( INPUT_GET, 's' ) );
 		$parent_id = filter_input( INPUT_GET, 'p', FILTER_VALIDATE_INT );
 
 		$query_args = array(
@@ -130,6 +130,38 @@ class Revision_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Retrieves the list of bulk actions available for this table.
+	 *
+	 * The format is an associative array where each element represents either a top level option value and label, or
+	 * an array representing an optgroup and its options.
+	 *
+	 * For a standard option, the array element key is the field value and the array element value is the field label.
+	 *
+	 * For an optgroup, the array element key is the label and the array element value is an associative array of
+	 * options as above.
+	 *
+	 * Example:
+	 *
+	 *     [
+	 *         'edit'         => 'Edit',
+	 *         'delete'       => 'Delete',
+	 *         'Change State' => [
+	 *             'feature' => 'Featured',
+	 *             'sale'    => 'On Sale',
+	 *         ]
+	 *     ]
+	 *
+	 * @return array
+	 */
+	protected function get_bulk_actions() {
+		$actions = array(
+			'delete' => __( 'Delete', 'revisions-extended' ),
+		);
+
+		return $actions;
+	}
+
+	/**
 	 * Gets a list of columns.
 	 *
 	 * The format is:
@@ -185,13 +217,18 @@ class Revision_List_Table extends WP_List_Table {
 
 		if ( $show ) :
 			?>
-			<label class="screen-reader-text" for="cb-select-<?php the_ID(); ?>">
+			<label class="screen-reader-text" for="cb-select-<?php echo esc_attr( $post->ID ); ?>">
 				<?php
 				/* translators: %s: Post title. */
 				printf( __( 'Select %s' ), _draft_or_post_title() );
 				?>
 			</label>
-			<input id="cb-select-<?php the_ID(); ?>" type="checkbox" name="post[]" value="<?php the_ID(); ?>" />
+			<input
+				id="cb-select-<?php echo esc_attr( $post->ID ); ?>"
+				type="checkbox"
+				name="bulk_edit[]"
+				value="<?php echo esc_attr( $post->ID ); ?>"
+			/>
 			<div class="locked-indicator">
 				<span class="locked-indicator-icon" aria-hidden="true"></span>
 				<span class="screen-reader-text">

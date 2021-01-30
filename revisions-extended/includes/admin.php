@@ -60,6 +60,18 @@ function add_subpages() {
 function render_subpage() {
 	$post_id    = filter_input( INPUT_GET, 'p', FILTER_VALIDATE_INT );
 	$list_table = get_list_table();
+	$messages   = array();
+
+	$action = wp_unslash( filter_input( INPUT_GET, 'action' ) );
+	$nonce  = wp_unslash( filter_input( INPUT_GET, '_wpnonce' ) );
+
+	if ( ! $action || '-1' === $action ) {
+		$action = wp_unslash( filter_input( INPUT_GET, 'action2' ) );
+	}
+
+	if ( $action && '-1' !== $action ) {
+		$messages = handle_bulk_edit_actions( $action, $nonce );
+	}
 
 	require get_views_path() . 'edit-revisions.php';
 }
@@ -73,6 +85,82 @@ function get_list_table() {
 	require_once get_includes_path() . 'revision-list-table.php';
 
 	return new Revision_List_Table();
+}
+
+/**
+ * Process list table form submissions for bulk actions.
+ *
+ * @param string $action
+ * @param string $nonce
+ *
+ * @return array An multidimensional associated array of message strings for different types of notices.
+ */
+function handle_bulk_edit_actions( $action, $nonce ) {
+	$nonce_is_valid = wp_verify_nonce( $nonce, 'bulk-posts_page_post-updates' ); // From WP_List_Table::display_tablenav.
+	$valid_actions  = array( 'delete' );
+	$items          = filter_input( INPUT_GET, 'bulk_edit', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY );
+	$edited         = 0;
+	$not_edited     = 0;
+	$messages       = array(
+		'error' => array(),
+		'info'  => array(),
+	);
+
+	if ( false === $nonce_is_valid || ! in_array( $action, $valid_actions, true ) ) {
+		$messages['error'][] = __( 'Invalid form submission.', 'revisions-extended' );
+	}
+
+	if ( empty( $items ) ) {
+		$messages['error'][] = __( 'No updates were selected for bulk editing.', 'revisions-extended' );
+	}
+
+	if ( empty( $messages['error'] ) ) {
+		foreach ( $items as $revision_id ) {
+			$revision = wp_get_post_revision( $revision_id );
+
+			if ( $revision ) {
+				switch ( $action ) {
+					case 'delete':
+						$result = wp_delete_post_revision( $revision );
+						break;
+				}
+
+				if ( $result ) {
+					$edited ++;
+				} else {
+					$not_edited ++;
+				}
+			} else {
+				$not_edited ++;
+			}
+		}
+	}
+
+	if ( $edited ) {
+		$messages['info'][] = sprintf(
+			_n(
+				'%s update was successfully deleted.',
+				'%s updates were successfully deleted.',
+				absint( $edited ),
+				'revisions-extended'
+			),
+			number_format_i18n( $edited )
+		);
+	}
+
+	if ( $not_edited ) {
+		$messages['error'][] = sprintf(
+			_n(
+				'%s update could not be deleted.',
+				'%s updates could not be deleted.',
+				absint( $not_edited ),
+				'revisions-extended'
+			),
+			number_format_i18n( $not_edited )
+		);
+	}
+
+	return $messages;
 }
 
 /**
