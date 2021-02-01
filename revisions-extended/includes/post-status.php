@@ -21,6 +21,7 @@ function get_revision_statuses() {
 		$stati,
 		array(
 			'future' => true,
+			'pending' => true,
 		)
 	);
 }

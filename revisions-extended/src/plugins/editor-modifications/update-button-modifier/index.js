@@ -13,11 +13,17 @@ import {
 	__experimentalText as Text,
 } from '@wordpress/components';
 import { dispatch } from '@wordpress/data';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { usePost, useRevision, useInterface } from '../../../hooks';
+import {
+	usePost,
+	useRevision,
+	useInterface,
+	POST_STATUS_SCHEDULED,
+} from '../../../hooks';
 import { getEditUrl, getFormattedDate } from '../../../utils';
 import './index.css';
 
@@ -140,12 +146,18 @@ const UpdateButtonModifier = () => {
 				className="update-button-modifier-notice"
 			>
 				<Notice status="success" isDismissible={ false }>
-					<span>
-						Successfully saved your revision for publish on:
-					</span>
-					<b style={ { display: 'block' } }>
-						{ getFormattedDate( newRevision.date ) }
-					</b>
+					{ newRevision.status === POST_STATUS_SCHEDULED ? (
+						<Fragment>
+							<span>
+								Successfully saved your revision for publish on:
+							</span>
+							<b style={ { display: 'block' } }>
+								{ getFormattedDate( newRevision.date ) }
+							</b>
+						</Fragment>
+					) : (
+						<span>Successfully saved your revision.</span>
+					) }
 				</Notice>
 				<div className="update-button-modifier-notice__content">
 					<Text variant="title.small" as="h3">
