@@ -49,7 +49,11 @@ const UpdateButtonModifier = () => {
 		getEditedPostAttribute,
 	} = usePost();
 
-	const _savePost = async () => {
+	const _savePost = async ( { isAutosave } ) => {
+		if ( isAutosave ) {
+			return;
+		}
+
 		const { data, error } = await create( {
 			postType: savedPost.type,
 			postId: savedPost.id,
