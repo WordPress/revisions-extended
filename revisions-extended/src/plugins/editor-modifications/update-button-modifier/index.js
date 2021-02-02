@@ -77,18 +77,21 @@ const UpdateButtonModifier = () => {
 	};
 
 	useEffect( () => {
-		let btnText, savePost;
+		let btnText = getStashProp( PROP_BTN_TEXT );
+		let savePost = getStashProp( PROP_FN_SAVE );
 
 		if ( shouldIntercept ) {
 			btnText = __( 'Create Revision', 'revisions-extended' );
 			savePost = _savePost;
-		} else {
-			btnText = getStashProp( PROP_BTN_TEXT );
-			savePost = getStashProp( PROP_FN_SAVE );
 		}
 
-		setBtnText( btnText );
-		setSavePostFunction( savePost );
+		if ( btnText ) {
+			setBtnText( btnText );
+		}
+
+		if ( savePost ) {
+			setSavePostFunction( savePost );
+		}
 	}, [ isPublished, changingToScheduled, shouldIntercept ] );
 
 	if ( newRevision ) {
