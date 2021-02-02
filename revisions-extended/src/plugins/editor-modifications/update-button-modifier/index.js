@@ -49,8 +49,8 @@ const UpdateButtonModifier = () => {
 		getEditedPostAttribute,
 	} = usePost();
 
-	const _savePost = async ( { isAutosave } ) => {
-		if ( isAutosave ) {
+	const _savePost = async ( gutenbergProps ) => {
+		if ( gutenbergProps && gutenbergProps.isAutosave ) {
 			return;
 		}
 

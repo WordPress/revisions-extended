@@ -34,8 +34,8 @@ const UpdateButtonModifier = () => {
 	const { savedPost } = usePost();
 	const { publish } = useRevision();
 
-	const _savePost = async ( { isAutosave } ) => {
-		if ( isAutosave ) {
+	const _savePost = async ( gutenbergProps ) => {
+		if ( gutenbergProps && gutenbergProps.isAutosave ) {
 			return;
 		}
 
