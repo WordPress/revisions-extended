@@ -2,9 +2,23 @@
  * WordPress dependencies
  */
 import { Modal, __experimentalText as Text } from '@wordpress/components';
+
+import { useInterface, usePost } from '../../hooks';
 import './index.css';
 
 const ConfirmWindow = ( { title, notice, links } ) => {
+	const { savedPost } = usePost();
+	const { clearLocalChanges } = useInterface();
+
+	const onLeave = ( e ) => {
+		e.preventDefault();
+
+		// Clear out any weird autosaves.
+		clearLocalChanges( savedPost.id );
+
+		window.location.href = e.target.href;
+	};
+
 	return (
 		<Modal
 			title={ title }
@@ -21,7 +35,9 @@ const ConfirmWindow = ( { title, notice, links } ) => {
 				<ul>
 					{ links.map( ( i ) => (
 						<li key={ i.href }>
-							<a href={ i.href }>{ i.text }</a>
+							<a href={ i.href } onClick={ onLeave }>
+								{ i.text }
+							</a>
 						</li>
 					) ) }
 				</ul>
