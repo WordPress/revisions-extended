@@ -400,4 +400,55 @@ class Revision_List_Table extends WP_List_Table {
 			get_the_modified_time( get_option( 'time_format', 'g:i a' ), $post )
 		);
 	}
+
+	/**
+	 * Generates and display row actions links for the list table.
+	 *
+	 * @param object|array $post        The post being acted upon.
+	 * @param string       $column_name Current column name.
+	 * @param string       $primary     Primary column name.
+	 *
+	 * @return string The row actions HTML, or an empty string
+	 *                if the current column is not the primary column.
+	 */
+	protected function handle_row_actions( $post, $column_name, $primary ) {
+		if ( $primary !== $column_name ) {
+			return '';
+		}
+
+		$post_type_object = get_post_type_object( $post->post_type );
+		$can_edit_post    = current_user_can( 'edit_post', $post->ID );
+		$actions          = array();
+		$title            = _draft_or_post_title( $post );
+
+		// Edit.
+		if ( $can_edit_post ) {
+			$edit_url = add_query_arg(
+				array(
+					'post'   => $post->ID,
+					'action' => 'edit',
+				),
+				admin_url( 'post.php' )
+			);
+
+			$actions['edit'] = sprintf(
+				'<a href="%1$s" aria-label="%2$s">%3$s</a>',
+				esc_url( $edit_url ),
+				/* translators: %s: Post title. */
+				esc_attr( sprintf( __( 'Edit &#8220;%s&#8221;', 'revisions-extended' ), $title ) ),
+				__( 'Edit', 'revisions-extended' )
+			);
+		}
+
+		// Compare.
+		// TODO
+
+		// Publish.
+		// TODO
+
+		// Delete.
+		// TODO
+
+		return $this->row_actions( $actions );
+	}
 }
