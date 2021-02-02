@@ -32,8 +32,10 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\initialize_rest_routes', 100 );
  * @return void
  */
 function load_files() {
+	require_once get_includes_path() . 'admin.php';
 	require_once get_includes_path() . 'capabilities.php';
 	require_once get_includes_path() . 'post-status.php';
+	require_once get_includes_path() . 'rest-revision-controller.php';
 	require_once get_includes_path() . 'rest-revisions-controller.php';
 	require_once get_includes_path() . 'revision.php';
 	require_once get_includes_path() . 'block-editor-modifier.php';
@@ -46,6 +48,15 @@ function load_files() {
  */
 function get_includes_path() {
 	return PLUGIN_DIR . 'includes/';
+}
+
+/**
+ * Shortcut to the views directory.
+ *
+ * @return string
+ */
+function get_views_path() {
+	return PLUGIN_DIR . 'views/';
 }
 
 /**
