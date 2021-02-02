@@ -44,9 +44,9 @@ const DocumentSettingsPanel = () => {
 
 	const revisionMap = ( i ) => {
 		return {
-			text: `Update #${ i.id } (${ getStatusDisplay( i.status ) })`,
+			text: `Update #${ i.id } (by ${ i.author_name })`,
+			status: `${ getStatusDisplay( i.status, i.date_gmt ) }`,
 			href: getEditUrl( i.id ),
-			author: i.author_name,
 		};
 	};
 

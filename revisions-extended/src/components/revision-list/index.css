@@ -16,6 +16,7 @@
 	padding-bottom: 0;
 } 
 
-.revisions-extended-revision-list__author  {
+.revisions-extended-revision-list__status  {
+	font-size: 12px;
 	color: #666;
 }

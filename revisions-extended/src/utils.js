@@ -21,13 +21,21 @@ export const getEditUrl = ( postId ) => {
 	return `/wp-admin/post.php?post=${ postId }&action=edit`;
 };
 
-export const getFormattedDate = ( date ) => {
-	return format( 'D, F j, Y', date );
+export const getAllRevisionUrl = ( type ) => {
+	if ( type.toLowerCase() === 'page' ) {
+		return '/wp-admin/edit.php?page=page-updates';
+	}
+
+	return '/wp-admin/edit.php?page=post-updates';
 };
 
-export const getStatusDisplay = ( postStatus ) => {
+export const getFormattedDate = ( date ) => {
+	return format( 'M j, Y', date );
+};
+
+export const getStatusDisplay = ( postStatus, date ) => {
 	if ( POST_STATUS_SCHEDULED === postStatus ) {
-		return 'Scheduled';
+		return `Publish on ${ getFormattedDate( date ) }`;
 	}
 	if ( POST_STATUS_PENDING === postStatus ) {
 		return 'Pending';

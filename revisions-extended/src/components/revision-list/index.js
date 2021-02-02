@@ -9,8 +9,8 @@ const RevisionList = ( { items } ) => {
 			{ items.map( ( i ) => (
 				<li key={ i.href }>
 					<a href={ i.href }>{ i.text }</a>
-					<span className="revisions-extended-revision-list__author">
-						by { i.author }
+					<span className="revisions-extended-revision-list__status">
+						{ i.status }
 					</span>
 				</li>
 			) ) }

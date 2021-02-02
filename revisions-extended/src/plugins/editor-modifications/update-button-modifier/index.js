@@ -24,7 +24,11 @@ import {
 	useInterface,
 	POST_STATUS_SCHEDULED,
 } from '../../../hooks';
-import { getEditUrl, getFormattedDate } from '../../../utils';
+import {
+	getEditUrl,
+	getFormattedDate,
+	getAllRevisionUrl,
+} from '../../../utils';
 import './index.css';
 
 /**
@@ -170,12 +174,7 @@ const UpdateButtonModifier = () => {
 								href={ getEditUrl( newRevision.id ) }
 								onClick={ onLeave }
 							>
-								Continue editing your revision.
-							</a>
-						</li>
-						<li>
-							<a href="/revisions" onClick={ onLeave }>
-								View all your revisions{ ' ' }
+								Continue editing your update.
 							</a>
 						</li>
 						<li>
@@ -183,7 +182,15 @@ const UpdateButtonModifier = () => {
 								href={ getEditUrl( savedPost.id ) }
 								onClick={ onLeave }
 							>
-								Reload original post
+								Reload original { savedPost.type }.
+							</a>
+						</li>
+						<li>
+							<a
+								href={ getAllRevisionUrl( savedPost.type ) }
+								onClick={ onLeave }
+							>
+								View all { savedPost.type } updates.
 							</a>
 						</li>
 					</ul>
