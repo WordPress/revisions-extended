@@ -364,7 +364,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			$response->data['status'] = $post->post_status;
 		}
 
-		$response->data['authorName'] = get_the_author_meta( 'nicename', $response->data['author'] ) ;
+		$response->data['author_name'] = get_the_author_meta( 'nicename', $response->data['author'] ) ;
 
 		return $response;
 	}
