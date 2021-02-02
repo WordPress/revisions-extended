@@ -13,7 +13,7 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
  */
 import { RevisionList } from '../../../components';
 import { useRevision, usePost } from '../../../hooks';
-import { getEditUrl, getFormattedDate } from '../../../utils';
+import { getEditUrl, getStatusDisplay } from '../../../utils';
 
 const DocumentSettingsPanel = () => {
 	const [ revisions, setRevisions ] = useState( [] );
@@ -44,7 +44,7 @@ const DocumentSettingsPanel = () => {
 
 	const revisionMap = ( i ) => {
 		return {
-			text: getFormattedDate( i.date_gmt ),
+			text: `Revision-${ i.id } (${ getStatusDisplay( i.status ) })`,
 			href: getEditUrl( i.id ),
 			author: i.author_name,
 		};
@@ -62,7 +62,7 @@ const DocumentSettingsPanel = () => {
 	return (
 		<PluginDocumentSettingPanel
 			name="scheduled-revisions"
-			title="Scheduled Revisions"
+			title="Updates"
 			icon="nothing"
 		>
 			<RevisionList items={ mappedRevisions } />
