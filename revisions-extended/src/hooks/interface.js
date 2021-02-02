@@ -54,9 +54,11 @@ export function InterfaceProvider( { children, btnTextOverride } ) {
 	const [ shouldIntercept, setShouldIntercept ] = useState( false );
 	const { isSavingPost, savedPost } = usePost();
 
-	if ( btnTextOverride ) {
-		setBtnText( btnTextOverride );
-	}
+	useEffect( () => {
+		if ( btnTextOverride ) {
+			setBtnText( btnTextOverride );
+		}
+	}, [] );
 
 	useEffect( () => {
 		if ( ! getStashProp( PROP_FN_SAVE ) ) {
