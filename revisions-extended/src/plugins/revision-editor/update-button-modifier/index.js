@@ -83,6 +83,10 @@ const UpdateButtonModifier = () => {
 				}
 				links={ [
 					{
+						text: 'View published post.',
+						href: `/?p=${ savedPost.parent }`,
+					},
+					{
 						text: 'Reload original post.',
 						href: getEditUrl( savedPost.parent ),
 					},
