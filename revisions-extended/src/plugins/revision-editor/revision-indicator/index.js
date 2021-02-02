@@ -14,6 +14,12 @@ import { dispatch } from '@wordpress/data';
  */
 
 import { usePost, POST_STATUS_SCHEDULED } from '../../../hooks';
+import { getEditUrl } from '../../../utils';
+
+/**
+ * Module Constants
+ */
+export const NOTICE_ID = 'revisions-extended-notice';
 
 const RevisionIndicator = () => {
 	const { savedPost } = usePost();
@@ -25,14 +31,14 @@ const RevisionIndicator = () => {
 
 	const notes = [
 		`You are currently editing a <b>${ getRevisionType } revision</b>.`,
-		`[ <a href="/wp-admin/post.php?post=${ savedPost.parent }&action=edit">View post</a>`,
+		`[ <a href="${ getEditUrl( savedPost.parent ) }">Edit post</a>`,
 		` | <a href="/wp-admin/revision.php?revision=${ savedPost.id }&gutenberg=true" />See changes</a> ]`,
 	];
 
 	useEffect( () => {
 		dispatch( 'core/notices' ).createNotice( 'warning', notes.join( ' ' ), {
 			__unstableHTML: true,
-			id: 'revisions-extended-notice',
+			id: NOTICE_ID,
 			isDismissible: false,
 		} );
 	}, [] );
