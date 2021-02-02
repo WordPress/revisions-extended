@@ -46,6 +46,7 @@ const DocumentSettingsPanel = () => {
 		return {
 			text: getFormattedDate( i.date_gmt ),
 			href: getEditUrl( i.id ),
+			author: i.authorName,
 		};
 	};
 

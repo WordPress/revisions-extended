@@ -21,5 +21,5 @@ export const getEditUrl = ( postId ) => {
 };
 
 export const getFormattedDate = ( date ) => {
-	return format( 'D, F j, Y G:i a', date );
+	return format( 'D, F j, Y', date );
 };
