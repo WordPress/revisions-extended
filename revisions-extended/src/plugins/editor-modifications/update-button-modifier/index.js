@@ -7,17 +7,14 @@ import { useEffect, useState } from 'react';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import {
-	Modal,
-	Notice,
-	__experimentalText as Text,
-} from '@wordpress/components';
+import { Notice } from '@wordpress/components';
 import { dispatch } from '@wordpress/data';
 import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import { ConfirmWindow } from '../../../components';
 import {
 	usePost,
 	useRevision,
@@ -29,52 +26,26 @@ import {
 	getFormattedDate,
 	getAllRevisionUrl,
 } from '../../../utils';
-import './index.css';
 
 /**
  * Module constants
  */
-const EDITOR_STORE = 'core/editor';
 const PROP_BTN_TEXT = 'btnText';
 const PROP_FN_SAVE = 'savePost';
-
-const getStashProp = ( prop ) => {
-	return window.revisionPluginStash
-		? window.revisionPluginStash[ prop ]
-		: undefined;
-};
-
-const stashGutenbergData = ( data ) => {
-	window.revisionPluginStash = {
-		...window.revisionPluginStash,
-		...data,
-	};
-};
-
-const setSavePostFunction = ( fn ) => {
-	dispatch( EDITOR_STORE ).savePost = fn;
-};
-
-const getBtnElement = () => {
-	return document.querySelector( '.editor-post-publish-button__button' );
-};
-
-const setBtnText = ( text ) => {
-	const btn = getBtnElement();
-	if ( btn && text ) {
-		btn.innerText = text;
-	}
-};
 
 const UpdateButtonModifier = () => {
 	const [ newRevision, setNewRevision ] = useState();
 	const { create } = useRevision();
-	const { clearLocalChanges, shouldCreateRevision } = useInterface();
+	const {
+		shouldIntercept,
+		setBtnText,
+		setSavePostFunction,
+		getStashProp,
+	} = useInterface();
 	const {
 		savedPost,
 		changingToScheduled,
 		isPublished,
-		isSavingPost,
 		getEditedPostAttribute,
 	} = usePost();
 
@@ -101,35 +72,10 @@ const UpdateButtonModifier = () => {
 		}
 	};
 
-	const onLeave = ( e ) => {
-		e.preventDefault();
-
-		// Clear out any weird autosaves.
-		clearLocalChanges( savedPost.id );
-
-		window.location.href = e.target.href;
-	};
-
-	useEffect( () => {
-		if ( ! getStashProp( PROP_FN_SAVE ) ) {
-			stashGutenbergData( {
-				savePost: dispatch( EDITOR_STORE ).savePost,
-			} );
-		}
-
-		const btnRef = getBtnElement();
-
-		if ( btnRef && ! getStashProp( PROP_BTN_TEXT ) && ! isSavingPost ) {
-			stashGutenbergData( {
-				btnText: btnRef.innerText,
-			} );
-		}
-	}, [ savedPost ] );
-
 	useEffect( () => {
 		let btnText, savePost;
 
-		if ( shouldCreateRevision ) {
+		if ( shouldIntercept ) {
 			btnText = __( 'Create Revision', 'revisions-extended' );
 			savePost = _savePost;
 		} else {
@@ -139,63 +85,44 @@ const UpdateButtonModifier = () => {
 
 		setBtnText( btnText );
 		setSavePostFunction( savePost );
-	}, [ isPublished, changingToScheduled, shouldCreateRevision ] );
+	}, [ isPublished, changingToScheduled, shouldIntercept ] );
 
 	if ( newRevision ) {
 		return (
-			<Modal
+			<ConfirmWindow
 				title="Revisions Extended"
-				icons="plugins"
-				isDismissible={ false }
-				className="update-button-modifier-notice"
-			>
-				<Notice status="success" isDismissible={ false }>
-					{ newRevision.status === POST_STATUS_SCHEDULED ? (
-						<Fragment>
-							<span>
-								Successfully saved your revision for publish on:
-							</span>
-							<b style={ { display: 'block' } }>
-								{ getFormattedDate( newRevision.date ) }
-							</b>
-						</Fragment>
-					) : (
-						<span>Successfully saved your revision.</span>
-					) }
-				</Notice>
-				<div className="update-button-modifier-notice__content">
-					<Text variant="title.small" as="h3">
-						Next Steps
-					</Text>
-					<Text as="h4">Select of on the following actions:</Text>
-					<ul>
-						<li>
-							<a
-								href={ getEditUrl( newRevision.id ) }
-								onClick={ onLeave }
-							>
-								Continue editing your update.
-							</a>
-						</li>
-						<li>
-							<a
-								href={ getEditUrl( savedPost.id ) }
-								onClick={ onLeave }
-							>
-								Reload original { savedPost.type }.
-							</a>
-						</li>
-						<li>
-							<a
-								href={ getAllRevisionUrl( savedPost.type ) }
-								onClick={ onLeave }
-							>
-								View all { savedPost.type } updates.
-							</a>
-						</li>
-					</ul>
-				</div>
-			</Modal>
+				notice={
+					<Notice status="success" isDismissible={ false }>
+						{ newRevision.status === POST_STATUS_SCHEDULED ? (
+							<Fragment>
+								<span>
+									Successfully saved your revision for publish
+									on:
+								</span>
+								<b style={ { display: 'block' } }>
+									{ getFormattedDate( newRevision.date ) }
+								</b>
+							</Fragment>
+						) : (
+							<span>Successfully saved your revision.</span>
+						) }
+					</Notice>
+				}
+				links={ [
+					{
+						text: 'Continue editing your update.',
+						href: getEditUrl( newRevision.id ),
+					},
+					{
+						text: `Reload original ${ savedPost.type }.`,
+						href: getEditUrl( savedPost.id ),
+					},
+					{
+						text: `View all ${ savedPost.type } updates.`,
+						href: getAllRevisionUrl( savedPost.type ),
+					},
+				] }
+			/>
 		);
 	}
 

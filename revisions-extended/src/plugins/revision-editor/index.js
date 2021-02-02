@@ -6,6 +6,7 @@ import { registerPlugin } from '@wordpress/plugins';
 /**
  * Internal dependencies
  */
+import UpdateButtonModifier from './update-button-modifier';
 import RevisionIndicator from './revision-indicator';
 import TrashModifier from './trash-modifier';
 import PluginPostStatusInfo from './plugin-post-status-info';
@@ -21,7 +22,8 @@ const PluginWrapper = () => {
 		window.location.href = getEditUrl( savedPost.parent );
 	}
 	return (
-		<InterfaceProvider>
+		<InterfaceProvider btnTextOverride="Update">
+			<UpdateButtonModifier />
 			<RevisionIndicator />
 			<TrashModifier />
 			<PluginPostStatusInfo />

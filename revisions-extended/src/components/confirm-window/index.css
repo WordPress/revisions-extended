@@ -1,0 +1,21 @@
+.confirm-window .components-notice {
+	margin: 0;
+}
+
+.confirm-window__content {
+	margin-top: 24px;
+}
+
+.confirm-window ul {
+	list-style: disc;
+	padding-left: 16px;
+}
+
+.confirm-window ul li a {
+	display: block;
+	margin: 16px 0;
+}
+
+.confirm-window ul li a:last-child {
+	margin-bottom: 0;
+}

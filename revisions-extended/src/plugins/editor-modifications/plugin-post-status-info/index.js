@@ -9,17 +9,16 @@ import { CheckboxControl } from '@wordpress/components';
  * Internal dependencies
  */
 import { useInterface } from '../../../hooks';
-import './index.css';
 
 const PluginPostStatusInfo = () => {
-	const { shouldCreateRevision, setShouldCreateRevision } = useInterface();
+	const { shouldIntercept, setShouldIntercept } = useInterface();
 
 	return (
 		<PostStatusInfo>
 			<CheckboxControl
 				label={ __( 'Create new revision', 'revisions-extended' ) }
-				checked={ shouldCreateRevision }
-				onChange={ setShouldCreateRevision }
+				checked={ shouldIntercept }
+				onChange={ setShouldIntercept }
 			/>
 		</PostStatusInfo>
 	);
