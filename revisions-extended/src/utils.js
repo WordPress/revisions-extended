@@ -30,12 +30,15 @@ export const getAllRevisionUrl = ( type ) => {
 };
 
 export const getFormattedDate = ( date ) => {
+	return format( 'D, F j, Y G:i a', date );
+};
+export const getShortenedFormattedDate = ( date ) => {
 	return format( 'M j, Y', date );
 };
 
 export const getStatusDisplay = ( postStatus, date ) => {
 	if ( POST_STATUS_SCHEDULED === postStatus ) {
-		return `Publish on ${ getFormattedDate( date ) }`;
+		return `Publish on ${ getShortenedFormattedDate( date ) }`;
 	}
 	if ( POST_STATUS_PENDING === postStatus ) {
 		return 'Pending';
