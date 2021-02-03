@@ -17,7 +17,7 @@ const PluginPostStatusInfo = () => {
 	return (
 		<PostStatusInfo>
 			<CheckboxControl
-				label={ __( 'Publish on Update' ) }
+				label={ __( 'Publish immediately' ) }
 				checked={ shouldIntercept }
 				onChange={ ( checked ) => {
 					let originalSlug = getCurrentPostAttribute( 'slug' );
