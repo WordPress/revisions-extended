@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { dispatch } from '@wordpress/data';
 import { Notice } from '@wordpress/components';
 
@@ -62,7 +62,7 @@ const UpdateButtonModifier = () => {
 		let savePost = getStashProp( PROP_FN_SAVE );
 
 		if ( shouldIntercept ) {
-			btnText = __( 'Publish', 'revisions-extended' );
+			btnText = __( 'Publish' );
 			savePost = _savePost;
 		}
 
@@ -78,23 +78,27 @@ const UpdateButtonModifier = () => {
 	if ( showSuccess ) {
 		return (
 			<ConfirmWindow
-				title="Revisions Extended"
+				title={ __( 'Revisions Extended' ) }
 				notice={
 					<Notice status="success" isDismissible={ false }>
-						Successfully published your update.
+						{ __( 'Successfully published your update.' ) }
 					</Notice>
 				}
 				links={ [
 					{
-						text: 'View published post.',
+						text: __( 'View published post.' ),
 						href: `/?p=${ savedPost.parent }`,
 					},
 					{
-						text: 'Reload original post.',
+						text: __( 'Edit original post.' ),
 						href: getEditUrl( savedPost.parent ),
 					},
 					{
-						text: `View all ${ savedPost.type } updates.`,
+						text: sprintf(
+							// translators: %s: post type.
+							__( 'View all %s updates.' ),
+							savedPost.type
+						),
 						href: getAllRevisionUrl( savedPost.type ),
 					},
 				] }

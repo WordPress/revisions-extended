@@ -1,8 +1,12 @@
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { Modal, __experimentalText as Text } from '@wordpress/components';
 
+/**
+ * Internal dependencies
+ */
 import { useInterface, usePost } from '../../hooks';
 import './index.css';
 
@@ -29,9 +33,11 @@ const ConfirmWindow = ( { title, notice, links } ) => {
 			{ notice }
 			<div className="confirm-window__content">
 				<Text variant="title.small" as="h3">
-					Next Steps
+					{ __( 'Next Steps' ) }
 				</Text>
-				<Text as="h4">Select one of the following actions:</Text>
+				<Text as="h4">
+					{ __( 'Select one of the following actions:' ) }
+				</Text>
 				<ul>
 					{ links.map( ( i ) => (
 						<li key={ i.href }>

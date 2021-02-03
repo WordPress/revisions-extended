@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 /**
  * WordPress Dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { dispatch } from '@wordpress/data';
 
 /**
@@ -26,13 +26,21 @@ const RevisionIndicator = () => {
 
 	const getRevisionType =
 		savedPost.status === POST_STATUS_SCHEDULED
-			? __( 'scheduled', 'revisions-extended' )
-			: __( 'pending', 'revisions-extended' );
+			? __( 'scheduled' )
+			: __( 'pending' );
 
 	const notes = [
-		`You are currently editing a <b>${ getRevisionType } update</b>.`,
-		`[ <a href="${ getEditUrl( savedPost.parent ) }">Edit post</a>`,
-		` | <a href="/wp-admin/revision.php?revision=${ savedPost.id }&gutenberg=true" />See changes</a> ]`,
+		sprintf(
+			// translators: %s: post type.
+			__( 'You are currently editing a <b>%s update</b>.' ),
+			getRevisionType
+		),
+		`[ <a href="${ getEditUrl( savedPost.parent ) }">${ __(
+			'Edit post'
+		) }</a>`,
+		` | <a href="/wp-admin/revision.php?revision=${
+			savedPost.id
+		}&gutenberg=true" />${ __( 'See changes' ) }</a> ]`,
 	];
 
 	useEffect( () => {

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Notice } from '@wordpress/components';
 import { dispatch } from '@wordpress/data';
 import { Fragment } from '@wordpress/element';
@@ -81,7 +81,7 @@ const UpdateButtonModifier = () => {
 		let savePost = getStashProp( PROP_FN_SAVE );
 
 		if ( shouldIntercept ) {
-			btnText = __( 'Create Update', 'revisions-extended' );
+			btnText = __( 'Create Update' );
 			savePost = _savePost;
 		}
 
@@ -103,29 +103,41 @@ const UpdateButtonModifier = () => {
 						{ newRevision.status === POST_STATUS_SCHEDULED ? (
 							<Fragment>
 								<span>
-									Successfully saved your update for publish
-									on:
+									{ ' ' }
+									{ __(
+										'Successfully saved your update for publish on:'
+									) }
 								</span>
 								<b style={ { display: 'block' } }>
 									{ getFormattedDate( newRevision.date ) }
 								</b>
 							</Fragment>
 						) : (
-							<span>Successfully saved your update.</span>
+							<span>
+								{ __( 'Successfully saved your update.' ) }
+							</span>
 						) }
 					</Notice>
 				}
 				links={ [
 					{
-						text: 'Continue editing your update.',
+						text: __( 'Continue editing your update.' ),
 						href: getEditUrl( newRevision.id ),
 					},
 					{
-						text: `Reload original ${ savedPost.type }.`,
+						text: sprintf(
+							// translators: %s: post type.
+							__( 'Reload original %s.' ),
+							savedPost.type
+						),
 						href: getEditUrl( savedPost.id ),
 					},
 					{
-						text: `View all ${ savedPost.type } updates.`,
+						text: sprintf(
+							// translators: %s: post type.
+							__( 'View all %s updates.' ),
+							savedPost.type
+						),
 						href: getAllRevisionUrl( savedPost.type ),
 					},
 				] }

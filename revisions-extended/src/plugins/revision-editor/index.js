@@ -1,6 +1,7 @@
 /**
- * External dependencies
+ * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { registerPlugin } from '@wordpress/plugins';
 
 /**
@@ -22,7 +23,7 @@ const PluginWrapper = () => {
 		window.location.href = getEditUrl( savedPost.parent );
 	}
 	return (
-		<InterfaceProvider btnTextOnLoad="Update">
+		<InterfaceProvider btnTextOnLoad={ __( 'Update' ) }>
 			<UpdateButtonModifier />
 			<RevisionIndicator />
 			<TrashModifier />

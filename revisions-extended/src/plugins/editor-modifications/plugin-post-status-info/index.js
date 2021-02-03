@@ -16,7 +16,7 @@ const PluginPostStatusInfo = () => {
 	return (
 		<PostStatusInfo>
 			<CheckboxControl
-				label={ __( 'Create new update', 'revisions-extended' ) }
+				label={ __( 'Create new update' ) }
 				checked={ shouldIntercept }
 				onChange={ setShouldIntercept }
 			/>

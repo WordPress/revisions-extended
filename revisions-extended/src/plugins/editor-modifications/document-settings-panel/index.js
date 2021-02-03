@@ -6,6 +6,7 @@ import { useEffect, useState, useMemo } from 'react';
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 /**
@@ -62,7 +63,7 @@ const DocumentSettingsPanel = () => {
 	return (
 		<PluginDocumentSettingPanel
 			name="scheduled-revisions"
-			title="Updates"
+			title={ __( 'Updates', 'revisions-extended' ) }
 			icon="nothing"
 		>
 			<RevisionList items={ mappedRevisions } />
