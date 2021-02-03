@@ -364,6 +364,19 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			$response->data['status'] = $post->post_status;
 		}
 
+		if ( in_array( 'author', $fields, true ) && $response->data['author'] ) {
+			$response->add_link(
+				'author',
+				rest_url( sprintf(
+					'wp/v2/users/%d',
+					$post->post_author
+				) ),
+				array(
+					'embeddable' => true,
+				)
+			);
+		}
+
 		return $response;
 	}
 }
