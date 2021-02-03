@@ -13,7 +13,8 @@ import { dispatch } from '@wordpress/data';
  * Internal dependencies
  */
 
-import { usePost, POST_STATUS_SCHEDULED } from '../../../hooks';
+import { usePost } from '../../../hooks';
+import { POST_STATUS_SCHEDULED } from '../../../settings';
 import { getEditUrl } from '../../../utils';
 
 /**

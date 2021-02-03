@@ -15,12 +15,8 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { ConfirmWindow } from '../../../components';
-import {
-	usePost,
-	useRevision,
-	useInterface,
-	POST_STATUS_SCHEDULED,
-} from '../../../hooks';
+import { usePost, useRevision, useInterface } from '../../../hooks';
+import { POST_STATUS_SCHEDULED } from '../../../settings';
 import {
 	getEditUrl,
 	getFormattedDate,
