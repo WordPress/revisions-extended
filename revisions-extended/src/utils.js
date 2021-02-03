@@ -38,7 +38,11 @@ export const getShortenedFormattedDate = ( date ) => {
 
 export const getStatusDisplay = ( postStatus, date ) => {
 	if ( POST_STATUS_SCHEDULED === postStatus ) {
-		return `Publish on ${ getShortenedFormattedDate( date ) }`;
+		return sprintf(
+			// translator: %s: formatted date
+			__( 'Scheduled for %s' ),
+			getShortenedFormattedDate( date )
+		);
 	}
 	if ( POST_STATUS_PENDING === postStatus ) {
 		return 'Pending';
