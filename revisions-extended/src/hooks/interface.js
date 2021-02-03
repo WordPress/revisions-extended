@@ -9,9 +9,12 @@ import {
 	useEffect,
 } from '@wordpress/element';
 
+/**
+ * Internal dependencies
+ */
 import { usePost } from './post';
+import { GUTENBERG_EDITOR_STORE } from '../settings';
 
-const EDITOR_STORE = 'core/editor';
 const PROP_BTN_TEXT = 'btnText';
 const PROP_FN_SAVE = 'savePost';
 
@@ -29,7 +32,7 @@ const stashGutenbergData = ( data ) => {
 };
 
 const setSavePostFunction = ( fn ) => {
-	dispatch( EDITOR_STORE ).savePost = fn;
+	dispatch( GUTENBERG_EDITOR_STORE ).savePost = fn;
 };
 
 const getBtnElement = () => {
@@ -63,7 +66,7 @@ export function InterfaceProvider( { children, btnTextOnLoad = false } ) {
 	useEffect( () => {
 		if ( ! getStashProp( PROP_FN_SAVE ) ) {
 			stashGutenbergData( {
-				savePost: dispatch( EDITOR_STORE ).savePost,
+				savePost: dispatch( GUTENBERG_EDITOR_STORE ).savePost,
 			} );
 		}
 

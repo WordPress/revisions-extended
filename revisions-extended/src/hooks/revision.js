@@ -8,8 +8,7 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import { getRestApiUrl, getRestApiUrlV2 } from '../utils';
 
-export const POST_STATUS_SCHEDULED = 'future'; // Matches API
-export const POST_STATUS_PENDING = 'pending';
+import { POST_STATUS_SCHEDULED, POST_STATUS_PENDING } from '../settings';
 
 /**
  * This function normalizes the apiFetch response

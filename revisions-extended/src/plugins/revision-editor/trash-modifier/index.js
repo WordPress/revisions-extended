@@ -8,6 +8,7 @@ import { dispatch } from '@wordpress/data';
  * Internal dependencies
  */
 import { useRevision, usePost } from '../../../hooks';
+import { GUTENBERG_EDITOR_STORE } from '../../../settings';
 
 /**
  * Module constants
@@ -19,7 +20,7 @@ const TrashModifier = () => {
 	const { trash } = useRevision();
 	const { getEditedPostAttribute } = usePost();
 
-	dispatch( 'core/editor' ).trashPost = async () => {
+	dispatch( GUTENBERG_EDITOR_STORE ).trashPost = async () => {
 		const trashBtnElement = document.querySelector(
 			GUTENBERG_TRASH_BTN_CLASS
 		);

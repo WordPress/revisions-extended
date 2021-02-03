@@ -7,7 +7,7 @@ import { format } from '@wordpress/date';
 export const pluginNamespace = 'revisions-extended';
 export const pluginName = __( 'Revisions Extended', 'revisions-extended' );
 export const pluginCustomPostType = 'revision';
-import { POST_STATUS_SCHEDULED, POST_STATUS_PENDING } from './hooks';
+import { POST_STATUS_SCHEDULED, POST_STATUS_PENDING } from './settings';
 
 export const getRestApiUrl = ( postType, parentId ) => {
 	return `revisions-extended/v1/${ postType }s/${ parentId }/revisions`;
