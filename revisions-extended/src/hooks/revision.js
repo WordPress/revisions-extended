@@ -45,7 +45,10 @@ const getPostRevisions = async ( data, status ) => {
 
 	return await executeFetch( async () => {
 		return await apiFetch( {
-			path: `${ getRestApiUrl( postType, postId ) }?status=${ status }`,
+			path: `${ getRestApiUrl(
+				postType,
+				postId
+			) }?status=${ status }&_embed`,
 			method: 'GET',
 		} );
 	} );
