@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { format } from '@wordpress/date';
 
 export const pluginNamespace = 'revisions-extended';
@@ -39,7 +39,7 @@ export const getShortenedFormattedDate = ( date ) => {
 export const getStatusDisplay = ( postStatus, date ) => {
 	if ( POST_STATUS_SCHEDULED === postStatus ) {
 		return sprintf(
-			// translator: %s: formatted date
+			// translators: %s: formatted date
 			__( 'Scheduled for %s' ),
 			getShortenedFormattedDate( date )
 		);
