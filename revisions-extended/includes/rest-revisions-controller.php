@@ -6,7 +6,6 @@ use WP_Error, WP_Post;
 use WP_REST_Controller, WP_REST_Posts_Controller, WP_REST_Revisions_Controller, WP_REST_Request, WP_REST_Response, WP_REST_Server;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
 use function RevisionsExtended\Revision\put_post_revision;
-use function RevisionsExtended\Revision\update_post_from_revision;
 
 defined( 'WPINC' ) || die();
 
@@ -87,29 +86,6 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 					'args'                => $this->get_valid_parent_endpoint_args( WP_REST_Server::CREATABLE ),
 				),
 				'schema' => array( $this, 'get_public_item_schema' ),
-			)
-		);
-
-		register_rest_route(
-			$this->namespace,
-			'/' . $this->parent_base . '/(?P<parent>[\d]+)/' . $this->rest_base . '/(?P<id>[\d]+)/publish',
-			array(
-				'args'   => array(
-					'parent' => array(
-						'description' => __( 'The ID for the parent of the object.', 'revisions-extended' ),
-						'type'        => 'integer',
-					),
-					'id'     => array(
-						'description' => __( 'Unique identifier for the object.', 'revisions-extended' ),
-						'type'        => 'integer',
-					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'publish_item' ),
-					'permission_callback' => array( $this, 'publish_item_permissions_check' ),
-				),
-				'schema' => array( $this->parent_controller, 'get_public_item_schema' ),
 			)
 		);
 	}
@@ -225,66 +201,6 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		add_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ), 10, 3 );
 		$response = $this->prepare_item_for_response( $revision, $request );
 		remove_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ) );
-
-		return rest_ensure_response( $response );
-	}
-
-	/**
-	 * Checks if a given request has access to update a post from a revision.
-	 *
-	 * @param WP_REST_Request $request
-	 *
-	 * @return true|WP_Error
-	 */
-	public function publish_item_permissions_check( $request ) {
-		$parent = $this->get_parent( $request->get_param( 'parent' ) );
-		if ( is_wp_error( $parent ) ) {
-			return $parent;
-		}
-
-		if ( ! current_user_can( 'edit_post', $parent->ID ) ) {
-			return new WP_Error(
-				'rest_cannot_edit',
-				__( 'Sorry, you are not allowed to edit this post.', 'revisions-extended' ),
-				array( 'status' => rest_authorization_required_code() )
-			);
-		}
-
-		$revision = $this->get_revision( $request['id'] );
-		if ( is_wp_error( $revision ) ) {
-			return $revision;
-		}
-
-		return true;
-	}
-
-	/**
-	 * "Publish" a revision as the new version of a post.
-	 *
-	 * @param WP_REST_Request $request
-	 *
-	 * @return WP_REST_Response|WP_Error
-	 */
-	public function publish_item( $request ) {
-		$parent = $this->get_parent( $request->get_param( 'parent' ) );
-		if ( is_wp_error( $parent ) ) {
-			return $parent;
-		}
-
-		$revision = $this->get_revision( $request['id'] );
-		if ( is_wp_error( $revision ) ) {
-			return $revision;
-		}
-
-		$result = update_post_from_revision( $revision->ID );
-		if ( is_wp_error( $result ) ) {
-			return $result;
-		}
-
-		$post = $this->get_parent( $result );
-		$request->set_param( 'context', 'edit' );
-
-		$response = $this->parent_controller->prepare_item_for_response( $post, $request );
 
 		return rest_ensure_response( $response );
 	}
