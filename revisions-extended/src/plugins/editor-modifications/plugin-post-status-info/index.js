@@ -16,7 +16,7 @@ const PluginPostStatusInfo = () => {
 	return (
 		<PostStatusInfo>
 			<CheckboxControl
-				label={ __( 'Create future update' ) }
+				label={ __( 'Save as future update' ) }
 				checked={ shouldIntercept }
 				onChange={ setShouldIntercept }
 			/>
