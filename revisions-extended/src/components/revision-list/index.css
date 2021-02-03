@@ -1,0 +1,22 @@
+.revisions-extended-revision-list {
+	list-style: disc;
+	padding-left: 16px;
+}
+
+.revisions-extended-revision-list li a {
+	padding: 4px 0;
+	display: block;
+}
+
+.revisions-extended-revision-list li:first-child a {
+	padding-top: 0;
+}
+
+.revisions-extended-revision-list li:last-child a {
+	padding-bottom: 0;
+} 
+
+.revisions-extended-revision-list__status  {
+	font-size: 12px;
+	color: #666;
+}

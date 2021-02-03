@@ -1,5 +1,5 @@
 /**
  * Internal dependencies
  */
-import './plugins';
+import './plugins/editor-modifications';
 import './styles.css';
