@@ -31,11 +31,25 @@ const UpdateButtonModifier = () => {
 		setSavePostFunction,
 		getStashProp,
 	} = useInterface();
-	const { savedPost } = usePost();
+	const { savedPost, didPostSaveRequestSucceed } = usePost();
 	const { publish } = useRevision();
 
 	const _savePost = async ( gutenbergProps ) => {
 		if ( gutenbergProps && gutenbergProps.isAutosave ) {
+			return;
+		}
+
+		// Save the post first
+		// Grab the default Gutenberg function
+		const savePost = getStashProp( PROP_FN_SAVE );
+
+		await savePost();
+
+		if ( ! didPostSaveRequestSucceed() ) {
+			dispatch( 'core/notices' ).createNotice(
+				'error',
+				__( 'Error saving update before publish.' )
+			);
 			return;
 		}
 
