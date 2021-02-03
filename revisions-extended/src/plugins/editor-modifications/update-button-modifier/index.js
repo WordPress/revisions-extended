@@ -127,7 +127,7 @@ const UpdateButtonModifier = () => {
 					{
 						text: sprintf(
 							// translators: %s: post type.
-							__( 'Reload original %s.' ),
+							__( 'Edit original %s.' ),
 							savedPost.type
 						),
 						href: getEditUrl( savedPost.id ),
