@@ -50,13 +50,13 @@ const clearLocalChanges = ( id ) => {
 
 const StateContext = createContext();
 
-export function InterfaceProvider( { children, btnTextOverride } ) {
+export function InterfaceProvider( { children, btnTextOnLoad = false } ) {
 	const [ shouldIntercept, setShouldIntercept ] = useState( false );
 	const { isSavingPost, savedPost } = usePost();
 
 	useEffect( () => {
-		if ( btnTextOverride ) {
-			setBtnText( btnTextOverride );
+		if ( btnTextOnLoad ) {
+			setBtnText( btnTextOnLoad );
 		}
 	}, [] );
 
@@ -72,7 +72,7 @@ export function InterfaceProvider( { children, btnTextOverride } ) {
 		if ( btnRef && ! getStashProp( PROP_BTN_TEXT ) && ! isSavingPost ) {
 			stashGutenbergData( {
 				// The revision page sets the button on load since the Gutenberg one doesn't make sense.
-				btnText: btnTextOverride ? btnTextOverride : btnRef.innerText,
+				btnText: btnTextOnLoad ? btnTextOnLoad : btnRef.innerText,
 			} );
 		}
 	}, [ savedPost ] );

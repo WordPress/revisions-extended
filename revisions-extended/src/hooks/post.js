@@ -1,21 +1,23 @@
 /**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
+import { dispatch, useSelect } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
 import { pluginCustomPostType } from '../utils';
 
-/**
- * Overrides Gutenberg `savePost` function.
- */
 import { POST_STATUS_PENDING, POST_STATUS_SCHEDULED } from './revision';
+
+/**
+ * Module constants
+ */
+const EDITOR_STORE = 'core/editor';
 
 export const usePost = () => {
 	return useSelect( ( select ) => {
-		const store = select( 'core/editor' );
+		const store = select( EDITOR_STORE );
 
 		const postType = store.getEditedPostAttribute( 'type' );
 		const postStatus = store.getEditedPostAttribute( 'status' );
@@ -33,6 +35,8 @@ export const usePost = () => {
 			savedPost: store.getCurrentPost(),
 			content: store.getEditedPostContent(),
 			getEditedPostAttribute: store.getEditedPostAttribute,
+			getCurrentPostAttribute: store.getCurrentPostAttribute,
+			editPost: dispatch( EDITOR_STORE ).editPost,
 		};
 	}, [] );
 };

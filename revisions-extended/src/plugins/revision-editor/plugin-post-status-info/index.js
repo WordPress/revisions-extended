@@ -8,17 +8,31 @@ import { CheckboxControl } from '@wordpress/components';
 /**
  * Internal dependencies
  */
-import { useInterface } from '../../../hooks';
+import { useInterface, usePost } from '../../../hooks';
 
 const PluginPostStatusInfo = () => {
 	const { shouldIntercept, setShouldIntercept } = useInterface();
+	const { getCurrentPostAttribute, editPost } = usePost();
 
 	return (
 		<PostStatusInfo>
 			<CheckboxControl
 				label={ __( 'Publish on Update', 'revisions-extended' ) }
 				checked={ shouldIntercept }
-				onChange={ setShouldIntercept }
+				onChange={ ( checked ) => {
+					let originalSlug = getCurrentPostAttribute( 'slug' );
+
+					// Make a very superficial change to turn on the publish button.
+					if ( checked ) {
+						originalSlug = `${ originalSlug } `;
+					}
+
+					editPost( {
+						slug: originalSlug,
+					} );
+
+					setShouldIntercept( checked );
+				} }
 			/>
 		</PostStatusInfo>
 	);
