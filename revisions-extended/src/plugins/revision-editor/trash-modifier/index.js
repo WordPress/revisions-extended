@@ -33,7 +33,7 @@ const TrashModifier = () => {
 		if ( error ) {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
-				__( 'Error deleting revision' ),
+				__( 'Error deleting update.' ),
 				{
 					id: 'revisions-extended-delete-notice',
 				}

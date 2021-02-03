@@ -30,7 +30,7 @@ const RevisionIndicator = () => {
 			: __( 'pending', 'revisions-extended' );
 
 	const notes = [
-		`You are currently editing a <b>${ getRevisionType } revision</b>.`,
+		`You are currently editing a <b>${ getRevisionType } update</b>.`,
 		`[ <a href="${ getEditUrl( savedPost.parent ) }">Edit post</a>`,
 		` | <a href="/wp-admin/revision.php?revision=${ savedPost.id }&gutenberg=true" />See changes</a> ]`,
 	];

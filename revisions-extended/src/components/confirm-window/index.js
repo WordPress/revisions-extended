@@ -31,7 +31,7 @@ const ConfirmWindow = ( { title, notice, links } ) => {
 				<Text variant="title.small" as="h3">
 					Next Steps
 				</Text>
-				<Text as="h4">Select of on the following actions:</Text>
+				<Text as="h4">Select one of the following actions:</Text>
 				<ul>
 					{ links.map( ( i ) => (
 						<li key={ i.href }>

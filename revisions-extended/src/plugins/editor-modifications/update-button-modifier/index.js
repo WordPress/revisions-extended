@@ -81,7 +81,7 @@ const UpdateButtonModifier = () => {
 		let savePost = getStashProp( PROP_FN_SAVE );
 
 		if ( shouldIntercept ) {
-			btnText = __( 'Create Revision', 'revisions-extended' );
+			btnText = __( 'Create Update', 'revisions-extended' );
 			savePost = _savePost;
 		}
 
@@ -103,7 +103,7 @@ const UpdateButtonModifier = () => {
 						{ newRevision.status === POST_STATUS_SCHEDULED ? (
 							<Fragment>
 								<span>
-									Successfully saved your revision for publish
+									Successfully saved your update for publish
 									on:
 								</span>
 								<b style={ { display: 'block' } }>
@@ -111,7 +111,7 @@ const UpdateButtonModifier = () => {
 								</b>
 							</Fragment>
 						) : (
-							<span>Successfully saved your revision.</span>
+							<span>Successfully saved your update.</span>
 						) }
 					</Notice>
 				}
