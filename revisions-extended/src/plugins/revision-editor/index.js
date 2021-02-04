@@ -23,7 +23,7 @@ const PluginWrapper = () => {
 		window.location.href = getEditUrl( savedPost.parent );
 	}
 	return (
-		<InterfaceProvider btnTextOnLoad={ __( 'Update' ) }>
+		<InterfaceProvider btnText={ __( 'Update' ) }>
 			<UpdateButtonModifier />
 			<RevisionIndicator />
 			<TrashModifier />

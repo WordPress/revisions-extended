@@ -29,12 +29,13 @@ export const usePost = () => {
 			isPublished: store.isCurrentPostPublished(),
 			isSavingPost: store.isSavingPost(),
 
-			changingToScheduled: store.isEditedPostBeingScheduled(),
+			changingToScheduled: store.isEditedPostBeingScheduled,
 			savedPost: store.getCurrentPost(),
-			content: store.getEditedPostContent(),
 			getEditedPostAttribute: store.getEditedPostAttribute,
 			getCurrentPostAttribute: store.getCurrentPostAttribute,
 			didPostSaveRequestSucceed: store.didPostSaveRequestSucceed,
+
+			savePost: dispatch( GUTENBERG_EDITOR_STORE ).savePost,
 			editPost: dispatch( GUTENBERG_EDITOR_STORE ).editPost,
 		};
 	}, [] );

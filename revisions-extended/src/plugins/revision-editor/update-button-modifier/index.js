@@ -17,32 +17,14 @@ import { ConfirmWindow } from '../../../components';
 import { usePost, useRevision, useInterface } from '../../../hooks';
 import { getEditUrl, getAllRevisionUrl } from '../../../utils';
 
-/**
- * Module constants
- */
-const PROP_BTN_TEXT = 'btnText';
-const PROP_FN_SAVE = 'savePost';
-
 const UpdateButtonModifier = () => {
 	const [ showSuccess, setShowSuccess ] = useState( false );
-	const {
-		shouldIntercept,
-		setBtnText,
-		setSavePostFunction,
-		getStashProp,
-	} = useInterface();
-	const { savedPost, didPostSaveRequestSucceed } = usePost();
+	const { setBtnDefaults } = useInterface();
+	const { savedPost, didPostSaveRequestSucceed, savePost } = usePost();
 	const { publish } = useRevision();
 
-	const _savePost = async ( gutenbergProps ) => {
-		if ( gutenbergProps && gutenbergProps.isAutosave ) {
-			return;
-		}
-
+	const _savePost = async () => {
 		// Save the post first
-		// Grab the default Gutenberg function
-		const savePost = getStashProp( PROP_FN_SAVE );
-
 		await savePost();
 
 		if ( ! didPostSaveRequestSucceed() ) {
@@ -68,22 +50,12 @@ const UpdateButtonModifier = () => {
 	};
 
 	useEffect( () => {
-		let btnText = getStashProp( PROP_BTN_TEXT );
-		let savePost = getStashProp( PROP_FN_SAVE );
-
-		if ( shouldIntercept ) {
-			btnText = __( 'Publish' );
-			savePost = _savePost;
-		}
-
-		if ( btnText ) {
-			setBtnText( btnText );
-		}
-
-		if ( savePost ) {
-			setSavePostFunction( savePost );
-		}
-	}, [ shouldIntercept ] );
+		setBtnDefaults( {
+			callback: async () => {
+				return await _savePost();
+			},
+		} );
+	}, [] );
 
 	if ( showSuccess ) {
 		return (

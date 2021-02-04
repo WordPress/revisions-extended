@@ -49,3 +49,8 @@ export const getStatusDisplay = ( postStatus, date ) => {
 	}
 	return '';
 };
+
+export const clearLocalChanges = ( id ) => {
+	// There's gotta be a better approach
+	window.sessionStorage.removeItem( `wp-autosave-block-editor-post-${ id }` );
+};

@@ -23,33 +23,17 @@ import {
 	getAllRevisionUrl,
 } from '../../../utils';
 
-/**
- * Module constants
- */
-const PROP_BTN_TEXT = 'btnText';
-const PROP_FN_SAVE = 'savePost';
-
 const UpdateButtonModifier = () => {
 	const [ newRevision, setNewRevision ] = useState();
 	const { create } = useRevision();
-	const {
-		shouldIntercept,
-		setBtnText,
-		setSavePostFunction,
-		getStashProp,
-	} = useInterface();
+	const { setBtnDefaults } = useInterface();
 	const {
 		savedPost,
 		changingToScheduled,
-		isPublished,
 		getEditedPostAttribute,
 	} = usePost();
 
-	const _savePost = async ( gutenbergProps ) => {
-		if ( gutenbergProps && gutenbergProps.isAutosave ) {
-			return;
-		}
-
+	const _savePost = async () => {
 		const { data, error } = await create( {
 			postType: savedPost.type,
 			postId: savedPost.id,
@@ -57,7 +41,7 @@ const UpdateButtonModifier = () => {
 			title: getEditedPostAttribute( 'title' ),
 			excerpt: getEditedPostAttribute( 'excerpt' ),
 			content: getEditedPostAttribute( 'content' ),
-			changingToScheduled,
+			changingToScheduled: changingToScheduled(),
 		} );
 
 		if ( error ) {
@@ -73,22 +57,12 @@ const UpdateButtonModifier = () => {
 	};
 
 	useEffect( () => {
-		let btnText = getStashProp( PROP_BTN_TEXT );
-		let savePost = getStashProp( PROP_FN_SAVE );
-
-		if ( shouldIntercept ) {
-			btnText = __( 'Create Update' );
-			savePost = _savePost;
-		}
-
-		if ( btnText ) {
-			setBtnText( btnText );
-		}
-
-		if ( savePost ) {
-			setSavePostFunction( savePost );
-		}
-	}, [ isPublished, changingToScheduled, shouldIntercept ] );
+		setBtnDefaults( {
+			callback: async () => {
+				return await _savePost();
+			},
+		} );
+	}, [] );
 
 	if ( newRevision ) {
 		return (
