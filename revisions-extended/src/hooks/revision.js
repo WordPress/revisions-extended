@@ -99,20 +99,14 @@ const trashRevision = async ( revisionId ) => {
 /**
  * Publishes a revision, changing it into a past
  *
- * @param {Object} data - Data sent to api
- * @param {string} data.postType - The type of the id.
- * @param {string} data.postId - The id of the post.
- * @param {string} data.revisionId - The revision id.
+ * @param {string} revisionId - The revision id.
  *
  * @return {Object} Api response
  */
-const publishRevision = async ( { postType, postId, revisionId } ) => {
+const publishRevision = async ( revisionId ) => {
 	return await executeFetch( async () => {
 		return await apiFetch( {
-			path: `${ getRestApiUrl(
-				postType,
-				postId
-			) }/${ revisionId }/publish`,
+			path: `${ getRestApiUrlV2( revisionId ) }/publish`,
 			method: 'POST',
 		} );
 	} );
