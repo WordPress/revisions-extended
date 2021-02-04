@@ -1,6 +1,7 @@
 /**
- * External dependencies
+ * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { registerPlugin } from '@wordpress/plugins';
 
 /**
@@ -21,7 +22,7 @@ const MainPlugin = () => {
 	}
 
 	return (
-		<InterfaceProvider>
+		<InterfaceProvider btnText={ __( 'Create update' ) }>
 			<UpdateButtonModifier />
 			<PluginPostStatusInfo />
 			<DocumentSettingsPanel />

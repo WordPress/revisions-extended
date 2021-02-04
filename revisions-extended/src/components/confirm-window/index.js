@@ -7,12 +7,12 @@ import { Modal, __experimentalText as Text } from '@wordpress/components';
 /**
  * Internal dependencies
  */
-import { useInterface, usePost } from '../../hooks';
+import { usePost } from '../../hooks';
+import { clearLocalChanges } from '../../utils';
 import './index.css';
 
 const ConfirmWindow = ( { title, notice, links } ) => {
 	const { savedPost } = usePost();
-	const { clearLocalChanges } = useInterface();
 
 	const onLeave = ( e ) => {
 		e.preventDefault();
