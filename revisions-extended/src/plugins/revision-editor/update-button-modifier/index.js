@@ -53,11 +53,7 @@ const UpdateButtonModifier = () => {
 			return;
 		}
 
-		const { data, error } = await publish( {
-			postId: savedPost.parent,
-			postType: 'post',
-			revisionId: savedPost.id,
-		} );
+		const { data, error } = await publish( savedPost.id );
 
 		if ( data ) {
 			setShowSuccess( true );
