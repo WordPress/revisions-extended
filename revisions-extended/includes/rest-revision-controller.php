@@ -247,7 +247,15 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 			return $result;
 		}
 
-		$post = $this->get_post( $result );
+		$post = get_post( $result );
+		if ( ! $post ) {
+			$post = new WP_Error(
+				'rest_post_invalid_id',
+				__( 'Invalid post ID.', 'revisions-extended' ),
+				array( 'status' => 404 )
+			);
+		}
+
 		$request->set_param( 'context', 'edit' );
 
 		$response = $this->prepare_item_for_response( $post, $request );
