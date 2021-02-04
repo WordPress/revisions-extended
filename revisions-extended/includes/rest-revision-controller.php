@@ -6,6 +6,7 @@ use WP_Error, WP_Post_Type;
 use WP_REST_Posts_Controller, WP_REST_Revisions_Controller, WP_REST_Request, WP_REST_Response, WP_REST_Server;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
 use function RevisionsExtended\Post_Status\validate_revision_status;
+use function RevisionsExtended\Revision\update_post_from_revision;
 
 defined( 'WPINC' ) || die();
 
@@ -58,6 +59,25 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 							'description' => __( 'Whether to bypass Trash and force deletion.' ),
 						),
 					),
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/publish',
+			array(
+				'args'   => array(
+					'id' => array(
+						'description' => __( 'Unique identifier for the object.', 'revisions-extended' ),
+						'type'        => 'integer',
+					),
+				),
+				array(
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'publish_item' ),
+					'permission_callback' => array( $this, 'publish_item_permissions_check' ),
 				),
 				'schema' => array( $this, 'get_public_item_schema' ),
 			)
@@ -196,6 +216,51 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 		$request['parent']    = $post->post_parent;
 
 		return $revisions_controller->delete_item( $request );
+	}
+
+	/**
+	 * Checks if a given request has access to update a post from a revision.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return true|WP_Error
+	 */
+	public function publish_item_permissions_check( $request ) {
+		return $this->update_item_permissions_check( $request );
+	}
+
+	/**
+	 * "Publish" a revision as the new version of a post.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function publish_item( $request ) {
+		$post = $this->get_post( $request['id'] );
+		if ( is_wp_error( $post ) ) {
+			return $post;
+		}
+
+		$result = update_post_from_revision( $post->ID );
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		$post = get_post( $result );
+		if ( ! $post ) {
+			$post = new WP_Error(
+				'rest_post_invalid_id',
+				__( 'Invalid post ID.', 'revisions-extended' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		$request->set_param( 'context', 'edit' );
+
+		$response = $this->prepare_item_for_response( $post, $request );
+
+		return rest_ensure_response( $response );
 	}
 
 	/**
