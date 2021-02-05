@@ -9,11 +9,9 @@
 	display: none !important;
 }
 
-/* Hide the post trash button, we use our own */
-.editor-post-trash,
-/* The row has a minimum height we don't want. */
+/* The trash button row has a minimum height we don't want. */
 /* It should be ok to assume its the last row. */
-/* If it's wrong, the min-height to auto shouldn't be very detrimental */
+/* If it's wrong, the min-height -> auto shouldn't be very detrimental */
 .components-panel__body .components-panel__row:last-child {
 	min-height: auto;
 }
