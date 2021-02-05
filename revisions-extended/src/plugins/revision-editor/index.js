@@ -10,9 +10,11 @@ import { registerPlugin } from '@wordpress/plugins';
 import DocumentSettingsPanel from './document-settings-panel';
 import UpdateButtonModifier from './update-button-modifier';
 import RevisionIndicator from './revision-indicator';
-import TrashModifier from './trash-modifier';
 import WPButtonModifier from './wp-button-modifier';
-import PluginPostStatusInfo from './plugin-post-status-info';
+import {
+	PluginPostStatusCheckbox,
+	PluginPostStatusTrashButton,
+} from './plugin-post-status-info';
 import { pluginNamespace, getEditUrl } from '../../utils';
 
 import { InterfaceProvider, usePost, ParentPostProvider } from '../../hooks';
@@ -36,9 +38,9 @@ const PluginWrapper = () => {
 				<DocumentSettingsPanel />
 				<UpdateButtonModifier />
 				<RevisionIndicator />
-				<TrashModifier />
-				<PluginPostStatusInfo />
 				<WPButtonModifier />
+				<PluginPostStatusCheckbox />
+				<PluginPostStatusTrashButton />
 			</ParentPostProvider>
 		</InterfaceProvider>
 	);

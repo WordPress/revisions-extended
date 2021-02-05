@@ -3,6 +3,17 @@
 /* Hide Post Visibility */
 .edit-post-post-visibility,
 /* Hide the ability to switch to draft */
-.editor-post-switch-to-draft {
+.editor-post-switch-to-draft,
+/* Hide the post trash button we use our own */
+.editor-post-trash {
 	display: none !important;
+}
+
+/* Hide the post trash button, we use our own */
+.editor-post-trash,
+/* The row has a minimum height we don't want. */
+/* It should be ok to assume its the last row. */
+/* If it's wrong, the min-height to auto shouldn't be very detrimental */
+.components-panel__body .components-panel__row:last-child {
+	min-height: auto;
 }
