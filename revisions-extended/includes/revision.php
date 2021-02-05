@@ -12,6 +12,7 @@ defined( 'WPINC' ) || die();
  * Actions and filters.
  */
 add_action( 'registered_post_type', __NAMESPACE__ . '\modify_revision_post_type', 10, 2 );
+add_action( 'registered_post_type', __NAMESPACE__ . '\redirect_on_revision_page' );
 add_filter( 'pre_wp_unique_post_slug', __NAMESPACE__ . '\filter_pre_wp_unique_post_slug', 10, 5 );
 add_filter( 'wp_insert_post_data', __NAMESPACE__ . '\filter_wp_insert_post_data' );
 
@@ -205,6 +206,81 @@ function update_post_from_revision( $revision_id ) {
 	}
 
 	return $result;
+}
+
+
+/**
+ * Returns the post id from a url. IE: wp-admin/post.php?post=151&action=edit
+ *
+ * @return string|null
+ */
+function get_post_id_from_referrer() {
+	if ( ! isset( $_SERVER['HTTP_REFERER'] ) ) {
+		return null;
+	}
+
+	// Split the url to get query params
+	$split_url = explode( '?', $_SERVER['HTTP_REFERER'] );
+
+	// We don't have query string params
+	if ( ! isset( $split_url[1] ) ) {
+		return null;
+	}
+
+	// parse query params
+	parse_str( $split_url[1], $parsed );
+
+	// we didn't find the post
+	if ( ! isset( $parsed['post'] ) ) {
+		return null;
+	}
+
+	return $parsed['post'];
+}
+
+/**
+ * Returns the revision parent's post type.
+ *
+ * @param int $revision_id
+ *
+ * @return string|null
+ */
+function get_parent_post_type( $revision_id ) {
+	if ( ! isset( $revision_id ) ) {
+		return null;
+	}
+
+	// get revision
+	$revision = get_post( $revision_id );
+
+	if ( ! isset( $revision ) ) {
+		return null;
+	}
+
+	// get parent
+	$parent = get_post( $revision->post_parent );
+
+	return isset( $parent->post_type ) ? $parent->post_type : null;
+}
+
+/**
+ * Redirects user to respective revision list
+ */
+function redirect_on_revision_page() {
+	if ( isset( $_GET['post_type'] ) && 'revision' === $_GET['post_type'] ) {
+		// If anything goes wrong, we'll redirect to the posts update
+		$redirect_url = '/wp-admin/edit.php?page=post-updates';
+
+		$revision_id      = get_post_id_from_referrer();
+		$parent_post_type = get_parent_post_type_from_referrer( $revision_id );
+
+		if ( ! is_null( $parent_post_type ) && 'page' === $parent_post_type ) {
+			$redirect_url = '/wp-admin/edit.php?post_type=page&page=page-updates';
+		}
+
+		wp_safe_redirect( $redirect_url );
+		exit;
+	}
 }
 
 /**
