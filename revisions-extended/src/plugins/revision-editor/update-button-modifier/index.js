@@ -81,7 +81,7 @@ const UpdateButtonModifier = () => {
 							__( 'View all %s updates.' ),
 							savedPost.type
 						),
-						href: getAllRevisionUrl( savedPost.type ),
+						href: getAllRevisionUrl(),
 					},
 				] }
 			/>
