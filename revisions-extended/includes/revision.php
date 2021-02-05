@@ -272,7 +272,7 @@ function redirect_on_revision_page() {
 		$redirect_url = '/wp-admin/edit.php?page=post-updates';
 
 		$revision_id      = get_post_id_from_referrer();
-		$parent_post_type = get_parent_post_type_from_referrer( $revision_id );
+		$parent_post_type = get_parent_post_type( $revision_id );
 
 		if ( ! is_null( $parent_post_type ) && 'page' === $parent_post_type ) {
 			$redirect_url = '/wp-admin/edit.php?post_type=page&page=page-updates';
