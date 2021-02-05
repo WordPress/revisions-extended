@@ -8,31 +8,17 @@ import { CheckboxControl } from '@wordpress/components';
 /**
  * Internal dependencies
  */
-import { useInterface, usePost } from '../../../hooks';
+import { useInterface } from '../../../hooks';
 
 const PluginPostStatusCheckbox = () => {
 	const { shouldIntercept, setShouldIntercept } = useInterface();
-	const { getCurrentPostAttribute, editPost } = usePost();
 
 	return (
 		<PostStatusInfo>
 			<CheckboxControl
 				label={ __( 'Publish immediately' ) }
 				checked={ shouldIntercept }
-				onChange={ ( checked ) => {
-					let originalSlug = getCurrentPostAttribute( 'slug' );
-
-					// Make a very superficial change to turn on the publish button.
-					if ( checked ) {
-						originalSlug = `${ originalSlug } `;
-					}
-
-					editPost( {
-						slug: originalSlug,
-					} );
-
-					setShouldIntercept( checked );
-				} }
+				onChange={ setShouldIntercept }
 			/>
 		</PostStatusInfo>
 	);

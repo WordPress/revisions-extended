@@ -33,7 +33,7 @@ const PluginWrapper = () => {
 	}
 
 	return (
-		<InterfaceProvider btnText={ __( 'Update' ) }>
+		<InterfaceProvider btnText={ __( 'Publish' ) }>
 			<ParentPostProvider links={ savedPost._links }>
 				<DocumentSettingsPanel />
 				<UpdateButtonModifier />
