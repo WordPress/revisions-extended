@@ -48,7 +48,7 @@ const UpdateButtonModifier = () => {
 		if ( ! isFutureRevision ) {
 			noticeDispatch.createWarningNotice(
 				__(
-					'We currently only support updates with publish dates in the future. Please select a date in the future.'
+					'We currently only support updates with publish future dates. Please select a date in the future.'
 				),
 				{
 					id: FUTURE_SUPPORT_NOTICE_ID,
