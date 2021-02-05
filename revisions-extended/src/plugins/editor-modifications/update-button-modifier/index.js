@@ -23,6 +23,12 @@ import {
 	getAllRevisionUrl,
 } from '../../../utils';
 
+/**
+ * Module Constants
+ */
+
+const FUTURE_SUPPORT_NOTICE_ID = 'revisions-extended-future-support-notice';
+
 const UpdateButtonModifier = () => {
 	const [ newRevision, setNewRevision ] = useState();
 	const { create } = useRevision();
@@ -34,6 +40,26 @@ const UpdateButtonModifier = () => {
 	} = usePost();
 
 	const _savePost = async () => {
+		const isFutureRevision = changingToScheduled();
+		const noticeDispatch = dispatch( 'core/notices' );
+
+		// We currently don't properly support 'pending' revisions,
+		// Alert user they should select a date in the future
+		if ( ! isFutureRevision ) {
+			noticeDispatch.createWarningNotice(
+				__(
+					'We currently only support updates with publish dates in the future. Please select a date in the future.'
+				),
+				{
+					id: FUTURE_SUPPORT_NOTICE_ID,
+				}
+			);
+
+			return;
+		}
+		// This will currently fail quietly if it doesn't exist, since it's *hopefully* temporary, low risk.
+		noticeDispatch.removeNotice( FUTURE_SUPPORT_NOTICE_ID );
+
 		const { data, error } = await create( {
 			postType: savedPost.type,
 			postId: savedPost.id,
@@ -41,7 +67,7 @@ const UpdateButtonModifier = () => {
 			title: getEditedPostAttribute( 'title' ),
 			excerpt: getEditedPostAttribute( 'excerpt' ),
 			content: getEditedPostAttribute( 'content' ),
-			changingToScheduled: changingToScheduled(),
+			changingToScheduled: isFutureRevision,
 		} );
 
 		if ( error ) {
