@@ -2,7 +2,7 @@
 
 namespace RevisionsExtended;
 
-use WP_Error, WP_Post_Type;
+use WP_Error, WP_Post, WP_Post_Type;
 use WP_REST_Posts_Controller, WP_REST_Revisions_Controller, WP_REST_Request, WP_REST_Response, WP_REST_Server;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
 use function RevisionsExtended\Post_Status\validate_revision_status;
@@ -281,6 +281,35 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 		}
 
 		return $post_status;
+	}
+
+	/**
+	 * Prepares links for the request.
+	 *
+	 * @param WP_Post $post Post object.
+	 *
+	 * @return array Links for the given post.
+	 */
+	protected function prepare_links( $post ) {
+		$links = parent::prepare_links( $post );
+
+		if ( ! empty( $post->post_parent ) ) {
+			$parent    = get_post( $post->post_parent );
+			$post_type = get_post_type( $parent );
+
+			if ( $parent && $post_type ) {
+				$links['parent'] = array(
+					'href'       => rest_url( sprintf(
+						'wp/v2/%s/%d',
+						get_post_type_object( $post_type )->rest_base,
+						$parent->ID
+					) ),
+					'embeddable' => true,
+				);
+			}
+		}
+
+		return $links;
 	}
 
 	/**
