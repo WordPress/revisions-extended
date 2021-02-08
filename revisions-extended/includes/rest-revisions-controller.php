@@ -280,6 +280,25 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			$response->data['status'] = $post->post_status;
 		}
 
+		if ( in_array( 'parent', $fields, true ) && $response->data['parent'] ) {
+			$parent    = get_post( $response->data['parent'] );
+			$post_type = get_post_type( $parent );
+
+			if ( $parent && $post_type ) {
+				$response->add_link(
+					'parent',
+					rest_url( sprintf(
+						'wp/v2/%s/%d',
+						get_post_type_object( $post_type )->rest_base,
+						$parent->ID
+					) ),
+					array(
+						'embeddable' => true,
+					)
+				);
+			}
+		}
+
 		if ( in_array( 'author', $fields, true ) && $response->data['author'] ) {
 			$response->add_link(
 				'author',
