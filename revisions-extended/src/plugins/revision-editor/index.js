@@ -14,7 +14,7 @@ import TrashModifier from './trash-modifier';
 import PluginPostStatusInfo from './plugin-post-status-info';
 import { pluginNamespace, getEditUrl } from '../../utils';
 
-import { InterfaceProvider, usePost } from '../../hooks';
+import { InterfaceProvider, usePost, ParentPostProvider } from '../../hooks';
 
 /**
  * Module Constants
@@ -31,11 +31,13 @@ const PluginWrapper = () => {
 
 	return (
 		<InterfaceProvider btnText={ __( 'Update' ) }>
-			<DocumentSettingsPanel />
-			<UpdateButtonModifier />
-			<RevisionIndicator />
-			<TrashModifier />
-			<PluginPostStatusInfo />
+			<ParentPostProvider>
+				<DocumentSettingsPanel />
+				<UpdateButtonModifier />
+				<RevisionIndicator />
+				<TrashModifier />
+				<PluginPostStatusInfo />
+			</ParentPostProvider>
 		</InterfaceProvider>
 	);
 };
