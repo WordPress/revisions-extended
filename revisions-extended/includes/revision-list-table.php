@@ -241,7 +241,7 @@ class Revision_List_Table extends WP_List_Table {
 				?>
 				</span>
 			</div>
-		<?php
+			<?php
 		endif;
 	}
 

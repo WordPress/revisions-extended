@@ -18,7 +18,7 @@ add_filter( 'wp_insert_post_data', __NAMESPACE__ . '\filter_wp_insert_post_data'
 /**
  * Change the properties of the built-in revision post type so it's editable in the block editor.
  *
- * @param string $post_type
+ * @param string       $post_type
  * @param WP_Post_Type $post_type_object
  *
  * @return void
@@ -211,10 +211,10 @@ function update_post_from_revision( $revision_id ) {
  * Ensure pending/scheduled revision posts use the same slug naming convention as normal revisions.
  *
  * @param string|null $override
- * @param string $slug
- * @param int $post_ID
- * @param string $post_status
- * @param string $post_type
+ * @param string      $slug
+ * @param int         $post_ID
+ * @param string      $post_status
+ * @param string      $post_type
  *
  * @return string|null
  */

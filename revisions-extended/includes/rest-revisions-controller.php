@@ -247,7 +247,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 	/**
 	 * Modify the query args for retrieving revision posts.
 	 *
-	 * @param array $args
+	 * @param array           $args
 	 * @param WP_REST_Request $request
 	 *
 	 * @return array
@@ -268,8 +268,8 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 	 * Modify the revision data being prepared for a REST response.
 	 *
 	 * @param WP_REST_Response $response
-	 * @param WP_Post $post
-	 * @param WP_REST_Request $request
+	 * @param WP_Post          $post
+	 * @param WP_REST_Request  $request
 	 *
 	 * @return WP_REST_Response
 	 */
@@ -283,10 +283,12 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		if ( in_array( 'author', $fields, true ) && $response->data['author'] ) {
 			$response->add_link(
 				'author',
-				rest_url( sprintf(
-					'wp/v2/users/%d',
-					$post->post_author
-				) ),
+				rest_url(
+					sprintf(
+						'wp/v2/users/%d',
+						$post->post_author
+					)
+				),
 				array(
 					'embeddable' => true,
 				)

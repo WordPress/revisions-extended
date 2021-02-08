@@ -14,10 +14,10 @@ add_filter( 'map_meta_cap', __NAMESPACE__ . '\map_meta_caps', 10, 4 );
 /**
  * Modify capabilities.
  *
- * @param array $caps
+ * @param array  $caps
  * @param string $cap
- * @param int $user_id
- * @param array $args
+ * @param int    $user_id
+ * @param array  $args
  *
  * @return array
  */
