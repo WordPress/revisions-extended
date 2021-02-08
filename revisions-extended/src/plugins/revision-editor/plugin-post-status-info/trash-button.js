@@ -41,10 +41,19 @@ const PluginPostStatusTrashButton = () => {
 		}
 	};
 
+	const onTrashClick = () => {
+		const message = __( 'Are you sure you want to delete this revision?' );
+
+		// eslint-disable-next-line no-alert
+		if ( window.confirm( message ) ) {
+			trashPost();
+		}
+	};
+
 	return (
 		<PostStatusInfo>
 			<Button
-				onClick={ trashPost }
+				onClick={ onTrashClick }
 				isTertiary
 				isDestructive
 				isBusy={ isBusy }
