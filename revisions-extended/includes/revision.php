@@ -14,6 +14,7 @@ defined( 'WPINC' ) || die();
 add_action( 'registered_post_type', __NAMESPACE__ . '\modify_revision_post_type', 10, 2 );
 add_filter( 'pre_wp_unique_post_slug', __NAMESPACE__ . '\filter_pre_wp_unique_post_slug', 10, 5 );
 add_filter( 'wp_insert_post_data', __NAMESPACE__ . '\filter_wp_insert_post_data' );
+add_action( 'the_content', __NAMESPACE__ . '\redirect_not_supported_revisions_in_editor' );
 
 /**
  * Change the properties of the built-in revision post type so it's editable in the block editor.
@@ -205,6 +206,22 @@ function update_post_from_revision( $revision_id ) {
 	}
 
 	return $result;
+}
+
+/**
+ * Redirects to the revision viewer once the revision is published.
+ */
+function redirect_not_supported_revisions_in_editor() {
+	// If we aren't editing, or don't have a post return
+	if( ! isset( $_GET[ 'action'] ) || 'edit' !== $_GET[ 'action'] || ! isset( $_GET[ 'post' ] ) ) return;
+
+	$post = get_post( $_GET[ 'post' ] );
+
+	// We only want to redirect revisions in the inherit status
+	if( 'revision' !== $post->post_type || 'inherit' !== $post->post_status ) return;
+
+	wp_safe_redirect( '/wp-admin/revision.php?revision=' . $_GET[ 'post'], 301 );
+	exit;
 }
 
 /**
