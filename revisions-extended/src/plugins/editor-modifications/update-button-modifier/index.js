@@ -23,6 +23,12 @@ import {
 	getAllRevisionUrl,
 } from '../../../utils';
 
+/**
+ * Module Constants
+ */
+
+const FUTURE_SUPPORT_NOTICE_ID = 'revisions-extended-future-support-notice';
+
 const UpdateButtonModifier = () => {
 	const [ newRevision, setNewRevision ] = useState();
 	const { create } = useRevision();
@@ -34,6 +40,27 @@ const UpdateButtonModifier = () => {
 	} = usePost();
 
 	const _savePost = async () => {
+		const isFutureRevision = changingToScheduled();
+		const noticeDispatch = dispatch( 'core/notices' );
+
+		// We currently don't properly support 'pending' revisions,
+		// Alert user they should select a date in the future
+		if ( ! isFutureRevision ) {
+			noticeDispatch.createWarningNotice(
+				__(
+					'We currently only support updates with future publish dates. Please select a date in the future.',
+					'revisions-extended'
+				),
+				{
+					id: FUTURE_SUPPORT_NOTICE_ID,
+				}
+			);
+
+			return;
+		}
+		// This will currently fail quietly if it doesn't exist, since it's *hopefully* temporary, low risk.
+		noticeDispatch.removeNotice( FUTURE_SUPPORT_NOTICE_ID );
+
 		const { data, error } = await create( {
 			postType: savedPost.type,
 			postId: savedPost.id,
@@ -41,13 +68,13 @@ const UpdateButtonModifier = () => {
 			title: getEditedPostAttribute( 'title' ),
 			excerpt: getEditedPostAttribute( 'excerpt' ),
 			content: getEditedPostAttribute( 'content' ),
-			changingToScheduled: changingToScheduled(),
+			changingToScheduled: isFutureRevision,
 		} );
 
 		if ( error ) {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
-				__( 'Error creating revision.' )
+				__( 'Error creating revision.', 'revisions-extended' )
 			);
 		}
 
@@ -75,7 +102,8 @@ const UpdateButtonModifier = () => {
 								<span>
 									{ ' ' }
 									{ __(
-										'Successfully saved your update for publish on:'
+										'Successfully saved your update for publish on:',
+										'revisions-extended'
 									) }
 								</span>
 								<b style={ { display: 'block' } }>
@@ -84,20 +112,26 @@ const UpdateButtonModifier = () => {
 							</Fragment>
 						) : (
 							<span>
-								{ __( 'Successfully saved your update.' ) }
+								{ __(
+									'Successfully saved your update.',
+									'revisions-extended'
+								) }
 							</span>
 						) }
 					</Notice>
 				}
 				links={ [
 					{
-						text: __( 'Continue editing your update.' ),
+						text: __(
+							'Continue editing your update.',
+							'revisions-extended'
+						),
 						href: getEditUrl( newRevision.id ),
 					},
 					{
 						text: sprintf(
 							// translators: %s: post type.
-							__( 'Edit original %s.' ),
+							__( 'Edit original %s.', 'revisions-extended' ),
 							savedPost.type
 						),
 						href: getEditUrl( savedPost.id ),
@@ -105,7 +139,7 @@ const UpdateButtonModifier = () => {
 					{
 						text: sprintf(
 							// translators: %s: post type.
-							__( 'View all %s updates.' ),
+							__( 'View all %s updates.', 'revisions-extended' ),
 							savedPost.type
 						),
 						href: getAllRevisionUrl( savedPost.type ),
