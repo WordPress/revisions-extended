@@ -2,7 +2,7 @@
 
 namespace RevisionsExtended\Revision;
 
-use WP_Error, WP_Post, WP_Post_Type;
+use WP_Error, WP_Post, WP_Post_Type, WP_Query;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
 use function RevisionsExtended\Post_Status\validate_revision_status;
 
@@ -82,6 +82,42 @@ function get_post_revisions( $post_id = 0, $args = null ) {
 	}
 
 	return $revisions;
+}
+
+/**
+ * Get revision posts for a particular parent post type.
+ *
+ * @param string $parent_post_type The parent post type to get revisions for.
+ * @param array  $args             Optional. Additional query args.
+ * @param bool   $wp_query         Optional. True to return a WP_Query object instead of an array of post objects.
+ *
+ * @return WP_Post[]|WP_Query
+ */
+function get_revisions_by_parent_type( $parent_post_type, $args = array(), $wp_query = false ) {
+	global $wpdb;
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	$valid_ids = $wpdb->get_col( $wpdb->prepare( "
+		SELECT revisions.ID
+		FROM {$wpdb->posts} revisions
+			JOIN {$wpdb->posts} parents ON parents.ID = revisions.post_parent AND parents.post_type = %s
+		WHERE revisions.post_type = 'revision' AND revisions.post_status = 'future'",
+		$parent_post_type
+	) );
+
+	$args = array_merge(
+		$args,
+		array(
+			'post_type' => 'revision',
+			'post__in'  => $valid_ids,
+		)
+	);
+
+	if ( true === $wp_query ) {
+		return new WP_Query( $args );
+	}
+
+	return get_posts( $args );
 }
 
 /**
