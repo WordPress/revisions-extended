@@ -61,6 +61,7 @@ class Revision_List_Table extends WP_List_Table {
 		$parent_id = filter_input( INPUT_GET, 'p', FILTER_VALIDATE_INT );
 
 		$query_args = array(
+			'post_status'    => wp_list_pluck( get_revision_statuses(), 'name' ),
 			'posts_per_page' => $per_page,
 			'orderby'        => $orderby ?: 'date ID',
 			'order'          => $order ?: 'asc',

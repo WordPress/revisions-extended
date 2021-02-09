@@ -108,9 +108,8 @@ function get_revisions_by_parent_type( $parent_post_type, $args = array(), $wp_q
 	$args = array_merge(
 		$args,
 		array(
-			'post_type'   => 'revision',
-			'post_status' => 'future',
-			'post__in'    => $valid_ids,
+			'post_type' => 'revision',
+			'post__in'  => $valid_ids,
 		)
 	);
 
