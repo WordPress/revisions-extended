@@ -16,6 +16,11 @@ import { pluginNamespace, getEditUrl } from '../../utils';
 
 import { InterfaceProvider, usePost } from '../../hooks';
 
+/**
+ * Module Constants
+ */
+export const GUTENBERG_PLUGIN_NAMESPACE = `${ pluginNamespace }-plugin-wrapper`;
+
 const PluginWrapper = () => {
 	const { isRevision, savedPost } = usePost();
 
@@ -35,6 +40,6 @@ const PluginWrapper = () => {
 	);
 };
 
-registerPlugin( `${ pluginNamespace }-plugin-wrapper`, {
+registerPlugin( GUTENBERG_PLUGIN_NAMESPACE, {
 	render: PluginWrapper,
 } );
