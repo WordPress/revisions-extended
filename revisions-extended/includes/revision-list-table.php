@@ -5,6 +5,7 @@ namespace RevisionsExtended\Admin;
 use WP_List_Table, WP_Post, WP_Query;
 use function RevisionsExtended\Admin\get_subpage_url;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
+use function RevisionsExtended\Revision\get_revisions_by_parent_type;
 
 defined( 'WPINC' ) || die();
 
@@ -60,8 +61,6 @@ class Revision_List_Table extends WP_List_Table {
 		$parent_id = filter_input( INPUT_GET, 'p', FILTER_VALIDATE_INT );
 
 		$query_args = array(
-			'post_type'      => 'revision',
-			'post_status'    => 'future',
 			'posts_per_page' => $per_page,
 			'orderby'        => $orderby ?: 'date ID',
 			'order'          => $order ?: 'asc',
@@ -75,7 +74,7 @@ class Revision_List_Table extends WP_List_Table {
 			$query_args['post_parent'] = $parent_id;
 		}
 
-		$query = new WP_Query( $query_args );
+		$query = get_revisions_by_parent_type( $this->parent_post_type, $query_args, true );
 
 		$this->items = $query->get_posts();
 
