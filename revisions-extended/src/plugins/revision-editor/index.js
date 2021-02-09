@@ -7,6 +7,7 @@ import { registerPlugin } from '@wordpress/plugins';
 /**
  * Internal dependencies
  */
+import DocumentSettingsPanel from './document-settings-panel';
 import UpdateButtonModifier from './update-button-modifier';
 import RevisionIndicator from './revision-indicator';
 import TrashModifier from './trash-modifier';
@@ -22,8 +23,10 @@ const PluginWrapper = () => {
 	if ( ! isRevision ) {
 		window.location.href = getEditUrl( savedPost.parent );
 	}
+
 	return (
 		<InterfaceProvider btnText={ __( 'Update' ) }>
+			<DocumentSettingsPanel />
 			<UpdateButtonModifier />
 			<RevisionIndicator />
 			<TrashModifier />
