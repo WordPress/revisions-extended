@@ -2,7 +2,7 @@
 
 namespace RevisionsExtended\Revision;
 
-use WP_Error, WP_Post, WP_Post_Type;
+use WP_Error, WP_Post, WP_Post_Type, WP_Query;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
 use function RevisionsExtended\Post_Status\validate_revision_status;
 
@@ -14,6 +14,9 @@ defined( 'WPINC' ) || die();
 add_action( 'registered_post_type', __NAMESPACE__ . '\modify_revision_post_type', 10, 2 );
 add_filter( 'pre_wp_unique_post_slug', __NAMESPACE__ . '\filter_pre_wp_unique_post_slug', 10, 5 );
 add_filter( 'wp_insert_post_data', __NAMESPACE__ . '\filter_wp_insert_post_data' );
+add_action( '_wp_put_post_revision', __NAMESPACE__ . '\action_maybe_invalidate_revisions_cache' );
+add_action( 'wp_delete_post_revision', __NAMESPACE__ . '\action_maybe_invalidate_revisions_cache' );
+add_action( 'rest_delete_revision', __NAMESPACE__ . '\action_maybe_invalidate_revisions_cache' );
 
 /**
  * Change the properties of the built-in revision post type so it's editable in the block editor.
@@ -82,6 +85,55 @@ function get_post_revisions( $post_id = 0, $args = null ) {
 	}
 
 	return $revisions;
+}
+
+/**
+ * Get revision posts for a particular parent post type.
+ *
+ * @param string $parent_post_type The parent post type to get revisions for.
+ * @param array  $args             Optional. Additional query args.
+ * @param bool   $wp_query         Optional. True to return a WP_Query object instead of an array of post objects.
+ *
+ * @return WP_Post[]|WP_Query
+ */
+function get_revisions_by_parent_type( $parent_post_type, $args = array(), $wp_query = false ) {
+	global $wpdb;
+
+	$cache_key        = 'future-revisions-' . $parent_post_type;
+	$valid_parent_ids = wp_cache_get( $cache_key, 'revisions' );
+
+	if ( false === $valid_parent_ids ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$valid_parent_ids = $wpdb->get_col( $wpdb->prepare( "
+			SELECT DISTINCT ID
+			FROM {$wpdb->posts}
+			WHERE post_type = %s
+			AND ID IN(
+			    SELECT DISTINCT post_parent
+				FROM {$wpdb->posts}
+				WHERE post_type = 'revision'
+				AND post_status = 'future'
+			);",
+			$parent_post_type
+		) );
+
+		wp_cache_set( $cache_key, $valid_parent_ids, 'revisions' );
+	}
+
+	$args = array_merge(
+		$args,
+		array(
+			'post_type'       => 'revision',
+			'post_status'     => 'future',
+			'post_parent__in' => $valid_parent_ids,
+		)
+	);
+
+	if ( true === $wp_query ) {
+		return new WP_Query( $args );
+	}
+
+	return get_posts( $args );
 }
 
 /**
@@ -247,4 +299,22 @@ function filter_wp_insert_post_data( $data ) {
 	}
 
 	return $data;
+}
+
+/**
+ * Action: Invalidate the cache after a future revision has been created or deleted.
+ *
+ * @param int|WP_Post $revision_id
+ *
+ * @return void
+ */
+function action_maybe_invalidate_revisions_cache( $revision_id ) {
+	$revision         = wp_get_post_revision( $revision_id );
+	$status           = get_post_status( $revision );
+	$parent_post_type = get_post_type( $revision->post_parent );
+
+	if ( validate_revision_status( $status ) && $parent_post_type ) {
+		$cache_key = 'future-revisions-' . $parent_post_type;
+		wp_cache_delete( $cache_key, 'revisions' );
+	}
 }
