@@ -42,7 +42,10 @@ const PluginPostStatusTrashButton = () => {
 	};
 
 	const onTrashClick = () => {
-		const message = __( 'Are you sure you want to delete this revision?' );
+		const message = __(
+			'Are you sure you want to delete this update?',
+			'revisions-extended'
+		);
 
 		// eslint-disable-next-line no-alert
 		if ( window.confirm( message ) ) {
