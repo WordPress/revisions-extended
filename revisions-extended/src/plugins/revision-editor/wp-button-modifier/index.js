@@ -12,7 +12,6 @@ import { getAllRevisionUrl } from '../../../utils';
 /**
  * Module variables
  */
-
 let wpButtonElement;
 
 /**
