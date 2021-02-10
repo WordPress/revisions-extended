@@ -29,7 +29,11 @@ const PostStatusTrashButton = ( { onDelete, id } ) => {
 		}
 
 		if ( data ) {
-			window.history.back();
+			if ( document.referrer.length > 0 ) {
+				window.location.href = document.referrer;
+			} else {
+				window.location.reload();
+			}
 		}
 	};
 
