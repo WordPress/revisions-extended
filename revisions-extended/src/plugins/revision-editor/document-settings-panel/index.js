@@ -8,11 +8,17 @@ import { useEffect } from 'react';
  */
 import { select, dispatch } from '@wordpress/data';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { PanelRow } from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
 import PostSchedule from './post-schedule';
+import PostStatusTrashButton from './post-status-trash-button';
+import PostStatusPublishCheckbox from './post-status-publish-checkbox';
+
+import { useInterface, useRevision, usePost } from '../../../hooks';
+
 import { GUTENBERG_PLUGIN_NAMESPACE } from '../index';
 
 /**
@@ -23,6 +29,10 @@ const STORE_KEY = 'core/edit-post';
 const PANEL_NAME = 'scheduled-revisions';
 
 const DocumentSettingsPanel = () => {
+	const { shouldIntercept, setShouldIntercept } = useInterface();
+	const { trash } = useRevision();
+	const { getEditedPostAttribute } = usePost();
+
 	useEffect( () => {
 		// Hide the default panel;
 		dispatch( STORE_KEY ).removeEditorPanel( 'post-status' );
@@ -45,7 +55,21 @@ const DocumentSettingsPanel = () => {
 
 	return (
 		<PluginDocumentSettingPanel name={ PANEL_NAME }>
-			<PostSchedule />
+			<PanelRow>
+				<PostSchedule />
+			</PanelRow>
+			<PanelRow>
+				<PostStatusPublishCheckbox
+					toggled={ shouldIntercept }
+					onToggle={ setShouldIntercept }
+				/>
+			</PanelRow>
+			<PanelRow>
+				<PostStatusTrashButton
+					id={ getEditedPostAttribute( 'id' ) }
+					onDelete={ trash }
+				/>
+			</PanelRow>
 		</PluginDocumentSettingPanel>
 	);
 };

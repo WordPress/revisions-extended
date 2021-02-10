@@ -1,8 +1,5 @@
 /** Overrides **/
 
-/* Hide Post Visibility */
-.edit-post-post-visibility,
-/* Hide the ability to switch to draft */
 .editor-post-switch-to-draft {
 	display: none !important;
 }
