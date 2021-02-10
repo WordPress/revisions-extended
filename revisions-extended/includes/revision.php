@@ -106,6 +106,11 @@ function get_revisions_by_parent_type( $parent_post_type, $args = array(), $wp_q
 		$parent_post_type
 	) );
 
+	// If post__in gets an empty array, WP_Query will return all posts.
+	if ( empty( $valid_ids ) ) {
+		$valid_ids[] = false;
+	}
+
 	$args = array_merge(
 		$args,
 		array(
