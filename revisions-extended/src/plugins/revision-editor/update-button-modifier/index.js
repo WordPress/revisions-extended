@@ -26,7 +26,7 @@ const UpdateButtonModifier = () => {
 	const [ showSuccess, setShowSuccess ] = useState( false );
 	const { setBtnDefaults } = useInterface();
 	const { savedPost, didPostSaveRequestSucceed, savePost } = usePost();
-	const { type: parentType } = useParentPost();
+	const { type: parentType, getLabel } = useParentPost();
 	const { publish } = useRevision();
 
 	const _savePost = async () => {
@@ -77,7 +77,7 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'View published %s.' ),
-							parentType
+							getLabel( 'singular_name' ).toLowerCase()
 						),
 						href: `/?p=${ savedPost.parent }`,
 					},
@@ -85,7 +85,7 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'Edit original %s.' ),
-							parentType
+							getLabel( 'singular_name' ).toLowerCase()
 						),
 						href: getEditUrl( savedPost.parent ),
 					},
@@ -93,7 +93,7 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'View all %s updates.' ),
-							parentType
+							getLabel( 'singular_name' ).toLowerCase()
 						),
 						href: getAllRevisionUrl( parentType ),
 					},

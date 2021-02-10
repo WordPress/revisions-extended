@@ -21,6 +21,24 @@ export function ParentPostProvider( { children, links } ) {
 	};
 
 	useEffect( () => {
+		/**
+		 * Fetches type information from WP Rest api
+		 *
+		 * @param {string} postType
+		 * @return {Object} Information about the post type
+		 */
+		const getPostTypeLabel = async ( postType ) => {
+			return await apiFetch( {
+				path: `wp/v2/types/${ postType }&context=edit`,
+				method: 'GET',
+			} );
+		};
+
+		/**
+		 * Fetches post object of parent
+		 *
+		 * @param {string} path
+		 */
 		const getParentPost = async ( path ) => {
 			try {
 				const res = await apiFetch( {
@@ -28,7 +46,14 @@ export function ParentPostProvider( { children, links } ) {
 					method: 'GET',
 				} );
 
-				setParent( res );
+				const typeInfo = await getPostTypeLabel( res.type );
+
+				if ( typeInfo ) {
+					setParent( {
+						...res,
+						labels: typeInfo.labels,
+					} );
+				}
 			} catch ( ex ) {
 				// TO DO: Maybe consider add a default object since the ui depends on the type
 			}
@@ -41,8 +66,23 @@ export function ParentPostProvider( { children, links } ) {
 		getParentPost( href );
 	}, [ links ] );
 
+	/**
+	 * Returns the label for a specific key
+	 *
+	 * @param {string} key The key of a label
+	 * @return {string} String defined in post type declaration
+	 */
+	const getLabel = ( key ) => {
+		return parent.labels ? parent.labels[ key ] : '';
+	};
+
 	return (
-		<StateContext.Provider value={ parent }>
+		<StateContext.Provider
+			value={ {
+				...parent,
+				getLabel,
+			} }
+		>
 			{ children }
 		</StateContext.Provider>
 	);

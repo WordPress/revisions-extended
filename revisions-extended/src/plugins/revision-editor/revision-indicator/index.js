@@ -24,7 +24,7 @@ export const NOTICE_ID = 'revisions-extended-notice';
 
 const RevisionIndicator = () => {
 	const { savedPost } = usePost();
-	const { type: parentType } = useParentPost();
+	const { type: parentType, getLabel } = useParentPost();
 
 	const getRevisionType =
 		savedPost.status === POST_STATUS_SCHEDULED
@@ -41,7 +41,7 @@ const RevisionIndicator = () => {
 			// translators: %1$s: url %2$s: post type.
 			__( '[ <a href="%1$s">Edit %2$s</a>.' ),
 			getEditUrl( savedPost.parent ),
-			parentType
+			getLabel( 'singular_name' ).toLowerCase()
 		),
 		` | <a href="/wp-admin/revision.php?revision=${
 			savedPost.id
