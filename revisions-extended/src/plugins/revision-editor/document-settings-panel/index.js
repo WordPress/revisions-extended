@@ -67,7 +67,6 @@ const DocumentSettingsPanel = () => {
 			<PanelRow>
 				<PostStatusTrashButton
 					id={ getEditedPostAttribute( 'id' ) }
-					parentId={ getEditedPostAttribute( 'parent' ) }
 					onDelete={ trash }
 				/>
 			</PanelRow>

@@ -2,7 +2,6 @@
  * External dependencies
  */
 import { useState } from 'react';
-
 /**
  * WordPress dependencies
  */
@@ -10,12 +9,7 @@ import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 
-/**
- * Internal dependencies
- */
-import { getEditUrl } from '../../../utils';
-
-const PostStatusTrashButton = ( { onDelete, id, parentId } ) => {
+const PostStatusTrashButton = ( { onDelete, id } ) => {
 	const [ isBusy, setBusy ] = useState( false );
 
 	const deleteUpdate = async () => {
@@ -35,7 +29,7 @@ const PostStatusTrashButton = ( { onDelete, id, parentId } ) => {
 		}
 
 		if ( data ) {
-			window.location.href = getEditUrl( parentId );
+			window.history.back();
 		}
 	};
 
