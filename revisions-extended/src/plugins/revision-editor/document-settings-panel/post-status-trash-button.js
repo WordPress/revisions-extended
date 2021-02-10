@@ -7,22 +7,14 @@ import { useState } from 'react';
  */
 import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { PluginPostStatusInfo as PostStatusInfo } from '@wordpress/edit-post';
 import { Button } from '@wordpress/components';
 
-/**
- * Internal dependencies
- */
-import { useRevision, usePost } from '../../../hooks';
-
-const PluginPostStatusTrashButton = () => {
+const PostStatusTrashButton = ( { onDelete, id } ) => {
 	const [ isBusy, setBusy ] = useState( false );
-	const { trash } = useRevision();
-	const { getEditedPostAttribute } = usePost();
 
-	const trashPost = async () => {
+	const deleteUpdate = async () => {
 		setBusy( true );
-		const { data, error } = await trash( getEditedPostAttribute( 'id' ) );
+		const { data, error } = await onDelete( id );
 
 		setBusy( false );
 
@@ -49,22 +41,20 @@ const PluginPostStatusTrashButton = () => {
 
 		// eslint-disable-next-line no-alert
 		if ( window.confirm( message ) ) {
-			trashPost();
+			deleteUpdate();
 		}
 	};
 
 	return (
-		<PostStatusInfo>
-			<Button
-				onClick={ onTrashClick }
-				isTertiary
-				isDestructive
-				isBusy={ isBusy }
-			>
-				{ __( 'Delete permanently' ) }
-			</Button>
-		</PostStatusInfo>
+		<Button
+			onClick={ onTrashClick }
+			isTertiary
+			isDestructive
+			isBusy={ isBusy }
+		>
+			{ __( 'Delete permanently' ) }
+		</Button>
 	);
 };
 
-export default PluginPostStatusTrashButton;
+export default PostStatusTrashButton;
