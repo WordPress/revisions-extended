@@ -47,7 +47,7 @@ function filter_wp_get_post_revisions( $wp_query ) {
 		'revision' === $wp_query->get( 'post_type' ) &&
 		'inherit' === $wp_query->get( 'post_status' )
 	) {
-		$wp_query->set( 'post_status', [ 'inherit', 'future' ] );
+		$wp_query->set( 'post_status', wp_list_pluck( get_revision_statuses(), 'name' ) );
 	}
 }
 
