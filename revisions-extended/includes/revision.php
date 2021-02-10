@@ -14,6 +14,7 @@ defined( 'WPINC' ) || die();
 add_action( 'registered_post_type', __NAMESPACE__ . '\modify_revision_post_type', 10, 2 );
 add_filter( 'pre_wp_unique_post_slug', __NAMESPACE__ . '\filter_pre_wp_unique_post_slug', 10, 5 );
 add_filter( 'wp_insert_post_data', __NAMESPACE__ . '\filter_wp_insert_post_data' );
+add_action( 'load-edit.php', __NAMESPACE__ . '\short_circuit_default_revisions_list_table' );
 
 /**
  * Change the properties of the built-in revision post type so it's editable in the block editor.
@@ -283,4 +284,20 @@ function filter_wp_insert_post_data( $data ) {
 	}
 
 	return $data;
+}
+
+/**
+ * Bail from the Core-generated list table screen for revisions.
+ *
+ * Since we're modifying the revision post type and setting `show_ui` to true, Core generates this list table of
+ * revisions at wp-admin/edit.php?post_type=revision. We want to use the updates subpages instead.
+ *
+ * @return void
+ */
+function short_circuit_default_revisions_list_table() {
+	global $typenow;
+
+	if ( 'revision' === $typenow ) {
+		wp_die( __( 'Sorry, you are not allowed to list revisions this way.', 'revisions-extended' ) );
+	}
 }

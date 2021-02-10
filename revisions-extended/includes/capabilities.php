@@ -22,27 +22,56 @@ add_filter( 'map_meta_cap', __NAMESPACE__ . '\map_meta_caps', 10, 4 );
  * @return array
  */
 function map_meta_caps( $caps, $cap, $user_id, $args ) {
-	$statuses = wp_list_pluck( get_revision_statuses(), 'name' );
+	if ( in_array( $cap, array( 'delete_post', 'edit_post', 'read_post' ), true ) ) {
+		$post = get_post( $args[0] );
 
-	switch ( $cap ) {
-		case 'delete_post':
-			$post = get_post( $args[0] );
+		if ( $post && 'revision' === get_post_type( $post ) ) {
+			$revision_statuses = wp_list_pluck( get_revision_statuses(), 'name' );
+			$revision_object   = get_post_type_object( 'revision' );
+			$status            = get_post_status( $post );
+			$parent            = get_post( $post->post_parent );
+			$parent_object     = get_post_type_object( get_post_type( $parent ) );
 
-			if ( 'revision' === $post->post_type && in_array( $post->post_status, $statuses, true ) ) {
-				$do_not_allow = array_keys( $caps, 'do_not_allow', true );
-				foreach ( $do_not_allow as $index ) {
-					unset( $caps[ $index ] );
-				}
+			switch ( $cap ) {
+				case 'delete_post':
+					if ( in_array( $status, $revision_statuses, true ) ) {
+						$caps = array();
 
-				$post_type_object = get_post_type_object( $post->post_type );
+						if ( $post->post_author && $user_id === $post->post_author ) {
+							$caps[] = $revision_object->cap->delete_posts;
+						} else {
+							$caps[] = $revision_object->cap->delete_others_posts;
+						}
+					}
+					break;
+				case 'edit_post':
+					if ( in_array( $status, $revision_statuses, true ) ) {
+						$caps = array();
 
-				if ( $post->post_author && $user_id === $post->post_author ) {
-					$caps[] = $post_type_object->cap->delete_posts;
-				} else {
-					$caps[] = $post_type_object->cap->delete_others_posts;
-				}
+						if ( $post->post_author && $user_id === $post->post_author ) {
+							$caps[] = $revision_object->cap->edit_posts;
+						} else {
+							$caps[] = $revision_object->cap->edit_others_posts;
+						}
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+					break;
+				case 'read_post':
+					if ( in_array( $status, $revision_statuses, true ) ) {
+						$caps = array();
+
+						if ( $post->post_author && $user_id === $post->post_author ) {
+							$caps[] = $parent_object->cap->edit_posts;
+						} else {
+							$caps[] = $parent_object->cap->edit_others_posts;
+						}
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+					break;
 			}
-			break;
+		}
 	}
 
 	return $caps;

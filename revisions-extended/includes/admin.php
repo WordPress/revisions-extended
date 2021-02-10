@@ -27,11 +27,13 @@ function add_subpages() {
 			$parent_slug = add_query_arg( 'post_type', $post_type, $parent_slug );
 		}
 
+		$post_type_object = get_post_type_object( $post_type );
+
 		add_submenu_page(
 			$parent_slug,
 			__( 'Scheduled Updates', 'revisions-extended' ),
 			__( 'Updates', 'revisions-extended' ),
-			'edit_posts',
+			$post_type_object->cap->edit_posts,
 			$post_type . '-updates',
 			__NAMESPACE__ . '\render_subpage'
 		);
