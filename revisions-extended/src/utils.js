@@ -26,7 +26,7 @@ export const getAllRevisionUrl = ( type ) => {
 		return '/wp-admin/edit.php?page=post-updates';
 	}
 
-	return `/wp-admin/edit.php?post_type=${ type }&page=page-updates`;
+	return `/wp-admin/edit.php?post_type=${ type }&page=${ type }-updates`;
 };
 
 export const getFormattedDate = ( date ) => {
