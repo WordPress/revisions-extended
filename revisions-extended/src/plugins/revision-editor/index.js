@@ -11,6 +11,7 @@ import DocumentSettingsPanel from './document-settings-panel';
 import UpdateButtonModifier from './update-button-modifier';
 import RevisionIndicator from './revision-indicator';
 import TrashModifier from './trash-modifier';
+import WPButtonModifier from './wp-button-modifier';
 import PluginPostStatusInfo from './plugin-post-status-info';
 import { pluginNamespace, getEditUrl } from '../../utils';
 
@@ -37,6 +38,7 @@ const PluginWrapper = () => {
 				<RevisionIndicator />
 				<TrashModifier />
 				<PluginPostStatusInfo />
+				<WPButtonModifier />
 			</ParentPostProvider>
 		</InterfaceProvider>
 	);
