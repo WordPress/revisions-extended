@@ -1,17 +1,5 @@
 /** Overrides **/
 
-/* Hide Post Visibility */
-.edit-post-post-visibility,
-/* Hide the ability to switch to draft */
-.editor-post-switch-to-draft,
-/* Hide the post trash button we use our own */
-.editor-post-trash {
+.editor-post-switch-to-draft {
 	display: none !important;
-}
-
-/* The trash button row has a minimum height we don't want. */
-/* It should be ok to assume its the last row. */
-/* If it's wrong, the min-height -> auto shouldn't be very detrimental */
-.components-panel__body .components-panel__row:last-child {
-	min-height: auto;
 }
