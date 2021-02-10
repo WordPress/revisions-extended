@@ -51,39 +51,20 @@ function modify_revision_post_type( $post_type, $post_type_object ) {
  * @return array An array of revisions, or an empty array if none.
  */
 function get_post_revisions( $post_id = 0, $args = null ) {
-	$post = get_post( $post_id );
-	if ( ! $post || empty( $post->ID ) ) {
-		return array();
-	}
-
-	$defaults = array(
-		'order'         => 'DESC',
-		'orderby'       => 'date ID',
-		'check_enabled' => true,
-		'post_status'   => 'inherit', // Changed from Core.
-	);
-	$args     = wp_parse_args( $args, $defaults );
-
-	if ( $args['check_enabled'] && ! wp_revisions_enabled( $post ) ) {
-		return array();
-	}
-
-	$args = array_merge(
-		$args,
-		array(
-			'post_parent' => $post->ID,
-			'post_type'   => 'revision',
-			// Changed from Core.
-		)
-	);
-
-	$revisions = get_children( $args );
-	if ( ! $revisions ) {
-		return array();
-	}
-
-	return $revisions;
+	return \wp_get_post_revisions( $post_id, $args );
 }
+
+// Filter to do the above instead.
+add_action( 'parse_query', function( $wp_query ) {
+	if (
+		'revision' === $wp_query->get( 'post_type' ) &&
+		'inherit' === $wp_query->get( 'post_status' )
+	) {
+		// Include future updates in the revisions list.
+		$wp_query->set( 'post_status', [ 'inherit', 'future' ] );
+	}
+} );
+
 
 /**
  * Get revision posts for a particular parent post type.
