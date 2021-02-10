@@ -22,11 +22,11 @@ export const getEditUrl = ( postId ) => {
 };
 
 export const getAllRevisionUrl = ( type ) => {
-	if ( type.toLowerCase() === 'page' ) {
-		return '/wp-admin/edit.php?page=page-updates';
+	if ( type.toLowerCase() === 'post' ) {
+		return '/wp-admin/edit.php?page=post-updates';
 	}
 
-	return '/wp-admin/edit.php?page=post-updates';
+	return `/wp-admin/edit.php?post_type=${ type }&page=${ type }-updates`;
 };
 
 export const getFormattedDate = ( date ) => {

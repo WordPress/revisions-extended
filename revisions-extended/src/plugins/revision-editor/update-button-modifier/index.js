@@ -14,13 +14,19 @@ import { Notice } from '@wordpress/components';
  * Internal dependencies
  */
 import { ConfirmWindow } from '../../../components';
-import { usePost, useRevision, useInterface } from '../../../hooks';
+import {
+	usePost,
+	useRevision,
+	useInterface,
+	useParentPost,
+} from '../../../hooks';
 import { getEditUrl, getAllRevisionUrl } from '../../../utils';
 
 const UpdateButtonModifier = () => {
 	const [ showSuccess, setShowSuccess ] = useState( false );
 	const { setBtnDefaults } = useInterface();
 	const { savedPost, didPostSaveRequestSucceed, savePost } = usePost();
+	const { type: parentType, getLabel } = useParentPost();
 	const { publish } = useRevision();
 
 	const _savePost = async () => {
@@ -68,20 +74,28 @@ const UpdateButtonModifier = () => {
 				}
 				links={ [
 					{
-						text: __( 'View published post.' ),
+						text: sprintf(
+							// translators: %s: post type.
+							__( 'View published %s.' ),
+							getLabel( 'singular_name' ).toLowerCase()
+						),
 						href: `/?p=${ savedPost.parent }`,
 					},
 					{
-						text: __( 'Edit original post.' ),
+						text: sprintf(
+							// translators: %s: post type.
+							__( 'Edit original %s.' ),
+							getLabel( 'singular_name' ).toLowerCase()
+						),
 						href: getEditUrl( savedPost.parent ),
 					},
 					{
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'View all %s updates.' ),
-							savedPost.type
+							getLabel( 'singular_name' ).toLowerCase()
 						),
-						href: getAllRevisionUrl( savedPost.type ),
+						href: getAllRevisionUrl( parentType ),
 					},
 				] }
 			/>

@@ -13,7 +13,7 @@ import { dispatch } from '@wordpress/data';
  * Internal dependencies
  */
 
-import { usePost } from '../../../hooks';
+import { usePost, useParentPost } from '../../../hooks';
 import { POST_STATUS_SCHEDULED } from '../../../settings';
 import { getEditUrl } from '../../../utils';
 
@@ -24,6 +24,7 @@ export const NOTICE_ID = 'revisions-extended-notice';
 
 const RevisionIndicator = () => {
 	const { savedPost } = usePost();
+	const { type: parentType, getLabel } = useParentPost();
 
 	const getRevisionType =
 		savedPost.status === POST_STATUS_SCHEDULED
@@ -32,25 +33,30 @@ const RevisionIndicator = () => {
 
 	const notes = [
 		sprintf(
-			// translators: %s: post type.
+			// translators: %s: revision type.
 			__( 'You are currently editing a <b>%s update</b>.' ),
 			getRevisionType
 		),
-		`[ <a href="${ getEditUrl( savedPost.parent ) }">${ __(
-			'Edit post'
-		) }</a>`,
+		sprintf(
+			// translators: %1$s: url %2$s: post type.
+			__( '[ <a href="%1$s">Edit %2$s</a>.' ),
+			getEditUrl( savedPost.parent ),
+			getLabel( 'singular_name' ).toLowerCase()
+		),
 		` | <a href="/wp-admin/revision.php?revision=${
 			savedPost.id
 		}&gutenberg=true" />${ __( 'See changes' ) }</a> ]`,
 	];
 
 	useEffect( () => {
+		if ( ! parentType ) return;
+
 		dispatch( 'core/notices' ).createNotice( 'warning', notes.join( ' ' ), {
 			__unstableHTML: true,
 			id: NOTICE_ID,
 			isDismissible: false,
 		} );
-	}, [] );
+	}, [ parentType ] );
 
 	return null;
 };
