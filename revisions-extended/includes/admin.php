@@ -98,7 +98,8 @@ function get_list_table() {
  * @return array An multidimensional associated array of message strings for different types of notices.
  */
 function handle_bulk_edit_actions( $action, $nonce ) {
-	$nonce_is_valid = wp_verify_nonce( $nonce, 'bulk-posts_page_post-updates' ); // From WP_List_Table::display_tablenav.
+	$screen         = get_current_screen();
+	$nonce_is_valid = wp_verify_nonce( $nonce, "bulk-{$screen->base}" ); // From WP_List_Table::display_tablenav.
 	$valid_actions  = array( 'delete' );
 	$items          = filter_input( INPUT_GET, 'bulk_edit', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY );
 	$edited         = 0;
