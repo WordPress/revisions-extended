@@ -15,6 +15,7 @@ add_action( 'registered_post_type', __NAMESPACE__ . '\modify_revision_post_type'
 add_filter( 'pre_wp_unique_post_slug', __NAMESPACE__ . '\filter_pre_wp_unique_post_slug', 10, 5 );
 add_filter( 'wp_insert_post_data', __NAMESPACE__ . '\filter_wp_insert_post_data' );
 add_action( 'load-edit.php', __NAMESPACE__ . '\short_circuit_default_revisions_list_table' );
+add_action( 'parse_query', __NAMESPACE__ . '\filter_wp_get_post_revisions' );
 
 /**
  * Change the properties of the built-in revision post type so it's editable in the block editor.
@@ -37,34 +38,18 @@ function modify_revision_post_type( $post_type, $post_type_object ) {
 }
 
 /**
- * Returns revisions of specified post.
+ * Filters wp_get_post_revisions() to include future revisions.
  *
- * Specify a value for $args['post_status'] to get other types of revisions.
- *
- * Modified from wp_get_post_revisions in wp-includes/revision.php in Core.
- *
- * @see get_children()
- *
- * @param int|WP_Post $post_id Optional. Post ID or WP_Post object. Default is global `$post`.
- * @param array|null  $args    Optional. Arguments for retrieving post revisions. Default null.
- *
- * @return array An array of revisions, or an empty array if none.
+ * @param WP_Query $wp_query The WP_Query object.
  */
-function get_post_revisions( $post_id = 0, $args = null ) {
-	return \wp_get_post_revisions( $post_id, $args );
-}
-
-// Filter to do the above instead.
-add_action( 'parse_query', function( $wp_query ) {
+function filter_wp_get_post_revisions( $wp_query ) {
 	if (
 		'revision' === $wp_query->get( 'post_type' ) &&
 		'inherit' === $wp_query->get( 'post_status' )
 	) {
-		// Include future updates in the revisions list.
 		$wp_query->set( 'post_status', [ 'inherit', 'future' ] );
 	}
-} );
-
+}
 
 /**
  * Get revision posts for a particular parent post type.
