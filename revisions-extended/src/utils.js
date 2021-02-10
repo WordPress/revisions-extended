@@ -3,6 +3,7 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { format } from '@wordpress/date';
+import { addQueryArgs } from '@wordpress/url';
 
 export const pluginNamespace = 'revisions-extended';
 export const pluginName = __( 'Revisions Extended', 'revisions-extended' );
@@ -18,15 +19,27 @@ export const getRestApiUrlV2 = ( revisionId ) => {
 };
 
 export const getEditUrl = ( postId ) => {
-	return `/wp-admin/post.php?post=${ postId }&action=edit`;
+	return addQueryArgs( 'post.php', {
+		post: postId,
+		action: 'edit',
+	} );
 };
 
 export const getAllRevisionUrl = ( type ) => {
-	if ( type.toLowerCase() === 'post' ) {
-		return '/wp-admin/edit.php?page=post-updates';
+	if ( ! type || ! type.length ) {
+		return '';
 	}
 
-	return `/wp-admin/edit.php?post_type=${ type }&page=${ type }-updates`;
+	if ( type.toLowerCase() === 'post' ) {
+		return addQueryArgs( 'edit.php', {
+			page: 'post-updates',
+		} );
+	}
+
+	return addQueryArgs( 'edit.php', {
+		post_type: type,
+		page: `${ type }-updates`,
+	} );
 };
 
 export const getFormattedDate = ( date ) => {
