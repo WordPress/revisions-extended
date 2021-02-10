@@ -29,20 +29,23 @@ export function ParentPostProvider( { children, links } ) {
 		 */
 		const getPostTypeLabel = async ( postType ) => {
 			return await apiFetch( {
-				path: `wp/v2/types/${ postType }&context=edit`,
+				path: `wp/v2/types/${ postType }`,
 				method: 'GET',
+				data: {
+					context: 'edit'
+				}
 			} );
 		};
 
 		/**
 		 * Fetches post object of parent
 		 *
-		 * @param {string} path
+		 * @param {string} url
 		 */
-		const getParentPost = async ( path ) => {
+		const getParentPost = async ( url ) => {
 			try {
 				const res = await apiFetch( {
-					path,
+					url,
 					method: 'GET',
 				} );
 
