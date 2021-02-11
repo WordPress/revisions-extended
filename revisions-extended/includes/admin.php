@@ -3,6 +3,8 @@
 namespace RevisionsExtended\Admin;
 
 use RevisionsExtended\Admin\Revision_List_Table;
+use function RevisionsExtended\get_assets_path;
+use function RevisionsExtended\get_build_asset_info;
 use function RevisionsExtended\get_includes_path;
 use function RevisionsExtended\get_views_path;
 
@@ -11,9 +13,93 @@ defined( 'WPINC' ) || die();
 /**
  * Actions and filters.
  */
+add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\enqueue_admin_assets', 1 );
+add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\enqueue_block_editor_assets' );
 add_action( 'admin_menu', __NAMESPACE__ . '\add_updates_subpages' );
 add_action( 'admin_menu', __NAMESPACE__ . '\register_revision_compare_screen' );
-add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\enqueue_compare_scripts', 1 );
+
+/**
+ * Enqueue assets for admin screens, except the block editor.
+ *
+ * @param string $hook_suffix
+ *
+ * @return void
+ */
+function enqueue_admin_assets( $hook_suffix ) {
+	global $pagenow, $typenow;
+
+	$parent_screen = $pagenow;
+	if ( ! empty( $typenow ) ) {
+		$parent_screen = add_query_arg( 'post_type', $typenow, $parent_screen );
+	}
+
+	$post_type = $typenow ?: 'post';
+
+	switch ( $hook_suffix ) {
+		case 'admin_page_compare-updates':
+			$revision_id = filter_input( INPUT_GET, 'revision_id', FILTER_VALIDATE_INT );
+			$revision    = wp_get_post_revision( $revision_id );
+
+			if ( $revision ) {
+				wp_enqueue_script( 'revisions' );
+				wp_localize_script( 'revisions', '_wpRevisionsSettings', prepare_compare_data( $revision_id ) );
+
+				// This is an ugly hack to get the revisions.js script to work.
+				wp_add_inline_script( 'revisions', "window.adminpage = 'revision-php';", 'before' );
+			}
+
+			wp_enqueue_style(
+				'revisions-extended-compare-updates',
+				plugins_url( 'assets/compare-updates.css', dirname( __FILE__, 1 ) ),
+				array(),
+				filemtime( get_assets_path() . 'compare-updates.css' )
+			);
+			break;
+
+		case get_plugin_page_hookname( "$post_type-updates", $parent_screen ):
+			wp_enqueue_style(
+				'revisions-extended-edit-revisions',
+				plugins_url( 'assets/edit-revisions.css', dirname( __FILE__, 1 ) ),
+				array(),
+				filemtime( get_assets_path() . 'edit-revisions.css' )
+			);
+			break;
+	}
+}
+
+/**
+ * Enqueue assets for the block editor.
+ *
+ * @return void
+ */
+function enqueue_block_editor_assets() {
+	global $typenow;
+
+	if ( 'revision' === $typenow ) {
+		$handles = array( 'editor-modifications', 'revision-editor' );
+
+		foreach ( $handles as $handle ) {
+			$asset = get_build_asset_info( $handle );
+
+			if ( ! empty( $asset ) ) {
+				wp_enqueue_script(
+					"revisions-extended-$handle-script",
+					plugins_url( "build/$handle.js", dirname( __FILE__, 1 ) ),
+					$asset['dependencies'],
+					$asset['version'],
+					false
+				);
+
+				wp_enqueue_style(
+					"revisions-extended-$handle-style",
+					plugins_url( "build/$handle.css", dirname( __FILE__, 1 ) ),
+					array(),
+					$asset['version']
+				);
+			}
+		}
+	}
+}
 
 /**
  * Register a subpage for each post type that supports revisions.
@@ -319,26 +405,4 @@ function get_compare_url( $revision_id ) {
 	);
 
 	return $url;
-}
-
-/**
- * Enqueue assets for our compare screen.
- *
- * @param string $hook_suffix
- *
- * @return void
- */
-function enqueue_compare_scripts( $hook_suffix ) {
-	if ( 'admin_page_compare-updates' === $hook_suffix ) {
-		$revision_id = filter_input( INPUT_GET, 'revision_id', FILTER_VALIDATE_INT );
-		$revision    = wp_get_post_revision( $revision_id );
-
-		if ( $revision ) {
-			wp_enqueue_script( 'revisions' );
-			wp_localize_script( 'revisions', '_wpRevisionsSettings', prepare_compare_data( $revision_id ) );
-
-			// This is an ugly hack to get the revisions.js script to work.
-			wp_add_inline_script( 'revisions', "window.adminpage = 'revision-php';", 'before' );
-		}
-	}
 }
