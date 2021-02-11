@@ -250,6 +250,30 @@ function update_post_from_revision( $revision_id ) {
 }
 
 /**
+ * Generate a link for editing a revision.
+ *
+ * Note that this does not do a permission check. That should happen before calling this function.
+ *
+ * @param int $revision_id
+ *
+ * @return string
+ */
+function get_edit_revision_link( $revision_id ) {
+	$revision = wp_get_post_revision( $revision_id );
+	if ( ! $revision ) {
+		return '';
+	}
+
+	return add_query_arg(
+		array(
+			'post'   => $revision_id,
+			'action' => 'edit',
+		),
+		admin_url( 'post.php' )
+	);
+}
+
+/**
  * Ensure pending/scheduled revision posts use the same slug naming convention as normal revisions.
  *
  * @param string|null $override

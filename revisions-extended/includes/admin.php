@@ -212,6 +212,8 @@ function register_revision_compare_screen() {
  * @return void
  */
 function render_compare_screen() {
+	require_once ABSPATH . 'wp-admin/includes/revision.php';
+
 	$revision_id = filter_input( INPUT_GET, 'revision_id', FILTER_VALIDATE_INT );
 	$revision    = wp_get_post_revision( $revision_id );
 
@@ -295,7 +297,7 @@ function prepare_compare_data( $revision_id ) {
 		'from'           => $parent->ID,
 		'diffData'       => $diffs,
 		'baseUrl'        => wp_parse_url( admin_url( 'revision.php' ), PHP_URL_PATH ),
-		'compareTwoMode' => 1, // Apparently booleans are not allowed.
+		'compareTwoMode' => 0, // Apparently booleans are not allowed.
 		'revisionIds'    => array_keys( $data ),
 	);
 }
