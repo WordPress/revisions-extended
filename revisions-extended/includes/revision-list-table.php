@@ -3,7 +3,7 @@
 namespace RevisionsExtended\Admin;
 
 use WP_List_Table, WP_Post, WP_Query;
-use function RevisionsExtended\Admin\get_subpage_url;
+use function RevisionsExtended\Admin\get_updates_subpage_url;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
 use function RevisionsExtended\Revision\get_revisions_by_parent_type;
 
@@ -116,7 +116,7 @@ class Revision_List_Table extends WP_List_Table {
 
 		$view_links['all'] = sprintf(
 			'<a href="%1$s"%2$s%3$s>%4$s</a>',
-			esc_url( get_subpage_url( $this->parent_post_type ) ),
+			esc_url( get_updates_subpage_url( $this->parent_post_type ) ),
 			' class="current"',
 			' aria-current="page"',
 			$all_inner_html

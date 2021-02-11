@@ -11,14 +11,14 @@ defined( 'WPINC' ) || die();
 /**
  * Actions and filters.
  */
-add_action( 'admin_menu', __NAMESPACE__ . '\add_subpages' );
+add_action( 'admin_menu', __NAMESPACE__ . '\add_updates_subpages' );
 
 /**
  * Register a subpage for each post type that supports revisions.
  *
  * @return void
  */
-function add_subpages() {
+function add_updates_subpages() {
 	$supported_post_types = get_post_types_by_support( 'revisions' );
 
 	foreach ( $supported_post_types as $post_type ) {
@@ -35,7 +35,7 @@ function add_subpages() {
 			__( 'Updates', 'revisions-extended' ),
 			$post_type_object->cap->edit_posts,
 			$post_type . '-updates',
-			__NAMESPACE__ . '\render_subpage'
+			__NAMESPACE__ . '\render_updates_subpage'
 		);
 
 		$page_hook = get_plugin_page_hook( $post_type . '-updates', $parent_slug );
@@ -59,7 +59,7 @@ function add_subpages() {
  *
  * @return void
  */
-function render_subpage() {
+function render_updates_subpage() {
 	$post_id    = filter_input( INPUT_GET, 'p', FILTER_VALIDATE_INT );
 	$list_table = get_list_table();
 	$messages   = array();
@@ -173,7 +173,7 @@ function handle_bulk_edit_actions( $action, $nonce ) {
  *
  * @return string
  */
-function get_subpage_url( $parent_post_type ) {
+function get_updates_subpage_url( $parent_post_type ) {
 	$url = add_query_arg(
 		array(
 			'page' => "$parent_post_type-updates",
