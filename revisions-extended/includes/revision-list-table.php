@@ -4,6 +4,7 @@ namespace RevisionsExtended\Admin;
 
 use WP_List_Table, WP_Post, WP_Query;
 use function RevisionsExtended\Admin\get_updates_subpage_url;
+use function RevisionsExtended\Admin\get_compare_url;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
 use function RevisionsExtended\Revision\get_revisions_by_parent_type;
 
@@ -441,7 +442,15 @@ class Revision_List_Table extends WP_List_Table {
 		}
 
 		// Compare.
-		// TODO
+		if ( $can_edit_post ) {
+			$actions['compare'] = sprintf(
+				'<a href="%1$s" aria-label="%2$s">%3$s</a>',
+				esc_url( get_compare_url( $post->ID ) ),
+				/* translators: %s: Post title. */
+				esc_attr( sprintf( __( 'Compare &#8220;%s&#8221; to its parent post', 'revisions-extended' ), $title ) ),
+				__( 'Compare', 'revisions-extended' )
+			);
+		}
 
 		// Publish.
 		// TODO

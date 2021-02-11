@@ -12,6 +12,8 @@ defined( 'WPINC' ) || die();
  * Actions and filters.
  */
 add_action( 'admin_menu', __NAMESPACE__ . '\add_updates_subpages' );
+add_action( 'admin_menu', __NAMESPACE__ . '\register_revision_compare_screen' );
+add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\enqueue_compare_scripts', 1 );
 
 /**
  * Register a subpage for each post type that supports revisions.
@@ -186,4 +188,155 @@ function get_updates_subpage_url( $parent_post_type ) {
 	}
 
 	return $url;
+}
+
+/**
+ * Register a screen for showing a diff between a post and a scheduled update.
+ *
+ * @return void
+ */
+function register_revision_compare_screen() {
+	add_submenu_page(
+		'revision.php',
+		__( 'Compare Updates', 'revisions-extended' ),
+		null,
+		'read',
+		'compare-updates',
+		__NAMESPACE__ . '\render_compare_screen'
+	);
+}
+
+/**
+ * Render the screen for showing a diff.
+ *
+ * @return void
+ */
+function render_compare_screen() {
+	$revision_id = filter_input( INPUT_GET, 'revision_id', FILTER_VALIDATE_INT );
+	$revision    = wp_get_post_revision( $revision_id );
+
+	require get_views_path() . 'revision-compare.php';
+}
+
+/**
+ * Generate the data used by revisions.js to render a diff.
+ *
+ * @see wp_prepare_revisions_for_js()
+ *
+ * @param int $revision_id
+ *
+ * @return array
+ */
+function prepare_compare_data( $revision_id ) {
+	require_once ABSPATH . 'wp-admin/includes/revision.php';
+
+	$data         = array();
+	$show_avatars = get_option( 'show_avatars' );
+
+	$revision = wp_get_post_revision( $revision_id );
+	if ( ! $revision ) {
+		return array();
+	}
+
+	$parent = get_post( $revision->post_parent );
+
+	$data[ $parent->ID ] = array(
+		'id'         => $parent->ID,
+		'title'      => get_the_title( $parent->ID ),
+		'author'     => array(
+			'id'     => (int) $parent->post_author,
+			'avatar' => $show_avatars ? get_avatar( $parent->post_author, 32 ) : '',
+			'name'   => get_the_author_meta( 'display_name', $parent->post_author ),
+		),
+		'date'       => date_i18n( __( 'M j, Y @ H:i', 'revisions-extended' ), strtotime( $parent->post_modified ) ),
+		'dateShort'  => date_i18n( _x( 'j M @ H:i', 'revision date short format', 'revisions-extended' ), strtotime( $parent->post_modified ) ),
+		'timeAgo'    => sprintf(
+			/* translators: %s: Human-readable time difference. */
+			__( '%s ago', 'revisions-extended' ),
+			human_time_diff( strtotime( $parent->post_modified_gmt . ' +0000' ), time() )
+		),
+		'autosave'   => false,
+		'current'    => true,
+		'restoreUrl' => false,
+	);
+
+	$data[ $revision->ID ] = array(
+		'id'         => $revision->ID,
+		'title'      => get_the_title( $revision->ID ),
+		'author'     => array(
+			'id'     => (int) $revision->post_author,
+			'avatar' => $show_avatars ? get_avatar( $revision->post_author, 32 ) : '',
+			'name'   => get_the_author_meta( 'display_name', $revision->post_author ),
+		),
+		'date'       => date_i18n( __( 'M j, Y @ H:i', 'revisions-extended' ), strtotime( $revision->post_modified ) ),
+		'dateShort'  => date_i18n( _x( 'j M @ H:i', 'revision date short format', 'revisions-extended' ), strtotime( $revision->post_modified ) ),
+		'timeAgo'    => sprintf(
+			/* translators: %s: Human-readable time difference. */
+			__( '%s ago', 'revisions-extended' ),
+			human_time_diff( strtotime( $revision->post_modified_gmt . ' +0000' ), time() )
+		),
+		'autosave'   => false,
+		'current'    => false,
+		'restoreUrl' => false,
+	);
+
+	$diffs = array(
+		array(
+			'id'     => $parent->ID . ':' . $revision->ID,
+			'fields' => wp_get_revision_ui_diff( $parent->ID, $parent->ID, $revision->ID ),
+		),
+	);
+
+	return array(
+		'postId'         => $parent->ID,
+		'nonce'          => wp_create_nonce( 'revisions-ajax-nonce' ),
+		'revisionData'   => array_values( $data ),
+		'to'             => $revision->ID,
+		'from'           => $parent->ID,
+		'diffData'       => $diffs,
+		'baseUrl'        => wp_parse_url( admin_url( 'revision.php' ), PHP_URL_PATH ),
+		'compareTwoMode' => 1, // Apparently booleans are not allowed.
+		'revisionIds'    => array_keys( $data ),
+	);
+}
+
+/**
+ * Get the full admin URL for compare updates screen for a given revision.
+ *
+ * @param string $parent_post_type
+ *
+ * @return string
+ */
+function get_compare_url( $revision_id ) {
+	$url = add_query_arg(
+		array(
+			'page'        => 'compare-updates',
+			'revision_id' => $revision_id,
+		),
+		admin_url( 'revision.php' )
+	);
+
+	return $url;
+}
+
+/**
+ * Enqueue assets for our compare screen.
+ *
+ * @param string $hook_suffix
+ *
+ * @return void
+ */
+function enqueue_compare_scripts( $hook_suffix ) {
+	if ( 'admin_page_compare-updates' === $hook_suffix ) {
+		$revision_id = filter_input( INPUT_GET, 'revision_id', FILTER_VALIDATE_INT );
+		$revision    = wp_get_post_revision( $revision_id );
+
+		if ( $revision ) {
+			wp_enqueue_script( 'revisions' );
+			wp_localize_script( 'revisions', '_wpRevisionsSettings', prepare_compare_data( $revision_id ) );
+
+			// This is an ugly hack to get the revisions.js script to work.
+			wp_add_inline_script( 'revisions', "window.adminpage = 'revision-php';", 'before' );
+		}
+	}
 }
