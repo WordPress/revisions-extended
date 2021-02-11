@@ -9,13 +9,16 @@ defined( 'WPINC' ) || die();
 
 /** @var int $revision_id */
 /** @var WP_Post $revision */
+/** @var array $errors */
 ?>
 
 <div class="wrap">
-	<?php if ( ! $revision ) : ?>
-		<div class="notice notice-error">
-			<p><?php esc_html_e( 'Invalid revision ID.', 'revisions-extended' ); ?></p>
-		</div>
+	<?php if ( ! empty( $errors ) ) : ?>
+		<?php foreach ( $errors as $error ) : ?>
+			<div class="notice notice-error">
+				<p><?php echo esc_html( $error ); ?></p>
+			</div>
+		<?php endforeach; ?>
 	<?php else : ?>
 		<h1 class="wp-heading-inline">
 			<?php

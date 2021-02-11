@@ -302,6 +302,15 @@ function render_compare_screen() {
 
 	$revision_id = filter_input( INPUT_GET, 'revision_id', FILTER_VALIDATE_INT );
 	$revision    = wp_get_post_revision( $revision_id );
+	$errors      = array();
+
+	if ( ! $revision ) {
+		$errors[] = __( 'Invalid revision ID.', 'revisions-extended' );
+	}
+
+	if ( $revision && ! current_user_can( 'edit_post', $revision->ID ) ) {
+		$errors[] = __( 'Sorry, you are not allowed to view this revision.', 'revisions-extended' );
+	}
 
 	require get_views_path() . 'revision-compare.php';
 }
