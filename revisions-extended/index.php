@@ -38,7 +38,24 @@ function load_files() {
 	require_once get_includes_path() . 'rest-revision-controller.php';
 	require_once get_includes_path() . 'rest-revisions-controller.php';
 	require_once get_includes_path() . 'revision.php';
-	require_once get_includes_path() . 'block-editor-modifier.php';
+}
+
+/**
+ * Shortcut to the build directory.
+ *
+ * @return string
+ */
+function get_assets_path() {
+	return PLUGIN_DIR . 'assets/';
+}
+
+/**
+ * Shortcut to the build directory.
+ *
+ * @return string
+ */
+function get_build_path() {
+	return PLUGIN_DIR . 'build/';
 }
 
 /**
@@ -57,6 +74,25 @@ function get_includes_path() {
  */
 function get_views_path() {
 	return PLUGIN_DIR . 'views/';
+}
+
+/**
+ *
+ *
+ * @param string $handle
+ *
+ * @return array
+ */
+function get_build_asset_info( $handle ) {
+	$asset_info_path = get_build_path() . "$handle.asset.php";
+
+	if ( ! is_readable( $asset_info_path ) ) {
+		return array();
+	}
+
+	$asset_info = require $asset_info_path;
+
+	return $asset_info;
 }
 
 /**

@@ -3,8 +3,10 @@
 namespace RevisionsExtended\Admin;
 
 use WP_List_Table, WP_Post, WP_Query;
-use function RevisionsExtended\Admin\get_subpage_url;
+use function RevisionsExtended\Admin\get_updates_subpage_url;
+use function RevisionsExtended\Admin\get_compare_url;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
+use function RevisionsExtended\Revision\get_edit_revision_link;
 use function RevisionsExtended\Revision\get_revisions_by_parent_type;
 
 defined( 'WPINC' ) || die();
@@ -116,7 +118,7 @@ class Revision_List_Table extends WP_List_Table {
 
 		$view_links['all'] = sprintf(
 			'<a href="%1$s"%2$s%3$s>%4$s</a>',
-			esc_url( get_subpage_url( $this->parent_post_type ) ),
+			esc_url( get_updates_subpage_url( $this->parent_post_type ) ),
 			' class="current"',
 			' aria-current="page"',
 			$all_inner_html
@@ -277,17 +279,9 @@ class Revision_List_Table extends WP_List_Table {
 		$title = _draft_or_post_title( $post );
 
 		if ( $can_edit_post ) {
-			$edit_url = add_query_arg(
-				array(
-					'post'   => $post->ID,
-					'action' => 'edit',
-				),
-				admin_url( 'post.php' )
-			);
-
 			printf(
 				'<a class="row-title" href="%1$s" aria-label="%2$s">%3$s</a>',
-				esc_url( $edit_url ),
+				esc_url( get_edit_revision_link( $post->ID ) ),
 				/* translators: %s: Post title. */
 				esc_attr( sprintf( __( '&#8220;%s&#8221; (Edit)' ), $title ) ),
 				$title
@@ -338,17 +332,9 @@ class Revision_List_Table extends WP_List_Table {
 		$title         = _draft_or_post_title( $parent );
 
 		if ( $can_edit_post ) {
-			$edit_url = add_query_arg(
-				array(
-					'post'   => $parent->ID,
-					'action' => 'edit',
-				),
-				admin_url( 'post.php' )
-			);
-
 			printf(
 				'<a class="row-title" href="%1$s" aria-label="%2$s">%3$s</a>',
-				esc_url( $edit_url ),
+				esc_url( get_edit_post_link( $parent ) ),
 				/* translators: %s: Post title. */
 				esc_attr( sprintf( __( '&#8220;%s&#8221; (Edit)' ), $title ) ),
 				$title
@@ -423,17 +409,9 @@ class Revision_List_Table extends WP_List_Table {
 
 		// Edit.
 		if ( $can_edit_post ) {
-			$edit_url = add_query_arg(
-				array(
-					'post'   => $post->ID,
-					'action' => 'edit',
-				),
-				admin_url( 'post.php' )
-			);
-
 			$actions['edit'] = sprintf(
 				'<a href="%1$s" aria-label="%2$s">%3$s</a>',
-				esc_url( $edit_url ),
+				esc_url( get_edit_revision_link( $post->ID ) ),
 				/* translators: %s: Post title. */
 				esc_attr( sprintf( __( 'Edit &#8220;%s&#8221;', 'revisions-extended' ), $title ) ),
 				__( 'Edit', 'revisions-extended' )
@@ -441,7 +419,15 @@ class Revision_List_Table extends WP_List_Table {
 		}
 
 		// Compare.
-		// TODO
+		if ( $can_edit_post ) {
+			$actions['compare'] = sprintf(
+				'<a href="%1$s" aria-label="%2$s">%3$s</a>',
+				esc_url( get_compare_url( $post->ID ) ),
+				/* translators: %s: Post title. */
+				esc_attr( sprintf( __( 'Compare &#8220;%s&#8221; to its parent post', 'revisions-extended' ), $title ) ),
+				__( 'Compare', 'revisions-extended' )
+			);
+		}
 
 		// Publish.
 		// TODO

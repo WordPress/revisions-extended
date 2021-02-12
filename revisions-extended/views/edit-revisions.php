@@ -3,7 +3,7 @@
 namespace RevisionsExtended\Admin;
 
 use RevisionsExtended\Admin\Revision_List_Table;
-use function RevisionsExtended\Admin\get_subpage_url;
+use function RevisionsExtended\Admin\get_updates_subpage_url;
 
 defined( 'WPINC' ) || die();
 

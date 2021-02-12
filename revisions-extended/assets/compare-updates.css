@@ -1,0 +1,11 @@
+.revisions-controls {
+    padding-top: 0;
+}
+
+.revisions-buttons,
+.revisions-checkbox,
+.revisions-tooltip,
+.revisions-tickmarks,
+.wp-slider {
+    display: none;
+}
