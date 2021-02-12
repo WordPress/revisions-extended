@@ -75,28 +75,33 @@ function enqueue_admin_assets( $hook_suffix ) {
 function enqueue_block_editor_assets() {
 	global $typenow;
 
-	if ( 'revision' === $typenow ) {
-		$handles = array( 'editor-modifications', 'revision-editor' );
+	$post_type = $typenow ?: 'post';
 
-		foreach ( $handles as $handle ) {
-			$asset = get_build_asset_info( $handle );
+	$handles = array();
+	if ( 'revision' === $post_type ) {
+		$handles[] = 'revision-editor';
+	} elseif ( post_type_supports( $post_type, 'revisions' ) ) {
+		$handles[] = 'editor-modifications';
+	}
 
-			if ( ! empty( $asset ) ) {
-				wp_enqueue_script(
-					"revisions-extended-$handle-script",
-					plugins_url( "build/$handle.js", dirname( __FILE__, 1 ) ),
-					$asset['dependencies'],
-					$asset['version'],
-					false
-				);
+	foreach ( $handles as $handle ) {
+		$asset = get_build_asset_info( $handle );
 
-				wp_enqueue_style(
-					"revisions-extended-$handle-style",
-					plugins_url( "build/$handle.css", dirname( __FILE__, 1 ) ),
-					array(),
-					$asset['version']
-				);
-			}
+		if ( ! empty( $asset ) ) {
+			wp_enqueue_script(
+				"revisions-extended-$handle-script",
+				plugins_url( "build/$handle.js", dirname( __FILE__, 1 ) ),
+				$asset['dependencies'],
+				$asset['version'],
+				false
+			);
+
+			wp_enqueue_style(
+				"revisions-extended-$handle-style",
+				plugins_url( "build/$handle.css", dirname( __FILE__, 1 ) ),
+				array(),
+				$asset['version']
+			);
 		}
 	}
 }
