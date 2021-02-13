@@ -202,6 +202,8 @@ function put_post_revision( $post = null, $autosave = false ) {
  * Uses the same mechanism as for restoring a past revision, but if the revision is pending/scheduled,
  * it will be converted to a standard revision first, using the current time for the post date.
  *
+ * Note that this can only complete successfully if the parent post is published.
+ *
  * @param int $revision_id
  *
  * @return int|WP_Error The ID of the updated post. Otherwise a WP_Error.
@@ -212,6 +214,14 @@ function update_post_from_revision( $revision_id ) {
 		return new WP_Error(
 			'invalid_revision_id',
 			__( 'Invalid revision ID.', 'revisions-extended' )
+		);
+	}
+
+	$parent = get_post( $revision->post_parent );
+	if ( 'publish' !== get_post_status( $parent ) ) {
+		return new WP_Error(
+			'invalid_parent_post',
+			__( 'Parent post is not published.', 'revisions-extended' )
 		);
 	}
 
