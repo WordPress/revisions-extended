@@ -15,6 +15,7 @@ add_action( 'registered_post_type', __NAMESPACE__ . '\modify_revision_post_type'
 add_filter( 'pre_wp_unique_post_slug', __NAMESPACE__ . '\filter_pre_wp_unique_post_slug', 10, 5 );
 add_filter( 'wp_insert_post_data', __NAMESPACE__ . '\filter_wp_insert_post_data' );
 add_action( 'load-edit.php', __NAMESPACE__ . '\short_circuit_default_revisions_list_table' );
+add_action( 'publish_future_revision', __NAMESPACE__ . '\action_check_and_publish_future_revision' );
 
 /**
  * Change the properties of the built-in revision post type so it's editable in the block editor.
@@ -329,4 +330,38 @@ function short_circuit_default_revisions_list_table() {
 	if ( 'revision' === $typenow ) {
 		wp_die( __( 'Sorry, you are not allowed to list revisions this way.', 'revisions-extended' ) );
 	}
+}
+
+/**
+ * Action to update a post from a future revision when the time comes.
+ *
+ * Hooked to a scheduled event. See RevisionsExtended\Cron.
+ *
+ * Modeled on check_and_publish_future_post().
+ *
+ * @param int $revision_id
+ *
+ * @return void
+ */
+function action_check_and_publish_future_revision( $revision_id ) {
+	$revision = wp_get_post_revision( $revision_id );
+	if ( ! $revision ) {
+		return;
+	}
+
+	if ( 'future' !== get_post_status( $revision ) ) {
+		return;
+	}
+
+	$time = strtotime( $revision->post_date_gmt . ' GMT' );
+
+	// Uh oh, someone jumped the gun!
+	if ( $time > time() ) {
+		wp_clear_scheduled_hook( 'publish_future_revision', array( $revision_id ) ); // Clear anything else in the system.
+		wp_schedule_single_event( $time, 'publish_future_revision', array( $revision_id ) );
+
+		return;
+	}
+
+	update_post_from_revision( $revision_id );
 }
