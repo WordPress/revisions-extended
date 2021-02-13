@@ -157,7 +157,8 @@ class Revision_List_Table extends WP_List_Table {
 	 */
 	protected function get_bulk_actions() {
 		$actions = array(
-			'delete' => __( 'Delete', 'revisions-extended' ),
+			'publish' => __( 'Publish Immediately', 'revisions-extended' ),
+			'delete'  => __( 'Delete Permanently', 'revisions-extended' ),
 		);
 
 		return $actions;
@@ -402,10 +403,10 @@ class Revision_List_Table extends WP_List_Table {
 			return '';
 		}
 
-		$post_type_object = get_post_type_object( $post->post_type );
-		$can_edit_post    = current_user_can( 'edit_post', $post->ID );
-		$actions          = array();
-		$title            = _draft_or_post_title( $post );
+		$screen        = get_current_screen();
+		$can_edit_post = current_user_can( 'edit_post', $post->ID );
+		$actions       = array();
+		$title         = _draft_or_post_title( $post );
 
 		// Edit.
 		if ( $can_edit_post ) {
@@ -430,10 +431,42 @@ class Revision_List_Table extends WP_List_Table {
 		}
 
 		// Publish.
-		// TODO
+		if ( $can_edit_post ) {
+			$url = add_query_arg(
+				array(
+					'action'      => 'publish',
+					'bulk_edit[]' => $post->ID,
+				),
+				wp_nonce_url( get_updates_subpage_url( $this->parent_post_type ), "bulk-{$screen->base}" )
+			);
+
+			$actions['publish'] = sprintf(
+				'<a href="%1$s" aria-label="%2$s">%3$s</a>',
+				esc_url( $url ),
+				/* translators: %s: Post title. */
+				esc_attr( sprintf( __( 'Publish &#8220;%s&#8221; immediately', 'revisions-extended' ), $title ) ),
+				__( 'Publish', 'revisions-extended' )
+			);
+		}
 
 		// Delete.
-		// TODO
+		if ( current_user_can( 'delete_post', $post->ID ) ) {
+			$url = add_query_arg(
+				array(
+					'action'      => 'delete',
+					'bulk_edit[]' => $post->ID,
+				),
+				wp_nonce_url( get_updates_subpage_url( $this->parent_post_type ), "bulk-{$screen->base}" )
+			);
+
+			$actions['delete'] = sprintf(
+				'<a class="submitdelete" href="%1$s" aria-label="%2$s">%3$s</a>',
+				esc_url( $url ),
+				/* translators: %s: Post title. */
+				esc_attr( sprintf( __( 'Delete &#8220;%s&#8221; permanently', 'revisions-extended' ), $title ) ),
+				__( 'Delete Permanently', 'revisions-extended' )
+			);
+		}
 
 		return $this->row_actions( $actions );
 	}

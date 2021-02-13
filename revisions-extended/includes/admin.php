@@ -7,6 +7,7 @@ use function RevisionsExtended\get_assets_path;
 use function RevisionsExtended\get_build_asset_info;
 use function RevisionsExtended\get_includes_path;
 use function RevisionsExtended\get_views_path;
+use function RevisionsExtended\Revision\update_post_from_revision;
 
 defined( 'WPINC' ) || die();
 
@@ -204,10 +205,12 @@ function render_updates_subpage() {
 		INPUT_GET,
 		array(
 			// Be sure to include each of these in `filter_add_removable_query_args` as well.
-			'invalid'     => FILTER_VALIDATE_BOOLEAN,
-			'no_items'    => FILTER_VALIDATE_BOOLEAN,
-			'deleted'     => FILTER_VALIDATE_INT,
-			'not_deleted' => FILTER_VALIDATE_INT,
+			'invalid'       => FILTER_VALIDATE_BOOLEAN,
+			'no_items'      => FILTER_VALIDATE_BOOLEAN,
+			'deleted'       => FILTER_VALIDATE_INT,
+			'not_deleted'   => FILTER_VALIDATE_INT,
+			'published'     => FILTER_VALIDATE_INT,
+			'not_published' => FILTER_VALIDATE_INT,
 		)
 	) );
 
@@ -236,6 +239,28 @@ function render_updates_subpage() {
 						_n(
 							'%d update could not be deleted.',
 							'%d updates could not be deleted.',
+							$count,
+							'revisions-extended'
+						),
+						number_format_i18n( $count )
+					);
+					break;
+				case 'published':
+					$notices['success'][] = sprintf(
+						_n(
+							'%d update published.',
+							'%d updates published.',
+							$count,
+							'revisions-extended'
+						),
+						number_format_i18n( $count )
+					);
+					break;
+				case 'not_published':
+					$notices['error'][] = sprintf(
+						_n(
+							'%d update could not be published.',
+							'%d updates could not be published.',
 							$count,
 							'revisions-extended'
 						),
@@ -271,7 +296,7 @@ function handle_bulk_edit_actions( $action ) {
 	$screen = get_current_screen();
 	check_admin_referer( "bulk-{$screen->base}" );
 
-	$valid_actions = array( 'delete' );
+	$valid_actions = array( 'delete', 'publish' );
 	$items         = filter_input( INPUT_GET, 'bulk_edit', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY );
 	$query_args    = array();
 	$edited        = 0;
@@ -298,6 +323,13 @@ function handle_bulk_edit_actions( $action ) {
 				case 'delete':
 					$result = wp_delete_post_revision( $revision );
 					break;
+				case 'publish':
+					$result = update_post_from_revision( $revision->ID );
+
+					if ( is_wp_error( $result ) ) {
+						$result = false;
+					}
+					break;
 			}
 
 			if ( $result ) {
@@ -315,6 +347,10 @@ function handle_bulk_edit_actions( $action ) {
 			case 'delete':
 				$query_args['deleted']     = $edited;
 				$query_args['not_deleted'] = $not_edited;
+				break;
+			case 'publish':
+				$query_args['published']     = $edited;
+				$query_args['not_published'] = $not_edited;
 				break;
 		}
 	}
@@ -499,6 +535,8 @@ function filter_add_removable_query_args( $removable_query_args ) {
 			'no_items',
 			'deleted',
 			'not_deleted',
+			'published',
+			'not_published',
 		)
 	);
 
