@@ -9,7 +9,7 @@ defined( 'WPINC' ) || die();
 
 /** @var int $post_id */
 /** @var Revision_List_Table $list_table */
-/** @var array $messages */
+/** @var array $notices */
 
 $list_table->prepare_items();
 ?>
@@ -35,10 +35,10 @@ $list_table->prepare_items();
 
 	<hr class="wp-header-end">
 
-	<?php foreach ( $messages as $notice_type => $notices ) : ?>
-		<?php foreach ( $notices as $notice ) : ?>
+	<?php foreach ( $notices as $notice_type => $messages ) : ?>
+		<?php foreach ( $messages as $message ) : ?>
 			<div class="is-dismissible notice notice-<?php echo esc_attr( $notice_type ); ?>">
-				<?php echo wp_kses_post( wpautop( $notice ) ); ?>
+				<?php echo wp_kses_post( wpautop( $message ) ); ?>
 			</div>
 		<?php endforeach; ?>
 	<?php endforeach; ?>

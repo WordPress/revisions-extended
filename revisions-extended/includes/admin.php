@@ -7,6 +7,7 @@ use function RevisionsExtended\get_assets_path;
 use function RevisionsExtended\get_build_asset_info;
 use function RevisionsExtended\get_includes_path;
 use function RevisionsExtended\get_views_path;
+use function RevisionsExtended\Revision\update_post_from_revision;
 
 defined( 'WPINC' ) || die();
 
@@ -17,6 +18,7 @@ add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\enqueue_admin_assets', 1 
 add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\enqueue_block_editor_assets' );
 add_action( 'admin_menu', __NAMESPACE__ . '\add_updates_subpages' );
 add_action( 'admin_menu', __NAMESPACE__ . '\register_revision_compare_screen' );
+add_action( 'removable_query_args', __NAMESPACE__ . '\filter_add_removable_query_args' );
 
 /**
  * Enqueue assets for admin screens, except the block editor.
@@ -133,17 +135,56 @@ function add_updates_subpages() {
 
 		$page_hook = get_plugin_page_hook( $post_type . '-updates', $parent_slug );
 
-		add_action(
-			"load-$page_hook",
-			function() {
-				// This is a hack to ensure that the list table columns are registered properly. It has to happen
-				// before the subpage's render function is called.
-				get_list_table();
+		add_action( "load-$page_hook", __NAMESPACE__ . '\pre_render_updates_subpage' );
+	}
+}
 
-				// This also has to be called before the render function fires.
-				add_screen_option( 'per_page' );
-			}
-		);
+/**
+ * Things that need to happen before a subpage's render function is called.
+ *
+ * Plugin pages already have headers sent and admin header templates loaded by the time that
+ * the render callback is called.
+ *
+ * @return void
+ */
+function pre_render_updates_subpage() {
+	// This is a hack to ensure that the list table columns are registered properly.
+	get_list_table();
+
+	add_screen_option( 'per_page' );
+
+	$action = wp_unslash( filter_input( INPUT_GET, 'action' ) );
+	if ( ! $action || '-1' === $action ) {
+		$action = wp_unslash( filter_input( INPUT_GET, 'action2' ) );
+	}
+
+	if ( $action && '-1' !== $action ) {
+		$redirect = handle_bulk_edit_actions( $action );
+
+		wp_safe_redirect( $redirect );
+	} else {
+		$remove_args = array_filter( (array) filter_input_array(
+			INPUT_GET,
+			array(
+				'action'           => FILTER_DEFAULT,
+				'action2'          => FILTER_DEFAULT,
+				'_wp_http_referer' => FILTER_DEFAULT,
+				'_wpnonce'         => FILTER_DEFAULT,
+			)
+		) );
+		$remove_args = array_keys( $remove_args );
+
+		if ( '' === filter_input( INPUT_GET, 's' ) ) {
+			$remove_args[] = 's';
+		}
+
+		if ( 1 === filter_input( INPUT_GET, 'paged', FILTER_VALIDATE_INT ) ) {
+			$remove_args[] = 'paged';
+		}
+
+		if ( ! empty( $remove_args ) ) {
+			wp_safe_redirect( remove_query_arg( $remove_args, $_SERVER['REQUEST_URI'] ) );
+		}
 	}
 }
 
@@ -155,17 +196,79 @@ function add_updates_subpages() {
 function render_updates_subpage() {
 	$post_id    = filter_input( INPUT_GET, 'p', FILTER_VALIDATE_INT );
 	$list_table = get_list_table();
-	$messages   = array();
+	$notices    = array(
+		'success' => array(),
+		'error'   => array(),
+	);
 
-	$action = wp_unslash( filter_input( INPUT_GET, 'action' ) );
-	$nonce  = wp_unslash( filter_input( INPUT_GET, '_wpnonce' ) );
+	$action_results = array_filter( filter_input_array(
+		INPUT_GET,
+		array(
+			// Be sure to include each of these in `filter_add_removable_query_args` as well.
+			'invalid'       => FILTER_VALIDATE_BOOLEAN,
+			'no_items'      => FILTER_VALIDATE_BOOLEAN,
+			'deleted'       => FILTER_VALIDATE_INT,
+			'not_deleted'   => FILTER_VALIDATE_INT,
+			'published'     => FILTER_VALIDATE_INT,
+			'not_published' => FILTER_VALIDATE_INT,
+		)
+	) );
 
-	if ( ! $action || '-1' === $action ) {
-		$action = wp_unslash( filter_input( INPUT_GET, 'action2' ) );
-	}
-
-	if ( $action && '-1' !== $action ) {
-		$messages = handle_bulk_edit_actions( $action, $nonce );
+	if ( ! empty( $action_results ) ) {
+		foreach ( $action_results as $result => $count ) {
+			switch ( $result ) {
+				case 'invalid':
+					$notices['error'][] = __( 'Invalid form submission.', 'revisions-extended' );
+					break;
+				case 'no_items':
+					$notices['error'][] = __( 'No updates were selected for bulk editing.', 'revisions-extended' );
+					break;
+				case 'deleted':
+					$notices['success'][] = sprintf(
+						_n(
+							'%d update permanently deleted.',
+							'%d updates permanently deleted.',
+							$count,
+							'revisions-extended'
+						),
+						number_format_i18n( $count )
+					);
+					break;
+				case 'not_deleted':
+					$notices['error'][] = sprintf(
+						_n(
+							'%d update could not be deleted.',
+							'%d updates could not be deleted.',
+							$count,
+							'revisions-extended'
+						),
+						number_format_i18n( $count )
+					);
+					break;
+				case 'published':
+					$notices['success'][] = sprintf(
+						_n(
+							'%d update published.',
+							'%d updates published.',
+							$count,
+							'revisions-extended'
+						),
+						number_format_i18n( $count )
+					);
+					break;
+				case 'not_published':
+					$notices['error'][] = sprintf(
+						_n(
+							'%d update could not be published.',
+							'%d updates could not be published.',
+							$count,
+							'revisions-extended'
+						),
+						number_format_i18n( $count )
+					);
+					break;
+			}
+		}
 	}
 
 	require get_views_path() . 'edit-revisions.php';
@@ -186,77 +289,73 @@ function get_list_table() {
  * Process list table form submissions for bulk actions.
  *
  * @param string $action
- * @param string $nonce
  *
- * @return array An multidimensional associated array of message strings for different types of notices.
+ * @return string The URL to redirect to once processing is complete.
  */
-function handle_bulk_edit_actions( $action, $nonce ) {
-	$screen         = get_current_screen();
-	$nonce_is_valid = wp_verify_nonce( $nonce, "bulk-{$screen->base}" ); // From WP_List_Table::display_tablenav.
-	$valid_actions  = array( 'delete' );
-	$items          = filter_input( INPUT_GET, 'bulk_edit', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY );
-	$edited         = 0;
-	$not_edited     = 0;
-	$messages       = array(
-		'error' => array(),
-		'info'  => array(),
-	);
+function handle_bulk_edit_actions( $action ) {
+	$screen = get_current_screen();
+	check_admin_referer( "bulk-{$screen->base}" );
 
-	if ( false === $nonce_is_valid || ! in_array( $action, $valid_actions, true ) ) {
-		$messages['error'][] = __( 'Invalid form submission.', 'revisions-extended' );
+	$valid_actions = array( 'delete', 'publish' );
+	$items         = filter_input( INPUT_GET, 'bulk_edit', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY );
+	$query_args    = array();
+	$edited        = 0;
+	$not_edited    = 0;
+	$redirect      = wp_get_referer();
+
+	if ( ! in_array( $action, $valid_actions, true ) ) {
+		$query_args['invalid'] = 1;
 	}
 
 	if ( empty( $items ) ) {
-		$messages['error'][] = __( 'No updates were selected for bulk editing.', 'revisions-extended' );
+		$query_args['no_items'] = 1;
 	}
 
-	if ( empty( $messages['error'] ) ) {
-		foreach ( $items as $revision_id ) {
-			$revision = wp_get_post_revision( $revision_id );
+	if ( ! empty( $query_args ) ) {
+		return add_query_arg( $query_args, $redirect );
+	}
 
-			if ( $revision ) {
-				switch ( $action ) {
-					case 'delete':
-						$result = wp_delete_post_revision( $revision );
-						break;
-				}
+	foreach ( $items as $revision_id ) {
+		$revision = wp_get_post_revision( $revision_id );
 
-				if ( $result ) {
-					$edited ++;
-				} else {
-					$not_edited ++;
-				}
+		if ( $revision ) {
+			switch ( $action ) {
+				case 'delete':
+					$result = wp_delete_post_revision( $revision );
+					break;
+				case 'publish':
+					$result = update_post_from_revision( $revision->ID );
+
+					if ( is_wp_error( $result ) ) {
+						$result = false;
+					}
+					break;
+			}
+
+			if ( $result ) {
+				$edited ++;
 			} else {
 				$not_edited ++;
 			}
+		} else {
+			$not_edited ++;
 		}
 	}
 
-	if ( $edited ) {
-		$messages['info'][] = sprintf(
-			_n(
-				'%s update was successfully deleted.',
-				'%s updates were successfully deleted.',
-				absint( $edited ),
-				'revisions-extended'
-			),
-			number_format_i18n( $edited )
-		);
+	if ( $edited || $not_edited ) {
+		switch ( $action ) {
+			case 'delete':
+				$query_args['deleted']     = $edited;
+				$query_args['not_deleted'] = $not_edited;
+				break;
+			case 'publish':
+				$query_args['published']     = $edited;
+				$query_args['not_published'] = $not_edited;
+				break;
+		}
 	}
 
-	if ( $not_edited ) {
-		$messages['error'][] = sprintf(
-			_n(
-				'%s update could not be deleted.',
-				'%s updates could not be deleted.',
-				absint( $not_edited ),
-				'revisions-extended'
-			),
-			number_format_i18n( $not_edited )
-		);
-	}
-
-	return $messages;
+	return add_query_arg( $query_args, $redirect );
 }
 
 /**
@@ -419,4 +518,27 @@ function get_compare_url( $revision_id ) {
 	);
 
 	return $url;
+}
+
+/**
+ * Some additional single-use query variable names that can be removed from an admin URL.
+ *
+ * @param array $removable_query_args
+ *
+ * @return string[]
+ */
+function filter_add_removable_query_args( $removable_query_args ) {
+	$removable_query_args = array_merge(
+		$removable_query_args,
+		array(
+			'invalid',
+			'no_items',
+			'deleted',
+			'not_deleted',
+			'published',
+			'not_published',
+		)
+	);
+
+	return $removable_query_args;
 }
