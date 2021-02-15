@@ -3,6 +3,7 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { format } from '@wordpress/date';
+import { addQueryArgs } from '@wordpress/url';
 
 export const pluginNamespace = 'revisions-extended';
 export const pluginName = __( 'Revisions Extended', 'revisions-extended' );
@@ -27,6 +28,19 @@ export const getAllRevisionUrl = ( type ) => {
 	}
 
 	return `/wp-admin/edit.php?post_type=${ type }&page=${ type }-updates`;
+};
+
+/**
+ * Returns the link for the revision comparison page
+ *
+ * @param {string} revisionId
+ * @return {string} Url
+ */
+export const getCompareLink = ( revisionId ) => {
+	return addQueryArgs( 'revision.php', {
+		page: 'compare-updates',
+		revision_id: revisionId,
+	} );
 };
 
 export const getFormattedDate = ( date ) => {
