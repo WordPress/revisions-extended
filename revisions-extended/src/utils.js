@@ -42,6 +42,19 @@ export const getAllRevisionUrl = ( type ) => {
 	} );
 };
 
+/**
+ * Returns the link for the revision comparison page
+ *
+ * @param {string} revisionId
+ * @return {string} Url
+ */
+export const getCompareLink = ( revisionId ) => {
+	return addQueryArgs( 'revision.php', {
+		page: 'compare-updates',
+		revision_id: revisionId,
+	} );
+};
+
 export const getFormattedDate = ( date ) => {
 	return format( 'D, F j, Y G:i a', date );
 };

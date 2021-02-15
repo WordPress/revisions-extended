@@ -15,7 +15,7 @@ import { dispatch } from '@wordpress/data';
 
 import { usePost, useParentPost } from '../../../hooks';
 import { POST_STATUS_SCHEDULED } from '../../../settings';
-import { getEditUrl } from '../../../utils';
+import { getEditUrl, getCompareLink } from '../../../utils';
 
 /**
  * Module Constants
@@ -43,9 +43,9 @@ const RevisionIndicator = () => {
 			getEditUrl( savedPost.parent ),
 			getLabel( 'singular_name' ).toLowerCase()
 		),
-		` | <a href="/wp-admin/revision.php?revision=${
-			savedPost.id
-		}&gutenberg=true" />${ __( 'See changes' ) }</a> ]`,
+		` | <a href="${ getCompareLink( savedPost.id ) }" />${ __(
+			'See changes'
+		) }</a> ]`,
 	];
 
 	useEffect( () => {
