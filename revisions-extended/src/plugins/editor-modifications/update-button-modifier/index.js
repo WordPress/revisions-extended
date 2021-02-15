@@ -15,7 +15,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { ConfirmWindow } from '../../../components';
-import { usePost, useRevision, useInterface } from '../../../hooks';
+import { usePost, useRevision, useInterface, useTypes } from '../../../hooks';
 import { POST_STATUS_SCHEDULED } from '../../../settings';
 import {
 	getEditUrl,
@@ -38,6 +38,7 @@ const UpdateButtonModifier = () => {
 		changingToScheduled,
 		getEditedPostAttribute,
 	} = usePost();
+	const { fetchTypes } = useTypes();
 
 	const _savePost = async () => {
 		const isFutureRevision = changingToScheduled();
@@ -61,8 +62,11 @@ const UpdateButtonModifier = () => {
 		// This will currently fail quietly if it doesn't exist, since it's *hopefully* temporary, low risk.
 		noticeDispatch.removeNotice( FUTURE_SUPPORT_NOTICE_ID );
 
+		// We have to refetch because the context is obliterated because this function has been associated to the html element.
+		const types = await fetchTypes();
+
 		const { data, error } = await create( {
-			postType: savedPost.type,
+			restBase: types[ savedPost.type ].rest_base,
 			postId: savedPost.id,
 			date: getEditedPostAttribute( 'date' ),
 			title: getEditedPostAttribute( 'title' ),

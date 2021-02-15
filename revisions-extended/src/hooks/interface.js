@@ -128,6 +128,7 @@ export function InterfaceProvider( { children, btnText = false } ) {
 					}
 					setIntercept( isChecked );
 				},
+				btnState,
 			} }
 		>
 			{ children }
