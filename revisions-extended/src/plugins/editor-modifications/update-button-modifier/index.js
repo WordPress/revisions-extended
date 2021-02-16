@@ -69,7 +69,7 @@ const UpdateButtonModifier = () => {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
 				__(
-					'Error creating update: missing post type.',
+					'Error creating update: missing post type info.',
 					'revisions-extended'
 				)
 			);
