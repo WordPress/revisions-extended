@@ -38,7 +38,7 @@ const UpdateButtonModifier = () => {
 		changingToScheduled,
 		getEditedPostAttribute,
 	} = usePost();
-	const { fetchTypes } = useTypes();
+	const { fetchTypes, getTypeInfo } = useTypes();
 
 	const _savePost = async () => {
 		const isFutureRevision = changingToScheduled();
@@ -143,7 +143,9 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'Edit original %s.', 'revisions-extended' ),
-							savedPost.type
+							getTypeInfo(
+								`${ savedPost.type }.labels.singular_name`
+							).toLowerCase()
 						),
 						href: getEditUrl( savedPost.id ),
 					},
@@ -151,7 +153,9 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'View all %s updates.', 'revisions-extended' ),
-							savedPost.type
+							getTypeInfo(
+								`${ savedPost.type }.labels.singular_name`
+							).toLowerCase()
 						),
 						href: getAllRevisionUrl( savedPost.type ),
 					},
