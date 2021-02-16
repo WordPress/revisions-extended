@@ -68,7 +68,10 @@ const UpdateButtonModifier = () => {
 		if ( ! types ) {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
-				__( 'Error creating revision.', 'revisions-extended' )
+				__(
+					'Error creating update: missing post type.',
+					'revisions-extended'
+				)
 			);
 		}
 
@@ -85,7 +88,7 @@ const UpdateButtonModifier = () => {
 		if ( error ) {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
-				__( 'Error creating revision.', 'revisions-extended' )
+				__( 'Error creating update.', 'revisions-extended' )
 			);
 		}
 
