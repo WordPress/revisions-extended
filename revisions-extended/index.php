@@ -39,7 +39,6 @@ function load_files() {
 	require_once get_includes_path() . 'rest-revision-controller.php';
 	require_once get_includes_path() . 'rest-revisions-controller.php';
 	require_once get_includes_path() . 'revision.php';
-	require_once get_includes_path() . 'test-type.php';
 }
 
 /**
