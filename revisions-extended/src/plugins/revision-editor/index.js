@@ -16,9 +16,9 @@ import { pluginNamespace, getEditUrl } from '../../utils';
 
 import {
 	InterfaceProvider,
-	usePost,
 	ParentPostProvider,
 	TypesProvider,
+	usePost,
 } from '../../hooks';
 
 /**
