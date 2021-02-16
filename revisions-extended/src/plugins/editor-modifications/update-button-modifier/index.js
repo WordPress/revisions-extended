@@ -30,6 +30,7 @@ import {
 const FUTURE_SUPPORT_NOTICE_ID = 'revisions-extended-future-support-notice';
 
 const UpdateButtonModifier = () => {
+	const [ typeInfo, setTypeInfo ] = useState();
 	const [ newRevision, setNewRevision ] = useState();
 	const { create } = useRevision();
 	const { setBtnDefaults } = useInterface();
@@ -38,7 +39,14 @@ const UpdateButtonModifier = () => {
 		changingToScheduled,
 		getEditedPostAttribute,
 	} = usePost();
-	const { fetchTypes } = useTypes();
+	const { loaded: loadedTypes, getTypeInfo } = useTypes();
+
+	const displaySaveError = () => {
+		dispatch( 'core/notices' ).createNotice(
+			'error',
+			__( 'Error creating update.', 'revisions-extended' )
+		);
+	};
 
 	const _savePost = async () => {
 		const isFutureRevision = changingToScheduled();
@@ -63,10 +71,15 @@ const UpdateButtonModifier = () => {
 		noticeDispatch.removeNotice( FUTURE_SUPPORT_NOTICE_ID );
 
 		// We have to refetch because the context is obliterated because this function has been associated to the html element.
-		const types = await fetchTypes();
+		const restBase = await getTypeInfo( savedPost.type, 'rest_base' );
+
+		if ( ! restBase ) {
+			displaySaveError();
+			return;
+		}
 
 		const { data, error } = await create( {
-			restBase: types[ savedPost.type ].rest_base,
+			restBase,
 			postId: savedPost.id,
 			date: getEditedPostAttribute( 'date' ),
 			title: getEditedPostAttribute( 'title' ),
@@ -76,10 +89,7 @@ const UpdateButtonModifier = () => {
 		} );
 
 		if ( error ) {
-			dispatch( 'core/notices' ).createNotice(
-				'error',
-				__( 'Error creating revision.', 'revisions-extended' )
-			);
+			displaySaveError();
 		}
 
 		if ( data ) {
@@ -94,6 +104,18 @@ const UpdateButtonModifier = () => {
 			},
 		} );
 	}, [] );
+
+	useEffect( () => {
+		if ( ! loadedTypes ) return;
+
+		const _getTypeInfo = async () => {
+			const _typeInfo = await getTypeInfo( savedPost.type );
+
+			setTypeInfo( _typeInfo );
+		};
+
+		_getTypeInfo();
+	}, [ loadedTypes ] );
 
 	if ( newRevision ) {
 		return (
@@ -136,7 +158,7 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'Edit original %s.', 'revisions-extended' ),
-							savedPost.type
+							typeInfo.labels.singular_name.toLowerCase()
 						),
 						href: getEditUrl( savedPost.id ),
 					},
@@ -144,7 +166,7 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'View all %s updates.', 'revisions-extended' ),
-							savedPost.type
+							typeInfo.labels.singular_name.toLowerCase()
 						),
 						href: getAllRevisionUrl( savedPost.type ),
 					},

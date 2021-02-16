@@ -12,19 +12,41 @@ import apiFetch from '@wordpress/api-fetch';
 const StateContext = createContext();
 
 export function TypesProvider( { children } ) {
-	const [ types, setTypes ] = useState( {} );
+	const [ types, setTypes ] = useState( undefined );
 	const [ loading, setLoading ] = useState( false );
 	const [ error, setError ] = useState( false );
 
-	const getTypeInfo = ( type, prop ) => {
-		return types[ type ] ? types[ type ][ prop ] : undefined;
-	};
-
+	/**
+	 * Fetches type data from WP api
+	 */
 	const fetchTypes = async () => {
 		return await apiFetch( {
 			path: `wp/v2/types?context=edit`,
 			method: 'GET',
 		} );
+	};
+
+	/**
+	 * Return the type object.
+	 *
+	 * @param {string} postType Post type
+	 * @param {string|undefined} prop Property to return from type object
+	 * @return {Object|undefined} Type object
+	 */
+	const getTypeInfo = async ( postType, prop ) => {
+		let _types = types;
+
+		// Because of some hacks to tie into html elements, the context can be emptied unexpectedly.
+		// Let's refetch in that case.
+		if ( ! loading && ! types && ! error ) {
+			_types = await fetchTypes();
+		}
+
+		if ( ! prop ) {
+			return _types[ postType ];
+		}
+
+		return _types[ postType ] ? _types[ postType ][ prop ] : undefined;
 	};
 
 	useEffect( () => {
@@ -48,10 +70,9 @@ export function TypesProvider( { children } ) {
 		<StateContext.Provider
 			value={ {
 				loading,
-				loaded: ! loading && ! error && Object.keys( types ).length > 0,
+				loaded: ! loading && ! error && types !== undefined,
 				error,
 				types,
-				fetchTypes,
 				getTypeInfo,
 			} }
 		>

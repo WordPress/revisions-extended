@@ -14,7 +14,12 @@ import RevisionIndicator from './revision-indicator';
 import WPButtonModifier from './wp-button-modifier';
 import { pluginNamespace, getEditUrl } from '../../utils';
 
-import { InterfaceProvider, usePost, ParentPostProvider } from '../../hooks';
+import {
+	InterfaceProvider,
+	usePost,
+	TypesProvider,
+	ParentPostProvider,
+} from '../../hooks';
 
 /**
  * Module Constants
@@ -33,10 +38,12 @@ const PluginWrapper = () => {
 		<ErrorBoundary>
 			<InterfaceProvider btnText={ __( 'Publish' ) }>
 				<ParentPostProvider links={ savedPost._links }>
-					<DocumentSettingsPanel />
-					<UpdateButtonModifier />
-					<RevisionIndicator />
-					<WPButtonModifier />
+					<TypesProvider>
+						<DocumentSettingsPanel />
+						<UpdateButtonModifier />
+						<RevisionIndicator />
+						<WPButtonModifier />
+					</TypesProvider>
 				</ParentPostProvider>
 			</InterfaceProvider>
 		</ErrorBoundary>
