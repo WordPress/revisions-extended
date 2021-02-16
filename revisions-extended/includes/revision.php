@@ -257,6 +257,9 @@ function update_post_from_revision( $revision_id ) {
 		$result = $revision->post_parent;
 	}
 
+	// Ensure there are no more scheduled publish events for this revision.
+	wp_clear_scheduled_hook( 'publish_future_revision', array( $revision->ID ) );
+
 	return $result;
 }
 
