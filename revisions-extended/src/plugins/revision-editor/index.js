@@ -7,6 +7,7 @@ import { registerPlugin } from '@wordpress/plugins';
 /**
  * Internal dependencies
  */
+import { ErrorBoundary } from '../../components';
 import DocumentSettingsPanel from './document-settings-panel';
 import UpdateButtonModifier from './update-button-modifier';
 import RevisionIndicator from './revision-indicator';
@@ -29,14 +30,16 @@ const PluginWrapper = () => {
 	}
 
 	return (
-		<InterfaceProvider btnText={ __( 'Publish' ) }>
-			<ParentPostProvider links={ savedPost._links }>
-				<DocumentSettingsPanel />
-				<UpdateButtonModifier />
-				<RevisionIndicator />
-				<WPButtonModifier />
-			</ParentPostProvider>
-		</InterfaceProvider>
+		<ErrorBoundary>
+			<InterfaceProvider btnText={ __( 'Publish' ) }>
+				<ParentPostProvider links={ savedPost._links }>
+					<DocumentSettingsPanel />
+					<UpdateButtonModifier />
+					<RevisionIndicator />
+					<WPButtonModifier />
+				</ParentPostProvider>
+			</InterfaceProvider>
+		</ErrorBoundary>
 	);
 };
 
