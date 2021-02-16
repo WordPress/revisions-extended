@@ -1,4 +1,9 @@
 /**
+ * External dependencies
+ */
+import { get } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import {
@@ -16,8 +21,8 @@ export function TypesProvider( { children } ) {
 	const [ loading, setLoading ] = useState( false );
 	const [ error, setError ] = useState( false );
 
-	const getTypeInfo = ( type, prop ) => {
-		return types[ type ] ? types[ type ][ prop ] : undefined;
+	const getTypeInfo = ( prop, defaultValue = '' ) => {
+		return get( types, prop, defaultValue );
 	};
 
 	const fetchTypes = async () => {
@@ -50,7 +55,6 @@ export function TypesProvider( { children } ) {
 				loading,
 				loaded: ! loading && ! error && Object.keys( types ).length > 0,
 				error,
-				types,
 				fetchTypes,
 				getTypeInfo,
 			} }

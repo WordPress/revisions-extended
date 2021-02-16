@@ -19,6 +19,7 @@ import {
 	useRevision,
 	useInterface,
 	useParentPost,
+	useTypes,
 } from '../../../hooks';
 import { getEditUrl, getAllRevisionUrl } from '../../../utils';
 
@@ -26,7 +27,8 @@ const UpdateButtonModifier = () => {
 	const [ showSuccess, setShowSuccess ] = useState( false );
 	const { setBtnDefaults } = useInterface();
 	const { savedPost, didPostSaveRequestSucceed, savePost } = usePost();
-	const { type: parentType, getLabel } = useParentPost();
+	const { type: parentType } = useParentPost();
+	const { getTypeInfo } = useTypes();
 	const { publish } = useRevision();
 
 	const _savePost = async () => {
@@ -77,7 +79,9 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'View published %s.' ),
-							getLabel( 'singular_name' ).toLowerCase()
+							getTypeInfo(
+								`${ parentType }.labels.singular_name`
+							).toLowerCase()
 						),
 						href: `/?p=${ savedPost.parent }`,
 					},
@@ -85,7 +89,9 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'Edit original %s.' ),
-							getLabel( 'singular_name' ).toLowerCase()
+							getTypeInfo(
+								`${ parentType }.labels.singular_name`
+							).toLowerCase()
 						),
 						href: getEditUrl( savedPost.parent ),
 					},
@@ -93,7 +99,9 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'View all %s updates.' ),
-							getLabel( 'singular_name' ).toLowerCase()
+							getTypeInfo(
+								`${ parentType }.labels.singular_name`
+							).toLowerCase()
 						),
 						href: getAllRevisionUrl( parentType ),
 					},

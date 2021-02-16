@@ -28,7 +28,7 @@ const DocumentSettingsPanel = () => {
 		const runQuery = async () => {
 			const { data, error } = await get( {
 				postId: savedPost.id,
-				restBase: getTypeInfo( savedPost.type, 'rest_base' ),
+				restBase: getTypeInfo( `${ savedPost.type }.rest_base` ),
 			} );
 
 			if ( error ) {

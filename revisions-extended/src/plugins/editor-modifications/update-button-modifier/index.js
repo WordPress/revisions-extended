@@ -65,6 +65,13 @@ const UpdateButtonModifier = () => {
 		// We have to refetch because the context is obliterated because this function has been associated to the html element.
 		const types = await fetchTypes();
 
+		if ( ! types ) {
+			dispatch( 'core/notices' ).createNotice(
+				'error',
+				__( 'Error creating revision.', 'revisions-extended' )
+			);
+		}
+
 		const { data, error } = await create( {
 			restBase: types[ savedPost.type ].rest_base,
 			postId: savedPost.id,
