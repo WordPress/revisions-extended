@@ -14,12 +14,7 @@ import RevisionIndicator from './revision-indicator';
 import WPButtonModifier from './wp-button-modifier';
 import { pluginNamespace, getEditUrl } from '../../utils';
 
-import {
-	InterfaceProvider,
-	usePost,
-	TypesProvider,
-	ParentPostProvider,
-} from '../../hooks';
+import { InterfaceProvider, usePost, ParentPostProvider } from '../../hooks';
 
 /**
  * Module Constants
@@ -35,6 +30,7 @@ const PluginWrapper = () => {
 	}
 
 	return (
+<<<<<<< HEAD
 		<ErrorBoundary>
 			<InterfaceProvider btnText={ __( 'Publish' ) }>
 				<ParentPostProvider links={ savedPost._links }>
@@ -47,6 +43,16 @@ const PluginWrapper = () => {
 				</ParentPostProvider>
 			</InterfaceProvider>
 		</ErrorBoundary>
+=======
+		<InterfaceProvider btnText={ __( 'Publish' ) }>
+			<ParentPostProvider links={ savedPost._links }>
+				<DocumentSettingsPanel />
+				<UpdateButtonModifier />
+				<RevisionIndicator />
+				<WPButtonModifier />
+			</ParentPostProvider>
+		</InterfaceProvider>
+>>>>>>> Revert "Make the getTypeInfo function async for get the object."
 	);
 };
 

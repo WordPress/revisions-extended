@@ -19,17 +19,14 @@ import {
 	useRevision,
 	useInterface,
 	useParentPost,
-	useTypes,
 } from '../../../hooks';
 import { getEditUrl, getAllRevisionUrl } from '../../../utils';
 
 const UpdateButtonModifier = () => {
-	const [ singularName, setSingularName ] = useState();
 	const [ showSuccess, setShowSuccess ] = useState( false );
 	const { setBtnDefaults } = useInterface();
 	const { savedPost, didPostSaveRequestSucceed, savePost } = usePost();
-	const { type: parentType } = useParentPost();
-	const { loaded: loadedTypes, getTypeInfo } = useTypes();
+	const { type: parentType, getLabel } = useParentPost();
 	const { publish } = useRevision();
 
 	const _savePost = async () => {
@@ -66,23 +63,6 @@ const UpdateButtonModifier = () => {
 		} );
 	}, [] );
 
-	useEffect( () => {
-		if ( ! parentType || ! loadedTypes ) return;
-
-		const getSingularName = async () => {
-			const labels = await getTypeInfo( parentType, 'labels' );
-
-			// In case something goes wrong, use default
-			if ( ! labels || ! labels.singular_name ) {
-				setSingularName( __( 'post', 'revisions-extended' ) );
-			} else {
-				setSingularName( labels.singular_name.toLowerCase() );
-			}
-		};
-
-		getSingularName();
-	}, [ parentType, loadedTypes ] );
-
 	if ( showSuccess ) {
 		return (
 			<ConfirmWindow
@@ -97,7 +77,7 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'View published %s.' ),
-							singularName
+							getLabel( 'singular_name' ).toLowerCase()
 						),
 						href: `/?p=${ savedPost.parent }`,
 					},
@@ -105,7 +85,7 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'Edit original %s.' ),
-							singularName
+							getLabel( 'singular_name' ).toLowerCase()
 						),
 						href: getEditUrl( savedPost.parent ),
 					},
@@ -113,7 +93,7 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'View all %s updates.' ),
-							singularName
+							getLabel( 'singular_name' ).toLowerCase()
 						),
 						href: getAllRevisionUrl( parentType ),
 					},
