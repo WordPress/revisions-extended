@@ -301,7 +301,7 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 				$links['parent'] = array(
 					'href'       => rest_url( sprintf(
 						'wp/v2/%s/%d',
-						get_post_type_object( $post_type )->rest_base,
+						get_post_type_object( $post_type )->get_rest_controller()->rest_base,
 						$parent->ID
 					) ),
 					'embeddable' => true,
