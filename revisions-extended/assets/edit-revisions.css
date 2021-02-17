@@ -1,3 +1,4 @@
-.column-parent a {
+.column-parent a,
+.column-scheduled strong {
     display: block;
 }

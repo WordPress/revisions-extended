@@ -364,6 +364,13 @@ class Revision_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function column_scheduled( $post ) {
+		$scheduled_time = get_post_timestamp( $post );
+		$time_diff      = time() - $scheduled_time;
+
+		if ( $time_diff > 0 ) {
+			echo '<strong class="error-message">' . __( 'Missed schedule', 'revisions-extended' ) . '</strong>';
+		}
+
 		printf(
 			/* translators: 1: Post date, 2: Post time. */
 			__( '%1$s at %2$s', 'revisions-extended' ),
