@@ -12,6 +12,10 @@ import DocumentSettingsPanel from './document-settings-panel';
 import UpdateButtonModifier from './update-button-modifier';
 import RevisionIndicator from './revision-indicator';
 import WPButtonModifier from './wp-button-modifier';
+
+// The filter will run once on load
+import './wp-button-filter';
+
 import { pluginNamespace, getEditUrl } from '../../utils';
 
 import {
