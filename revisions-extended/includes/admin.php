@@ -19,6 +19,8 @@ add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\enqueue_block_edito
 add_action( 'admin_menu', __NAMESPACE__ . '\add_updates_subpages' );
 add_action( 'admin_menu', __NAMESPACE__ . '\register_revision_compare_screen' );
 add_action( 'removable_query_args', __NAMESPACE__ . '\filter_add_removable_query_args' );
+add_filter( 'parent_file', __NAMESPACE__ . '\filter_menu_file_for_edit_screen' );
+add_filter( 'submenu_file', __NAMESPACE__ . '\filter_menu_file_for_edit_screen' );
 
 /**
  * Enqueue assets for admin screens, except the block editor.
@@ -541,4 +543,35 @@ function filter_add_removable_query_args( $removable_query_args ) {
 	);
 
 	return $removable_query_args;
+}
+
+/**
+ * Highlight the Updates menu item when editing a revision.
+ *
+ * @param string $file
+ *
+ * @return mixed|string
+ */
+function filter_menu_file_for_edit_screen( $file ) {
+	if ( 'edit.php?post_type=revision' === $file ) {
+		global $post;
+		$post_type = get_post_type( $post->post_parent );
+
+		if ( $post_type ) {
+			switch ( current_filter() ) {
+				case 'parent_file':
+					$file = 'edit.php';
+
+					if ( 'post' !== $post_type ) {
+						$file = add_query_arg( 'post_type', $post_type, $file );
+					}
+					break;
+				case 'submenu_file':
+					$file = "$post_type-updates";
+					break;
+			}
+		}
+	}
+
+	return $file;
 }
