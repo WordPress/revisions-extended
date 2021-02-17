@@ -195,6 +195,8 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			return $revision_id;
 		}
 
+		$this->maybe_delete_duplicate_autosave( $revision_id );
+
 		$revision = $this->get_revision( $revision_id );
 		$request->set_param( 'context', 'edit' );
 
@@ -203,6 +205,32 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		remove_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ) );
 
 		return rest_ensure_response( $response );
+	}
+
+	/**
+	 * Delete an autosave whose changes were captured by a created update.
+	 *
+	 * This helps prevent the message "There is an autosave of this post that is more recent than the version below"
+	 * from appearing when returning to the original post after saving an update.
+	 *
+	 * @param int $revision_id
+	 *
+	 * @return void
+	 */
+	protected function maybe_delete_duplicate_autosave( $revision_id ) {
+		$revision = $this->get_revision( $revision_id );
+		$parent   = $this->get_parent( $revision->post_parent );
+		$autosave = wp_get_post_autosave( $parent->ID, get_current_user_id() );
+
+		if ( $autosave ) {
+			$revision_modified = mysql2date( 'U', $revision->post_modified_gmt, false );
+			$parent_modified   = mysql2date( 'U', $parent->post_modified_gmt, false );
+			$autosave_modified = mysql2date( 'U', $autosave->post_modified_gmt, false );
+
+			if ( $autosave_modified > $parent_modified && $autosave_modified <= $revision_modified ) {
+				wp_delete_post_revision( $autosave->ID );
+			}
+		}
 	}
 
 	/**
