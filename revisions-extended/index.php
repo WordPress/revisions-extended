@@ -1,11 +1,13 @@
 <?php
 /**
  * Plugin name: Revisions Extended
- * Description:
+ * Plugin URI:  https://github.com/coreymckrill/revisions-extended
+ * Description: [Experimental] Extends the functionality of WP's revisioning system to allow for scheduled post updates.
  * Version:     0.1
  * Author:      WordPress.org
  * Author URI:  http://wordpress.org/
  * License:     GPLv2 or later
+ * Text Domain: revisions-extended
  */
 
 namespace RevisionsExtended;
