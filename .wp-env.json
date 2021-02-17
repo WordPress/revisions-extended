@@ -8,7 +8,7 @@
 	"core": "WordPress/WordPress#master",
 	"plugins": [
 		"./revisions-extended",
-		"https://downloads.wordpress.org/plugin/gutenberg.9.9.1.zip"
+		"https://downloads.wordpress.org/plugin/gutenberg.9.9.3.zip"
 	],
 	"mappings": {
 		"wp-content/mu-plugins": "./wp-env/mu-plugins"
