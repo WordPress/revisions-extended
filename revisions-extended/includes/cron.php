@@ -36,6 +36,9 @@ function unschedule_default_publish( $post_id ) {
 function schedule_update( $post_id, $post ) {
 	$time = strtotime( $post->post_date_gmt . ' GMT' );
 
+	// Clear previous scheduled events for the same revision.
+	wp_clear_scheduled_hook( 'publish_future_revision', array( $post->ID ) );
+
 	wp_schedule_single_event( $time, 'publish_future_revision', array( $post->ID ) );
 }
 
