@@ -2,11 +2,13 @@
 
 namespace RevisionsExtended\Admin;
 
+use WP_Post;
 use RevisionsExtended\Admin\Revision_List_Table;
 use function RevisionsExtended\get_assets_path;
 use function RevisionsExtended\get_build_asset_info;
 use function RevisionsExtended\get_includes_path;
 use function RevisionsExtended\get_views_path;
+use function RevisionsExtended\Revision\get_post_revisions;
 use function RevisionsExtended\Revision\update_post_from_revision;
 
 defined( 'WPINC' ) || die();
@@ -21,6 +23,7 @@ add_action( 'admin_menu', __NAMESPACE__ . '\register_revision_compare_screen' );
 add_action( 'removable_query_args', __NAMESPACE__ . '\filter_add_removable_query_args' );
 add_filter( 'parent_file', __NAMESPACE__ . '\filter_menu_file_for_edit_screen' );
 add_filter( 'submenu_file', __NAMESPACE__ . '\filter_menu_file_for_edit_screen' );
+add_filter( 'display_post_states', __NAMESPACE__ . '\filter_display_post_states', 10, 2 );
 
 /**
  * Enqueue assets for admin screens, except the block editor.
@@ -574,4 +577,27 @@ function filter_menu_file_for_edit_screen( $file ) {
 	}
 
 	return $file;
+}
+
+/**
+ * Add states for posts with updates.
+ *
+ * @param array $post_states
+ * @param WP_Post $post
+ *
+ * @return mixed
+ */
+function filter_display_post_states( $post_states, $post ) {
+	if ( post_type_supports( get_post_type( $post ), 'revisions' ) ) {
+		$args      = array(
+			'post_status' => 'future',
+		);
+		$revisions = get_post_revisions( $post, $args );
+
+		if ( ! empty( $revisions ) ) {
+			$post_states['has_scheduled_updates'] = _x( 'Scheduled Updates', 'post status', 'revisions-extended' );
+		}
+	}
+
+	return $post_states;
 }
