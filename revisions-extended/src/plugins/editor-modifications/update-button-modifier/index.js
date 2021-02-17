@@ -15,7 +15,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { ConfirmWindow } from '../../../components';
-import { usePost, useRevision, useInterface } from '../../../hooks';
+import { usePost, useRevision, useInterface, useTypes } from '../../../hooks';
 import { POST_STATUS_SCHEDULED } from '../../../settings';
 import {
 	getEditUrl,
@@ -38,6 +38,7 @@ const UpdateButtonModifier = () => {
 		changingToScheduled,
 		getEditedPostAttribute,
 	} = usePost();
+	const { fetchTypes, getTypeInfo } = useTypes();
 
 	const _savePost = async () => {
 		const isFutureRevision = changingToScheduled();
@@ -61,8 +62,21 @@ const UpdateButtonModifier = () => {
 		// This will currently fail quietly if it doesn't exist, since it's *hopefully* temporary, low risk.
 		noticeDispatch.removeNotice( FUTURE_SUPPORT_NOTICE_ID );
 
+		// We have to refetch because the context is obliterated because this function has been associated to the html element.
+		const types = await fetchTypes();
+
+		if ( ! types ) {
+			dispatch( 'core/notices' ).createNotice(
+				'error',
+				__(
+					'Error creating update: missing post type info.',
+					'revisions-extended'
+				)
+			);
+		}
+
 		const { data, error } = await create( {
-			postType: savedPost.type,
+			restBase: types[ savedPost.type ].rest_base,
 			postId: savedPost.id,
 			date: getEditedPostAttribute( 'date' ),
 			title: getEditedPostAttribute( 'title' ),
@@ -74,7 +88,7 @@ const UpdateButtonModifier = () => {
 		if ( error ) {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
-				__( 'Error creating revision.', 'revisions-extended' )
+				__( 'Error creating update.', 'revisions-extended' )
 			);
 		}
 
@@ -132,7 +146,9 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'Edit original %s.', 'revisions-extended' ),
-							savedPost.type
+							getTypeInfo(
+								`${ savedPost.type }.labels.singular_name`
+							).toLowerCase()
 						),
 						href: getEditUrl( savedPost.id ),
 					},
@@ -140,7 +156,9 @@ const UpdateButtonModifier = () => {
 						text: sprintf(
 							// translators: %s: post type.
 							__( 'View all %s updates.', 'revisions-extended' ),
-							savedPost.type
+							getTypeInfo(
+								`${ savedPost.type }.labels.singular_name`
+							).toLowerCase()
 						),
 						href: getAllRevisionUrl( savedPost.type ),
 					},

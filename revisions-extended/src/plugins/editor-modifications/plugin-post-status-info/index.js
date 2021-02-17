@@ -18,8 +18,7 @@ const PluginPostStatusInfo = () => {
 	const isChangingToScheduled = changingToScheduled();
 
 	useEffect( () => {
-
-        // We want to update the checkbox if the date is moving into the future.
+		// We want to update the checkbox if the date is moving into the future.
 		if ( shouldIntercept !== isChangingToScheduled ) {
 			setShouldIntercept( isChangingToScheduled );
 		}

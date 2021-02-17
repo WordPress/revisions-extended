@@ -33,19 +33,16 @@ const executeFetch = async ( fn ) => {
  * Get all the post revisions for a specific post type
  *
  * @param {Object} data - Data sent to api
- * @param {string} data.postType - The type of the post.
+ * @param {string} data.restBase - The rest_base from the post type.
  * @param {string} data.postId - The id of the post.
  * @param {string} status
- *
  * @return {Object} Api response
  */
-const getPostRevisions = async ( data, status ) => {
-	const { postType, postId } = data;
-
+const getPostRevisions = async ( { restBase, postId }, status ) => {
 	return await executeFetch( async () => {
 		return await apiFetch( {
 			path: `${ getRestApiUrl(
-				postType,
+				restBase,
 				postId
 			) }?status=${ status }&_embed`,
 			method: 'GET',
@@ -57,18 +54,18 @@ const getPostRevisions = async ( data, status ) => {
  * Creates a revision for a specific post type
  *
  * @param {Object} data Data sent to api
- * @param {string} data.postType - The type of the post.
+ * @param {string} data.restBase - The rest_base from the post type.
  * @param {string} data.postId - The id of the post.
  * @param {string} status
  *
  * @return {Object} Api response
  */
 const createRevision = async ( data, status ) => {
-	const { postType, postId } = data;
+	const { restBase, postId } = data;
 
 	return await executeFetch( async () => {
 		return await apiFetch( {
-			path: getRestApiUrl( postType, postId ),
+			path: getRestApiUrl( restBase, postId ),
 			method: 'POST',
 			data: {
 				...data,

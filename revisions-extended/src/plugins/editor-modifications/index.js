@@ -13,7 +13,7 @@ import PluginPostStatusInfo from './plugin-post-status-info';
 import DocumentSettingsPanel from './document-settings-panel';
 
 import { pluginNamespace } from '../../utils';
-import { InterfaceProvider, usePost } from '../../hooks';
+import { InterfaceProvider, TypesProvider, usePost } from '../../hooks';
 
 const MainPlugin = () => {
 	const { isPublished } = usePost();
@@ -25,9 +25,11 @@ const MainPlugin = () => {
 	return (
 		<ErrorBoundary>
 			<InterfaceProvider btnText={ __( 'Create update' ) }>
-				<UpdateButtonModifier />
-				<PluginPostStatusInfo />
-				<DocumentSettingsPanel />
+				<TypesProvider>
+					<UpdateButtonModifier />
+					<PluginPostStatusInfo />
+					<DocumentSettingsPanel />
+				</TypesProvider>
 			</InterfaceProvider>
 		</ErrorBoundary>
 	);

@@ -13,19 +13,22 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
  * Internal dependencies
  */
 import { RevisionList } from '../../../components';
-import { useRevision, usePost } from '../../../hooks';
+import { useRevision, usePost, useTypes } from '../../../hooks';
 import { getEditUrl, getStatusDisplay } from '../../../utils';
 
 const DocumentSettingsPanel = () => {
 	const [ revisions, setRevisions ] = useState( [] );
 	const { savedPost } = usePost();
+	const { loaded: loadedTypes, getTypeInfo } = useTypes();
 	const { get } = useRevision();
 
 	useEffect( () => {
+		if ( ! loadedTypes ) return;
+
 		const runQuery = async () => {
 			const { data, error } = await get( {
 				postId: savedPost.id,
-				postType: savedPost.type,
+				restBase: getTypeInfo( `${ savedPost.type }.rest_base` ),
 			} );
 
 			if ( error ) {
@@ -38,7 +41,7 @@ const DocumentSettingsPanel = () => {
 		};
 
 		runQuery();
-	}, [] );
+	}, [ loadedTypes ] );
 
 	const revisionSort = ( a, b ) =>
 		new Date( a.date_gmt ) - new Date( b.date_gmt );
