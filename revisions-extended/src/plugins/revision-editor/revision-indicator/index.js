@@ -43,7 +43,7 @@ const RevisionIndicator = () => {
 			),
 			sprintf(
 				// translators: %1$s: url %2$s: post type.
-				__( '[ <a href="%1$s">Edit %2$s</a>.' ),
+				__( '[ <a href="%1$s">Edit %2$s</a>' ),
 				getEditUrl( savedPost.parent ),
 				getTypeInfo(
 					`${ parentType }.labels.singular_name`
