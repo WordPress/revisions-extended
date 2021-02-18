@@ -44,13 +44,21 @@ const UpdateButtonModifier = () => {
 	 * Clear the current post edits to avoid triggering dirty state
 	 */
 	const clearPostEdits = async () => {
-		const entity = { kind: 'postType', name: 'post', id: savedPost.id };
+		const entity = {
+			kind: 'postType',
+			name: savedPost.type,
+			id: savedPost.id,
+		};
 
 		const edits = select( 'core' ).getEntityRecordEdits(
 			entity.kind,
 			entity.name,
 			entity.id
 		);
+
+		if ( ! edits ) {
+			return;
+		}
 
 		const clearedEdits = {};
 
