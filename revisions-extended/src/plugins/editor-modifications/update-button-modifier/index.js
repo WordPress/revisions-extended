@@ -28,6 +28,7 @@ import {
  */
 
 const FUTURE_SUPPORT_NOTICE_ID = 'revisions-extended-future-support-notice';
+const POST_AUTOSAVE_LOCK_ID = 'revisions-extended-lock';
 
 const UpdateButtonModifier = () => {
 	const [ newRevision, setNewRevision ] = useState();
@@ -66,7 +67,7 @@ const UpdateButtonModifier = () => {
 		const types = await fetchTypes();
 
 		if ( ! types ) {
-			dispatch( 'core/notices' ).createNotice(
+			noticeDispatch.createNotice(
 				'error',
 				__(
 					'Error creating update: missing post type info.',
@@ -74,6 +75,10 @@ const UpdateButtonModifier = () => {
 				)
 			);
 		}
+
+		const editorDispatch = dispatch( 'core/editor' );
+		// Lock the post autosaves to stop updates.
+		await editorDispatch.lockPostAutosaving( POST_AUTOSAVE_LOCK_ID );
 
 		const { data, error } = await create( {
 			restBase: types[ savedPost.type ].rest_base,
@@ -86,10 +91,12 @@ const UpdateButtonModifier = () => {
 		} );
 
 		if ( error ) {
-			dispatch( 'core/notices' ).createNotice(
+			noticeDispatch.createNotice(
 				'error',
 				__( 'Error creating update.', 'revisions-extended' )
 			);
+
+			await editorDispatch.unlockPostAutosaving( POST_AUTOSAVE_LOCK_ID );
 		}
 
 		if ( data ) {
