@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { Notice } from '@wordpress/components';
-import { dispatch } from '@wordpress/data';
+import { select, dispatch } from '@wordpress/data';
 import { Fragment } from '@wordpress/element';
 
 /**
@@ -39,6 +39,34 @@ const UpdateButtonModifier = () => {
 		getEditedPostAttribute,
 	} = usePost();
 	const { fetchTypes, getTypeInfo } = useTypes();
+
+	/**
+	 * Clear the current post edits to avoid triggering dirty state
+	 */
+	const clearPostEdits = async () => {
+		const entity = { kind: 'postType', name: 'post', id: savedPost.id };
+
+		const edits = select( 'core' ).getEntityRecordEdits(
+			entity.kind,
+			entity.name,
+			entity.id
+		);
+
+		const clearedEdits = {};
+
+		// Setting them to undefined will effectively clear them.
+		Object.keys( edits ).forEach( ( e ) => {
+			clearedEdits[ e ] = undefined;
+		} );
+
+		return await dispatch( 'core' ).editEntityRecord(
+			entity.kind,
+			entity.name,
+			entity.id,
+			clearedEdits,
+			{ undoIgnore: true }
+		);
+	};
 
 	const _savePost = async () => {
 		const isFutureRevision = changingToScheduled();
@@ -91,6 +119,9 @@ const UpdateButtonModifier = () => {
 				__( 'Error creating update.', 'revisions-extended' )
 			);
 		}
+
+		// We clear the post edits so users can navigate away without the "dirty" browser prompt.
+		await clearPostEdits();
 
 		if ( data ) {
 			setNewRevision( data );
