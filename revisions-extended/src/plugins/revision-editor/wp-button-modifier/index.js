@@ -1,7 +1,8 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
+import { subscribe } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -10,32 +11,37 @@ import { useParentPost } from '../../../hooks';
 import { getAllRevisionUrl } from '../../../utils';
 
 /**
- * Module variables
- */
-let wpButtonElement;
-
-/**
  * Returns the WP button element
  *
  * @return {HTMLElement} Html anchor tag.
  */
 const getWPButton = () => {
-	if ( wpButtonElement ) return wpButtonElement;
-
 	return document.querySelector( '.edit-post-fullscreen-mode-close' );
 };
 
 const WPButtonModifier = () => {
+	const [ typeUrl, setTypeUrl ] = useState();
 	const { type } = useParentPost();
 
-	useEffect( () => {
-		if ( ! type ) return;
-		const btn = getWPButton();
+	subscribe( () => {
+		if ( ! typeUrl ) {
+			return;
+		}
 
-		if ( btn ) {
-			btn.href = getAllRevisionUrl( type );
+		const wpButtonElement = getWPButton();
+
+		if ( wpButtonElement || wpButtonElement.href !== typeUrl ) {
+			wpButtonElement.href = typeUrl;
 		}
 	} );
+
+	useEffect( () => {
+		if ( ! type ) {
+			return;
+		}
+
+		setTypeUrl( getAllRevisionUrl( type ) );
+	}, [ type ] );
 
 	return null;
 };
