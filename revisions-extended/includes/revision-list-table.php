@@ -174,12 +174,12 @@ class Revision_List_Table extends WP_List_Table {
 	 */
 	public function get_columns() {
 		$columns = array(
-			'cb'        => '<input type="checkbox" />',
-			'title'     => _x( 'Title', 'column name', 'revisions-extended' ),
-			'author'    => _x( 'Author', 'column name', 'revisions-extended' ),
-			'parent'    => _x( 'An update to', 'column name', 'revisions-extended' ),
-			'scheduled' => _x( 'Scheduled for', 'column name', 'revisions-extended' ),
-			'modified'  => _x( 'Modified on', 'column name', 'revisions-extended' ),
+			'cb'       => '<input type="checkbox" />',
+			'title'    => _x( 'Title', 'column name', 'revisions-extended' ),
+			'status'   => _x( 'Status', 'column name', 'revisions-extended' ),
+			'parent'   => _x( 'An update to', 'column name', 'revisions-extended' ),
+			'modified' => _x( 'Last modified', 'column name', 'revisions-extended' ),
+			'author'   => _x( 'Author', 'column name', 'revisions-extended' ),
 		);
 
 		$parent_id = filter_input( INPUT_GET, 'p', FILTER_VALIDATE_INT );
@@ -202,9 +202,9 @@ class Revision_List_Table extends WP_List_Table {
 	 */
 	protected function get_sortable_columns() {
 		return array(
-			'title'     => 'title',
-			'scheduled' => array( 'date', 'asc' ),
-			'modified'  => array( 'modified', true ),
+			'title'    => 'title',
+			'status'   => array( 'date', 'asc' ),
+			'modified' => array( 'modified', true ),
 		);
 	}
 
@@ -347,36 +347,69 @@ class Revision_List_Table extends WP_List_Table {
 			);
 		}
 
-		$parent_post_type_object = get_post_type_object( get_post_type( $parent ) );
+		$parent_status = get_post_status( $parent );
 
-		printf(
-			'<a href="%1$s" class="view-item-link">%2$s</a>',
-			esc_url( get_permalink( $parent->ID ) ),
-			esc_html( $parent_post_type_object->labels->view_item )
-		);
+		// TODO Replace with `is_post_publicly_viewable()` when WP 5.7 lands.
+		if ( 'publish' !== $parent_status ) {
+			$parent_status_object = get_post_status_object( $parent_status );
+
+			printf(
+				// translators: %s is the status of a post.
+				esc_html__( 'Not published (%s)', 'revisions-extended' ),
+				sprintf(
+					'<span class="error-message">%s</span>',
+					esc_html( $parent_status_object->label )
+				)
+			);
+		} else {
+			$parent_post_type_object = get_post_type_object( get_post_type( $parent ) );
+
+			printf(
+				'<a href="%1$s" class="view-item-link">%2$s</a>',
+				esc_url( get_permalink( $parent->ID ) ),
+				esc_html( $parent_post_type_object->labels->view_item )
+			);
+		}
 	}
 
 	/**
-	 * Render the Scheduled column.
+	 * Render the Status column.
 	 *
 	 * @param WP_Post $post
 	 *
 	 * @return void
 	 */
-	public function column_scheduled( $post ) {
-		$scheduled_time = get_post_timestamp( $post );
-		$time_diff      = time() - $scheduled_time;
+	public function column_status( $post ) {
+		$status = get_post_status( $post );
+		$object = get_post_status_object( $status );
 
-		if ( $time_diff > 0 ) {
-			echo '<strong class="error-message">' . __( 'Missed schedule', 'revisions-extended' ) . '</strong>';
+		switch ( $status ) {
+			case 'future':
+				$scheduled_time = get_post_timestamp( $post );
+				$time_diff      = time() - $scheduled_time;
+
+				if ( $time_diff > 0 ) {
+					printf(
+						'<strong class="error-message">%s</strong>',
+						esc_html__( 'Missed schedule', 'revisions-extended' )
+					);
+				} else {
+					printf(
+						'<strong>%s</strong>',
+						esc_html( $object->label )
+					);
+				}
+
+				printf(
+					/* translators: 1: Post date, 2: Post time. */
+					esc_html__( '%1$s at %2$s', 'revisions-extended' ),
+					/* translators: Post date format. See https://www.php.net/manual/datetime.format.php */
+					get_the_time( __( 'Y/m/d' ), $post ),
+					/* translators: Post time format. See https://www.php.net/manual/datetime.format.php */
+					get_the_time( __( 'g:i a' ), $post )
+				);
+				break;
 		}
-
-		printf(
-			/* translators: 1: Post date, 2: Post time. */
-			__( '%1$s at %2$s', 'revisions-extended' ),
-			get_the_date( get_option( 'date_format', 'Y/m/d' ), $post ),
-			get_the_time( get_option( 'time_format', 'g:i a' ), $post )
-		);
 	}
 
 	/**
@@ -390,8 +423,10 @@ class Revision_List_Table extends WP_List_Table {
 		printf(
 			/* translators: 1: Post date, 2: Post time. */
 			__( '%1$s at %2$s', 'revisions-extended' ),
-			get_the_modified_date( get_option( 'date_format', 'Y/m/d' ), $post ),
-			get_the_modified_time( get_option( 'time_format', 'g:i a' ), $post )
+			/* translators: Post date format. See https://www.php.net/manual/datetime.format.php */
+			get_the_modified_time( __( 'Y/m/d' ), $post ),
+			/* translators: Post time format. See https://www.php.net/manual/datetime.format.php */
+			get_the_modified_time( __( 'g:i a' ), $post )
 		);
 	}
 

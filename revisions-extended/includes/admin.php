@@ -588,14 +588,22 @@ function filter_menu_file_for_edit_screen( $file ) {
  * @return mixed
  */
 function filter_display_post_states( $post_states, $post ) {
-	if ( post_type_supports( get_post_type( $post ), 'revisions' ) ) {
+	if ( 'revision' === get_post_type( $post ) ) {
+		$post_states = array();
+		$parent      = get_post( $post->post_parent );
+
+		// TODO Replace with `is_post_publicly_viewable()` when WP 5.7 lands.
+		if ( 'publish' !== get_post_status( $parent ) ) {
+			$post_states['suspended'] = _x( 'Suspended', 'post status', 'revisions-extended' );
+		}
+	} elseif ( post_type_supports( get_post_type( $post ), 'revisions' ) ) {
 		$args      = array(
 			'post_status' => 'future',
 		);
 		$revisions = get_post_revisions( $post, $args );
 
 		if ( ! empty( $revisions ) ) {
-			$post_states['has_scheduled_updates'] = _x( 'Scheduled Updates', 'post status', 'revisions-extended' );
+			$post_states['has_updates'] = _x( 'Has Updates', 'post status', 'revisions-extended' );
 		}
 	}
 
