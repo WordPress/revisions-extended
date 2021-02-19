@@ -1,0 +1,5 @@
+/** Overrides **/
+
+.components-modal__screen-overlay {
+	background-color: rgba(255,255,255,0.95);
+}

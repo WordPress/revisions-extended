@@ -128,9 +128,6 @@ const UpdateButtonModifier = () => {
 			);
 		}
 
-		// We clear the post edits so users can navigate away without the "dirty" browser prompt.
-		await clearPostEdits();
-
 		if ( data ) {
 			setNewRevision( data );
 		}
@@ -143,6 +140,14 @@ const UpdateButtonModifier = () => {
 			},
 		} );
 	}, [] );
+
+	useEffect( () => {
+		if ( newRevision ) {
+			( async () => {
+				await clearPostEdits();
+			} )();
+		}
+	}, [ newRevision ] );
 
 	if ( newRevision ) {
 		return (
