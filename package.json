@@ -16,7 +16,8 @@
 		"build": "wp-scripts build revisions-extended/src/editor-modifications.js revisions-extended/src/revision-editor.js --output-path=revisions-extended/build/",
 		"start": "wp-scripts start revisions-extended/src/editor-modifications.js revisions-extended/src/revision-editor.js --output-path=revisions-extended/build",
 		"lint:js": "wp-scripts lint-js",
-		"test:unit": "wp-scripts test-unit-js"
+		"test:unit": "wp-scripts test-unit-js",
+		"wp-env": "wp-env"
 	},
 	"devDependencies": {
 		"@wordpress/date": "^3.13.1",
