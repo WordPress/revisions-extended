@@ -158,7 +158,7 @@ function put_post_revision( $post = null, $autosave = false ) {
 	if ( ! validate_revision_status( $post['post_status'] ) ) {
 		return new WP_Error(
 			'invalid_revision_status',
-			__( 'Invalid revision status.', 'revisions-extended' ),
+			__( 'Invalid revision status.', 'revisions-extended' )
 		);
 	}
 
