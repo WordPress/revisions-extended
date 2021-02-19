@@ -30,7 +30,7 @@ const WPButtonModifier = () => {
 
 		const wpButtonElement = getWPButton();
 
-		if ( wpButtonElement || wpButtonElement.href !== typeUrl ) {
+		if ( wpButtonElement && wpButtonElement.href !== typeUrl ) {
 			wpButtonElement.href = typeUrl;
 		}
 	} );
