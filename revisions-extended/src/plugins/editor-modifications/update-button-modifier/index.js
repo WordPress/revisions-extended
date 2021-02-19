@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { Notice } from '@wordpress/components';
-import { dispatch } from '@wordpress/data';
+import { select, dispatch } from '@wordpress/data';
 import { Fragment } from '@wordpress/element';
 
 /**
@@ -40,6 +40,42 @@ const UpdateButtonModifier = () => {
 		getEditedPostAttribute,
 	} = usePost();
 	const { fetchTypes, getTypeInfo } = useTypes();
+
+	/**
+	 * Clear the current post edits to avoid triggering dirty state
+	 */
+	const clearPostEdits = async () => {
+		const entity = {
+			kind: 'postType',
+			name: savedPost.type,
+			id: savedPost.id,
+		};
+
+		const edits = select( 'core' ).getEntityRecordEdits(
+			entity.kind,
+			entity.name,
+			entity.id
+		);
+
+		if ( ! edits ) {
+			return;
+		}
+
+		const clearedEdits = {};
+
+		// Setting them to undefined will effectively clear them.
+		Object.keys( edits ).forEach( ( e ) => {
+			clearedEdits[ e ] = undefined;
+		} );
+
+		return await dispatch( 'core' ).editEntityRecord(
+			entity.kind,
+			entity.name,
+			entity.id,
+			clearedEdits,
+			{ undoIgnore: true }
+		);
+	};
 
 	const _savePost = async () => {
 		const isFutureRevision = changingToScheduled();
@@ -111,6 +147,14 @@ const UpdateButtonModifier = () => {
 			},
 		} );
 	}, [] );
+
+	useEffect( () => {
+		if ( newRevision ) {
+			( async () => {
+				await clearPostEdits();
+			} )();
+		}
+	}, [ newRevision ] );
 
 	if ( newRevision ) {
 		return (

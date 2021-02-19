@@ -2,4 +2,4 @@
  * Internal dependencies
  */
 import './plugins/editor-modifications';
-import './styles.css';
+import './editor-modifications-styles.css';
