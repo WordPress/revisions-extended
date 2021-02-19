@@ -4,4 +4,4 @@ Extended functionality for the WordPress revision system.
 
 1. `npm install`
 1. `npm run setup`
-1. `wp-env start`
+1. `npm run wp-env start`
