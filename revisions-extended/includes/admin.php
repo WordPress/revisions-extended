@@ -603,7 +603,13 @@ function filter_display_post_states( $post_states, $post ) {
 		$revisions = get_post_revisions( $post, $args );
 
 		if ( ! empty( $revisions ) ) {
-			$post_states['has_updates'] = _x( 'Has Updates', 'post status', 'revisions-extended' );
+			$post_states['has_updates'] = _nx(
+				'Has Update',
+				'Has Updates',
+				count( $revisions ),
+				'post status',
+				'revisions-extended'
+			);
 		}
 	}
 
