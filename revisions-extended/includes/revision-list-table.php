@@ -433,9 +433,9 @@ class Revision_List_Table extends WP_List_Table {
 	/**
 	 * Generates and display row actions links for the list table.
 	 *
-	 * @param object|array $post        The post being acted upon.
-	 * @param string       $column_name Current column name.
-	 * @param string       $primary     Primary column name.
+	 * @param WP_Post $post        The post being acted upon.
+	 * @param string  $column_name Current column name.
+	 * @param string  $primary     Primary column name.
 	 *
 	 * @return string The row actions HTML, or an empty string
 	 *                if the current column is not the primary column.
@@ -447,8 +447,9 @@ class Revision_List_Table extends WP_List_Table {
 
 		$screen        = get_current_screen();
 		$can_edit_post = current_user_can( 'edit_post', $post->ID );
-		$actions       = array();
 		$title         = _draft_or_post_title( $post );
+		$parent        = get_post( $post->post_parent );
+		$actions       = array();
 
 		// Edit.
 		if ( $can_edit_post ) {
@@ -473,7 +474,7 @@ class Revision_List_Table extends WP_List_Table {
 		}
 
 		// Publish.
-		if ( $can_edit_post ) {
+		if ( $can_edit_post && 'publish' === get_post_status( $parent ) ) { // TODO Replace with `is_post_publicly_viewable()` when WP 5.7 lands.
 			$url = add_query_arg(
 				array(
 					'action'      => 'publish',
