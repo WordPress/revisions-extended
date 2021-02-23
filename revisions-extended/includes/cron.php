@@ -45,6 +45,9 @@ function schedule_update( $post_id, $post ) {
 /**
  * Unschedule a future event to update a parent post with a revision when the revision is deleted.
  *
+ * This is hooked to two different actions that provide parameters in different orders. Thus sometimes
+ * the first parameter is the WP_Post object, and sometimes the second one is.
+ *
  * @param int|WP_Post $revision
  * @param WP_Post|\WP_REST_Request
  */
