@@ -218,6 +218,7 @@ function update_post_from_revision( $revision_id ) {
 	}
 
 	$parent = get_post( $revision->post_parent );
+	// TODO Replace with `is_post_publicly_viewable()` when WP 5.7 lands.
 	if ( 'publish' !== get_post_status( $parent ) ) {
 		return new WP_Error(
 			'invalid_parent_post',
