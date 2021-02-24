@@ -48,7 +48,7 @@ function schedule_update( $post_id, $post ) {
  * This is hooked to two different actions that provide parameters in different orders. Thus sometimes
  * the first parameter is the WP_Post object, and sometimes the second one is.
  *
- * @param int|WP_Post $revision
+ * @param int|WP_Post              $revision
  * @param WP_Post|\WP_REST_Request
  */
 function unschedule_update( $revision, $revision2 ) {

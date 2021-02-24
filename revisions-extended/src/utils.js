@@ -66,7 +66,7 @@ export const getStatusDisplay = ( postStatus, date ) => {
 	if ( POST_STATUS_SCHEDULED === postStatus ) {
 		return sprintf(
 			// translators: %s: formatted date
-			__( 'Scheduled for %s' ),
+			__( 'Scheduled for %s', 'revisions-extended' ),
 			getShortenedFormattedDate( date )
 		);
 	}
