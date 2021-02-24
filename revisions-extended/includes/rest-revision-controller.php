@@ -32,7 +32,7 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 			array(
 				'args'   => array(
 					'id' => array(
-						'description' => __( 'Unique identifier for the object.' ),
+						'description' => __( 'Unique identifier for the object.', 'revisions-extended' ),
 						'type'        => 'integer',
 					),
 				),
@@ -56,7 +56,7 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 						'force' => array(
 							'type'        => 'boolean',
 							'default'     => false,
-							'description' => __( 'Whether to bypass Trash and force deletion.' ),
+							'description' => __( 'Whether to bypass Trash and force deletion.', 'revisions-extended' ),
 						),
 					),
 				),
@@ -299,11 +299,13 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 
 			if ( $parent && $post_type ) {
 				$links['parent'] = array(
-					'href'       => rest_url( sprintf(
-						'wp/v2/%s/%d',
-						get_post_type_object( $post_type )->get_rest_controller()->rest_base,
-						$parent->ID
-					) ),
+					'href'       => rest_url(
+						sprintf(
+							'wp/v2/%s/%d',
+							get_post_type_object( $post_type )->get_rest_controller()->rest_base,
+							$parent->ID
+						)
+					),
 					'embeddable' => true,
 				);
 			}
@@ -322,7 +324,7 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 
 		$schema['properties']['status']['enum'] = wp_list_pluck( get_revision_statuses(), 'name' );
 		$schema['properties']['parent']         = array(
-			'description' => __( 'The ID for the parent of the object.' ),
+			'description' => __( 'The ID for the parent of the object.', 'revisions-extended' ),
 			'type'        => 'integer',
 			'context'     => array( 'view', 'edit' ),
 		);

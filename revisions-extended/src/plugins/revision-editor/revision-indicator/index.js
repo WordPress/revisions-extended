@@ -29,8 +29,8 @@ const RevisionIndicator = () => {
 
 	const getRevisionType =
 		savedPost.status === POST_STATUS_SCHEDULED
-			? __( 'scheduled' )
-			: __( 'pending' );
+			? __( 'scheduled', 'revisions-extended' )
+			: __( 'pending', 'revisions-extended' );
 
 	useEffect( () => {
 		if ( ! parentType || ! loadedTypes ) return;
@@ -38,19 +38,23 @@ const RevisionIndicator = () => {
 		const notes = [
 			sprintf(
 				// translators: %s: revision type.
-				__( 'You are currently editing a <b>%s update</b>.' ),
+				__(
+					'You are currently editing a <b>%s update</b>.',
+					'revisions-extended'
+				),
 				getRevisionType
 			),
 			sprintf(
 				// translators: %1$s: url %2$s: post type.
-				__( '[ <a href="%1$s">Edit %2$s</a>' ),
+				__( '[ <a href="%1$s">Edit %2$s</a>', 'revisions-extended' ),
 				getEditUrl( savedPost.parent ),
 				getTypeInfo(
 					`${ parentType }.labels.singular_name`
 				).toLowerCase()
 			),
 			` | <a href="${ getCompareLink( savedPost.id ) }" />${ __(
-				'See changes'
+				'See changes',
+				'revisions-extended'
 			) }</a> ]`,
 		];
 

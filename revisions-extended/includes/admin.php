@@ -168,15 +168,17 @@ function pre_render_updates_subpage() {
 
 		wp_safe_redirect( $redirect );
 	} else {
-		$remove_args = array_filter( (array) filter_input_array(
-			INPUT_GET,
-			array(
-				'action'           => FILTER_DEFAULT,
-				'action2'          => FILTER_DEFAULT,
-				'_wp_http_referer' => FILTER_DEFAULT,
-				'_wpnonce'         => FILTER_DEFAULT,
+		$remove_args = array_filter(
+			(array) filter_input_array(
+				INPUT_GET,
+				array(
+					'action'           => FILTER_DEFAULT,
+					'action2'          => FILTER_DEFAULT,
+					'_wp_http_referer' => FILTER_DEFAULT,
+					'_wpnonce'         => FILTER_DEFAULT,
+				)
 			)
-		) );
+		);
 		$remove_args = array_keys( $remove_args );
 
 		if ( '' === filter_input( INPUT_GET, 's' ) ) {
@@ -206,18 +208,20 @@ function render_updates_subpage() {
 		'error'   => array(),
 	);
 
-	$action_results = array_filter( filter_input_array(
-		INPUT_GET,
-		array(
-			// Be sure to include each of these in `filter_add_removable_query_args` as well.
-			'invalid'       => FILTER_VALIDATE_BOOLEAN,
-			'no_items'      => FILTER_VALIDATE_BOOLEAN,
-			'deleted'       => FILTER_VALIDATE_INT,
-			'not_deleted'   => FILTER_VALIDATE_INT,
-			'published'     => FILTER_VALIDATE_INT,
-			'not_published' => FILTER_VALIDATE_INT,
+	$action_results = array_filter(
+		filter_input_array(
+			INPUT_GET,
+			array(
+				// Be sure to include each of these in `filter_add_removable_query_args` as well.
+				'invalid'       => FILTER_VALIDATE_BOOLEAN,
+				'no_items'      => FILTER_VALIDATE_BOOLEAN,
+				'deleted'       => FILTER_VALIDATE_INT,
+				'not_deleted'   => FILTER_VALIDATE_INT,
+				'published'     => FILTER_VALIDATE_INT,
+				'not_published' => FILTER_VALIDATE_INT,
+			)
 		)
-	) );
+	);
 
 	if ( ! empty( $action_results ) ) {
 		foreach ( $action_results as $result => $count ) {
@@ -582,7 +586,7 @@ function filter_menu_file_for_edit_screen( $file ) {
 /**
  * Add states for posts with updates.
  *
- * @param array $post_states
+ * @param array   $post_states
  * @param WP_Post $post
  *
  * @return mixed

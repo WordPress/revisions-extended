@@ -41,7 +41,9 @@ const PluginWrapper = () => {
 
 	return (
 		<ErrorBoundary>
-			<InterfaceProvider btnText={ __( 'Publish' ) }>
+			<InterfaceProvider
+				btnText={ __( 'Publish', 'revisions-extended' ) }
+			>
 				<ParentPostProvider links={ savedPost._links }>
 					<TypesProvider>
 						<DocumentSettingsPanel />

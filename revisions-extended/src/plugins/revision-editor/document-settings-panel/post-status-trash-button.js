@@ -56,7 +56,7 @@ const PostStatusTrashButton = ( { onDelete, id } ) => {
 			isDestructive
 			isBusy={ isBusy }
 		>
-			{ __( 'Delete permanently' ) }
+			{ __( 'Delete permanently', 'revisions-extended' ) }
 		</Button>
 	);
 };
