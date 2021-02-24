@@ -99,13 +99,16 @@ function get_revisions_by_parent_type( $parent_post_type, $args = array(), $wp_q
 	global $wpdb;
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-	$valid_ids = $wpdb->get_col( $wpdb->prepare( "
+	$valid_ids = $wpdb->get_col(
+		$wpdb->prepare(
+			"
 		SELECT revisions.ID
 		FROM {$wpdb->posts} revisions
 			JOIN {$wpdb->posts} parents ON parents.ID = revisions.post_parent AND parents.post_type = %s
 		WHERE revisions.post_type = 'revision' AND revisions.post_status = 'future'",
-		$parent_post_type
-	) );
+			$parent_post_type
+		)
+	);
 
 	// If post__in gets an empty array, WP_Query will return all posts.
 	if ( empty( $valid_ids ) ) {
@@ -147,11 +150,11 @@ function put_post_revision( $post = null, $autosave = false ) {
 	}
 
 	if ( ! $post || empty( $post['ID'] ) ) {
-		return new WP_Error( 'invalid_post', __( 'Invalid post ID.' ) );
+		return new WP_Error( 'invalid_post', __( 'Invalid post ID.', 'revisions-extended' ) );
 	}
 
 	if ( isset( $post['post_type'] ) && 'revision' === $post['post_type'] ) {
-		return new WP_Error( 'post_type', __( 'Cannot create a revision of a revision' ) );
+		return new WP_Error( 'post_type', __( 'Cannot create a revision of a revision', 'revisions-extended' ) );
 	}
 
 	// Begin changes from Core.

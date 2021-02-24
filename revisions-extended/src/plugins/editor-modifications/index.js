@@ -24,7 +24,9 @@ const MainPlugin = () => {
 
 	return (
 		<ErrorBoundary>
-			<InterfaceProvider btnText={ __( 'Create update' ) }>
+			<InterfaceProvider
+				btnText={ __( 'Create update', 'revisions-extended' ) }
+			>
 				<TypesProvider>
 					<UpdateButtonModifier />
 					<PluginPostStatusInfo />

@@ -223,7 +223,7 @@ class Revision_List_Table extends WP_List_Table {
 			<label class="screen-reader-text" for="cb-select-<?php echo esc_attr( $post->ID ); ?>">
 				<?php
 				/* translators: %s: Post title. */
-				printf( __( 'Select %s' ), _draft_or_post_title() );
+				printf( __( 'Select %s', 'revisions-extended' ), _draft_or_post_title() );
 				?>
 			</label>
 			<input
@@ -238,7 +238,7 @@ class Revision_List_Table extends WP_List_Table {
 				<?php
 				printf(
 				/* translators: %s: Post title. */
-					__( '&#8220;%s&#8221; is locked' ),
+					__( '&#8220;%s&#8221; is locked', 'revisions-extended' ),
 					_draft_or_post_title( $post )
 				);
 				?>
@@ -266,7 +266,7 @@ class Revision_List_Table extends WP_List_Table {
 				$lock_holder   = get_userdata( $lock_holder );
 				$locked_avatar = get_avatar( $lock_holder->ID, 18 );
 				/* translators: %s: User's display name. */
-				$locked_text = esc_html( sprintf( __( '%s is currently editing' ), $lock_holder->display_name ) );
+				$locked_text = esc_html( sprintf( __( '%s is currently editing', 'revisions-extended' ), $lock_holder->display_name ) );
 			} else {
 				$locked_avatar = '';
 				$locked_text   = '';
@@ -284,7 +284,7 @@ class Revision_List_Table extends WP_List_Table {
 				'<a class="row-title" href="%1$s" aria-label="%2$s">%3$s</a>',
 				esc_url( get_edit_revision_link( $post->ID ) ),
 				/* translators: %s: Post title. */
-				esc_attr( sprintf( __( '&#8220;%s&#8221; (Edit)' ), $title ) ),
+				esc_attr( sprintf( __( '&#8220;%s&#8221; (Edit)', 'revisions-extended' ), $title ) ),
 				$title
 			);
 		} else {
@@ -337,7 +337,7 @@ class Revision_List_Table extends WP_List_Table {
 				'<a class="row-title" href="%1$s" aria-label="%2$s">%3$s</a>',
 				esc_url( get_edit_post_link( $parent ) ),
 				/* translators: %s: Post title. */
-				esc_attr( sprintf( __( '&#8220;%s&#8221; (Edit)' ), $title ) ),
+				esc_attr( sprintf( __( '&#8220;%s&#8221; (Edit)', 'revisions-extended' ), $title ) ),
 				$title
 			);
 		} else {
@@ -404,9 +404,9 @@ class Revision_List_Table extends WP_List_Table {
 					/* translators: 1: Post date, 2: Post time. */
 					esc_html__( '%1$s at %2$s', 'revisions-extended' ),
 					/* translators: Post date format. See https://www.php.net/manual/datetime.format.php */
-					get_the_time( __( 'Y/m/d' ), $post ),
+					get_the_time( __( 'Y/m/d', 'revisions-extended' ), $post ),
 					/* translators: Post time format. See https://www.php.net/manual/datetime.format.php */
-					get_the_time( __( 'g:i a' ), $post )
+					get_the_time( __( 'g:i a', 'revisions-extended' ), $post )
 				);
 				break;
 		}
@@ -424,9 +424,9 @@ class Revision_List_Table extends WP_List_Table {
 			/* translators: 1: Post date, 2: Post time. */
 			__( '%1$s at %2$s', 'revisions-extended' ),
 			/* translators: Post date format. See https://www.php.net/manual/datetime.format.php */
-			get_the_modified_time( __( 'Y/m/d' ), $post ),
+			get_the_modified_time( __( 'Y/m/d', 'revisions-extended' ), $post ),
 			/* translators: Post time format. See https://www.php.net/manual/datetime.format.php */
-			get_the_modified_time( __( 'g:i a' ), $post )
+			get_the_modified_time( __( 'g:i a', 'revisions-extended' ), $post )
 		);
 	}
 

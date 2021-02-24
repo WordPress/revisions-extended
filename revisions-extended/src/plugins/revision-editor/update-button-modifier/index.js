@@ -38,7 +38,10 @@ const UpdateButtonModifier = () => {
 		if ( ! didPostSaveRequestSucceed() ) {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
-				__( 'Error saving update before publish.' )
+				__(
+					'Error saving update before publish.',
+					'revisions-extended'
+				)
 			);
 			return;
 		}
@@ -52,7 +55,7 @@ const UpdateButtonModifier = () => {
 		if ( error ) {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
-				__( 'Error publishing revision.' )
+				__( 'Error publishing revision.', 'revisions-extended' )
 			);
 		}
 	};
@@ -68,17 +71,20 @@ const UpdateButtonModifier = () => {
 	if ( showSuccess ) {
 		return (
 			<ConfirmWindow
-				title={ __( 'Revisions Extended' ) }
+				title={ __( 'Revisions Extended', 'revisions-extended' ) }
 				notice={
 					<Notice status="success" isDismissible={ false }>
-						{ __( 'Successfully published your update.' ) }
+						{ __(
+							'Successfully published your update.',
+							'revisions-extended'
+						) }
 					</Notice>
 				}
 				links={ [
 					{
 						text: sprintf(
 							// translators: %s: post type.
-							__( 'View published %s.' ),
+							__( 'View published %s.', 'revisions-extended' ),
 							getTypeInfo(
 								`${ parentType }.labels.singular_name`
 							).toLowerCase()
@@ -88,7 +94,7 @@ const UpdateButtonModifier = () => {
 					{
 						text: sprintf(
 							// translators: %s: post type.
-							__( 'Edit original %s.' ),
+							__( 'Edit original %s.', 'revisions-extended' ),
 							getTypeInfo(
 								`${ parentType }.labels.singular_name`
 							).toLowerCase()
@@ -98,7 +104,7 @@ const UpdateButtonModifier = () => {
 					{
 						text: sprintf(
 							// translators: %s: post type.
-							__( 'View all %s updates.' ),
+							__( 'View all %s updates.', 'revisions-extended' ),
 							getTypeInfo(
 								`${ parentType }.labels.singular_name`
 							).toLowerCase()

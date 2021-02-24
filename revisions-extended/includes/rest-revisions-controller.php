@@ -242,7 +242,7 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		$schema = parent::get_item_schema();
 
 		$schema['properties']['status'] = array(
-			'description' => __( 'A named status for the object.' ),
+			'description' => __( 'A named status for the object.', 'revisions-extended' ),
 			'type'        => 'string',
 			'enum'        => wp_list_pluck( get_revision_statuses(), 'name' ),
 			'context'     => array( 'view', 'edit' ),
@@ -315,11 +315,13 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			if ( $parent && $post_type ) {
 				$response->add_link(
 					'parent',
-					rest_url( sprintf(
-						'wp/v2/%s/%d',
-						get_post_type_object( $post_type )->rest_base,
-						$parent->ID
-					) ),
+					rest_url(
+						sprintf(
+							'wp/v2/%s/%d',
+							get_post_type_object( $post_type )->rest_base,
+							$parent->ID
+						)
+					),
 					array(
 						'embeddable' => true,
 					)

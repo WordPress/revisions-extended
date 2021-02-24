@@ -33,10 +33,13 @@ const ConfirmWindow = ( { title, notice, links } ) => {
 			{ notice }
 			<div className="confirm-window__content">
 				<Text variant="title.small" as="h3">
-					{ __( 'Next Steps' ) }
+					{ __( 'Next Steps', 'revisions-extended' ) }
 				</Text>
 				<Text as="h4">
-					{ __( 'Select one of the following actions:' ) }
+					{ __(
+						'Select one of the following actions:',
+						'revisions-extended'
+					) }
 				</Text>
 				<ul>
 					{ links.map( ( i ) => (
