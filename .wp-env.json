@@ -11,5 +11,13 @@
 	],
 	"mappings": {
 		"wp-content/mu-plugins": "./wp-env/mu-plugins"
+	},
+	"env": {
+		"tests": {
+			"mappings": {
+				"vendor": "./vendor",
+				"phpunit": "./phpunit"
+			}
+		}
 	}
 }

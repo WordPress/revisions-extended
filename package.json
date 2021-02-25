@@ -10,6 +10,7 @@
 		"@wordpress/icons": "^2.9.0"
 	},
 	"scripts": {
+		"wp-env": "wp-env",
 		"setup": "composer install",
 		"lint:php": "composer run lint",
 		"format:php": "composer run format",
@@ -17,7 +18,7 @@
 		"start": "wp-scripts start revisions-extended/src/editor-modifications.js revisions-extended/src/revision-editor.js --output-path=revisions-extended/build",
 		"lint:js": "wp-scripts lint-js",
 		"test:unit": "wp-scripts test-unit-js",
-		"wp-env": "wp-env"
+		"test:php": "wp-env run phpunit 'phpunit -c /var/www/html/phpunit/phpunit.xml.dist --verbose'"
 	},
 	"devDependencies": {
 		"@wordpress/date": "^3.13.1",
