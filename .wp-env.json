@@ -4,7 +4,6 @@
 		"SCRIPT_DEBUG": true,
 		"ALTERNATE_WP_CRON": true
 	},
-	"phpVersion": "5.6",
 	"core": "WordPress/WordPress#master",
 	"plugins": [
 		"./revisions-extended",
