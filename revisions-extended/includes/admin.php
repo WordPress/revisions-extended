@@ -8,6 +8,7 @@ use function RevisionsExtended\get_assets_path;
 use function RevisionsExtended\get_build_asset_info;
 use function RevisionsExtended\get_includes_path;
 use function RevisionsExtended\get_views_path;
+use function RevisionsExtended\Revision\post_type_supports_updates;
 use function RevisionsExtended\Revision\get_post_revisions;
 use function RevisionsExtended\Revision\update_post_from_revision;
 
@@ -87,7 +88,7 @@ function enqueue_block_editor_assets() {
 	$handles = array();
 	if ( 'revision' === $post_type ) {
 		$handles[] = 'revision-editor';
-	} elseif ( post_type_supports( $post_type, 'revisions' ) ) {
+	} elseif ( post_type_supports_updates( $post_type ) ) {
 		$handles[] = 'editor-modifications';
 	}
 
@@ -600,7 +601,7 @@ function filter_display_post_states( $post_states, $post ) {
 		if ( 'publish' !== get_post_status( $parent ) ) {
 			$post_states['suspended'] = _x( 'Suspended', 'post status', 'revisions-extended' );
 		}
-	} elseif ( post_type_supports( get_post_type( $post ), 'revisions' ) ) {
+	} elseif ( post_type_supports_updates( get_post_type( $post ) ) ) {
 		$args      = array(
 			'post_status' => 'future',
 		);

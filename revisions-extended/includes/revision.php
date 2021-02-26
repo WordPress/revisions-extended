@@ -38,6 +38,19 @@ function modify_revision_post_type( $post_type, $post_type_object ) {
 }
 
 /**
+ * Check if a given post type should support updates.
+ *
+ * @param string $post_type
+ *
+ * @return bool True if the post type supports updates.
+ */
+function post_type_supports_updates( $post_type ) {
+	$exceptions = array( 'wp_template' );
+
+	return post_type_supports( $post_type, 'revisions' ) && ! in_array( $post_type, $exceptions, true );
+}
+
+/**
  * Returns revisions of specified post.
  *
  * Specify a value for $args['post_status'] to get other types of revisions.

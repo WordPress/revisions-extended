@@ -13,6 +13,7 @@
 namespace RevisionsExtended;
 
 use RevisionsExtended\REST_Revisions_Controller;
+use function RevisionsExtended\Revision\post_type_supports_updates;
 
 defined( 'WPINC' ) || die();
 
@@ -105,7 +106,7 @@ function get_build_asset_info( $handle ) {
  */
 function initialize_rest_routes() {
 	foreach ( get_post_types( array( 'show_in_rest' => true ), 'objects' ) as $post_type ) {
-		if ( post_type_supports( $post_type->name, 'revisions' ) ) {
+		if ( post_type_supports_updates( $post_type->name ) ) {
 			$controller = new REST_Revisions_Controller( $post_type->name );
 			$controller->register_routes();
 		}
