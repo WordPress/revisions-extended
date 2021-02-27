@@ -204,7 +204,12 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 		$response = $this->prepare_item_for_response( $revision, $request );
 		remove_filter( 'rest_prepare_revision', array( $this, 'filter_rest_prepare_revision' ) );
 
-		return rest_ensure_response( $response );
+		$response = $this->prepare_response_for_collection( $response );
+		$response = rest_ensure_response( $response );
+		$response->set_status( 201 );
+		$response->header( 'Location', rest_url( sprintf( 'wp/v2/revision/%d', $revision_id ) ) );
+
+		return $response;
 	}
 
 	/**
@@ -313,6 +318,8 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			$post_type = get_post_type( $parent );
 
 			if ( $parent && $post_type ) {
+				$response->remove_link( 'parent' );
+
 				$response->add_link(
 					'parent',
 					rest_url( sprintf(
