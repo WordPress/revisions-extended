@@ -16,7 +16,8 @@
 		"tests": {
 			"mappings": {
 				"vendor": "./vendor",
-				"phpunit": "./phpunit"
+				"phpunit": "./phpunit",
+				"phpunit.xml.dist": "./phpunit.xml.dist"
 			}
 		}
 	}

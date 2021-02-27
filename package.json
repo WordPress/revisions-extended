@@ -18,7 +18,7 @@
 		"start": "wp-scripts start revisions-extended/src/editor-modifications.js revisions-extended/src/revision-editor.js --output-path=revisions-extended/build",
 		"lint:js": "wp-scripts lint-js",
 		"test:unit": "wp-scripts test-unit-js",
-		"test:php": "wp-env run phpunit 'phpunit -c /var/www/html/phpunit/phpunit.xml.dist --verbose'"
+		"test:php": "wp-env run phpunit 'phpunit -c /var/www/html/phpunit.xml.dist --verbose'"
 	},
 	"devDependencies": {
 		"@wordpress/date": "^3.13.1",

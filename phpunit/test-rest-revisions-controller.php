@@ -1,0 +1,200 @@
+<?php
+
+namespace RevisionsExtended\Tests;
+
+use WP_UnitTest_Factory;
+use WP_Test_REST_Controller_Testcase;
+use WP_Post, WP_REST_Posts_Controller, WP_REST_Request, WP_REST_Response;
+
+defined( 'WPINC' ) || die();
+
+
+class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
+	protected static $post_id;
+	protected static $update_id;
+	protected static $page_id;
+
+	protected static $editor_id;
+	protected static $contributor_id;
+
+	public static function wpSetUpBeforeClass( WP_UnitTest_Factory $factory ) {
+		self::$post_id = $factory->post->create();
+		self::$page_id = $factory->post->create( array( 'post_type' => 'page' ) );
+
+		self::$editor_id      = $factory->user->create(
+			array(
+				'role' => 'editor',
+			)
+		);
+		self::$contributor_id = $factory->user->create(
+			array(
+				'role' => 'contributor',
+			)
+		);
+
+		wp_set_current_user( self::$editor_id );
+
+		wp_update_post(
+			array(
+				'post_content' => 'This content is better.',
+				'ID'           => self::$post_id,
+			)
+		);
+		wp_update_post(
+			array(
+				'post_content' => 'This content is marvelous.',
+				'ID'           => self::$post_id,
+			)
+		);
+		wp_update_post(
+			array(
+				'post_content' => 'This content is fantastic.',
+				'ID'           => self::$post_id,
+			)
+		);
+
+		self::$update_id = $factory->post->create( array(
+			'post_type'   => 'revision',
+			'post_status' => 'future',
+			'post_date'   => wp_date( 'Y-m-d H:i:s', strtotime( '+ 1 week' ) ),
+			'post_parent' => self::$post_id,
+			'post_author' => self::$editor_id,
+		) );
+
+		wp_set_current_user( 0 );
+	}
+
+	public static function wpTearDownAfterClass() {
+		// Also deletes revisions.
+		wp_delete_post( self::$post_id, true );
+		wp_delete_post( self::$update_id, true );
+		wp_delete_post( self::$page_id, true );
+
+		self::delete_user( self::$editor_id );
+		self::delete_user( self::$contributor_id );
+	}
+
+	public function tearDown() {
+		parent::tearDown();
+		wp_set_current_user( 0 );
+	}
+
+	/**
+	 * Modified from WP_Test_REST_Revisions_Controller::check_get_revision_response.
+	 *
+	 * @param WP_REST_Response|array $response
+	 * @param WP_Post $revision
+	 */
+	protected function check_revision_response( $response, $revision ) {
+		if ( $response instanceof WP_REST_Response ) {
+			$links    = $response->get_links();
+			$response = $response->get_data();
+		} else {
+			$this->assertArrayHasKey( '_links', $response );
+			$links = $response['_links'];
+		}
+
+		$this->assertEquals( $revision->post_status, $response['status'] );
+
+		$parent        = get_post( $revision->post_parent );
+		$parent_object = get_post_type_object( $parent->post_type );
+		$parent_base   = ! empty( $parent_object->rest_base ) ? $parent_object->rest_base : $parent_object->name;
+		$this->assertSame( rest_url( '/wp/v2/' . $parent_base . '/' . $revision->post_parent ), $links['parent'][0]['href'] );
+		$this->assertArrayHasKey( 'embeddable', $links['parent'][0] );
+
+		$this->assertEquals( $revision->post_author, $response['author'] );
+		$this->assertSame( rest_url( '/wp/v2/users/' . self::$editor_id ), $links['author'][0]['href'] );
+		$this->assertArrayHasKey( 'embeddable', $links['author'][0] );
+
+		$rendered_content = apply_filters( 'the_content', $revision->post_content );
+		$this->assertSame( $rendered_content, $response['content']['rendered'] );
+
+		$this->assertSame( mysql_to_rfc3339( $revision->post_date ), $response['date'] );
+		$this->assertSame( mysql_to_rfc3339( $revision->post_date_gmt ), $response['date_gmt'] );
+
+		$rendered_excerpt = apply_filters( 'the_excerpt', apply_filters( 'get_the_excerpt', $revision->post_excerpt, $revision ) );
+		$this->assertSame( $rendered_excerpt, $response['excerpt']['rendered'] );
+
+		$rendered_guid = apply_filters( 'get_the_guid', $revision->guid, $revision->ID );
+		$this->assertSame( $rendered_guid, $response['guid']['rendered'] );
+
+		$this->assertSame( $revision->ID, $response['id'] );
+		$this->assertSame( mysql_to_rfc3339( $revision->post_modified ), $response['modified'] );
+		$this->assertSame( mysql_to_rfc3339( $revision->post_modified_gmt ), $response['modified_gmt'] );
+		$this->assertSame( $revision->post_name, $response['slug'] );
+
+		$rendered_title = get_the_title( $revision->ID );
+		$this->assertSame( $rendered_title, $response['title']['rendered'] );
+	}
+
+	public function test_register_routes() {
+		$routes = rest_get_server()->get_routes();
+		$this->assertArrayHasKey( '/revisions-extended/v1/posts/(?P<parent>[\d]+)/revisions', $routes );
+		$this->assertArrayHasKey( '/revisions-extended/v1/pages/(?P<parent>[\d]+)/revisions', $routes );
+	}
+
+	public function test_get_items() {
+		wp_set_current_user( self::$editor_id );
+		$request  = new WP_REST_Request(
+			'GET',
+			'/revisions-extended/v1/posts/' . self::$post_id . '/revisions',
+			array(
+				'status' => 'future',
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+		$this->assertSame( 200, $response->get_status() );
+		$this->assertCount( 1, $data );
+
+		$this->assertSame( self::$update_id, $data[0]['id'] );
+		$this->check_revision_response( $data[0], wp_get_post_revision( self::$update_id ) );
+	}
+
+	public function test_create_item() {
+		wp_set_current_user( self::$editor_id );
+
+		$request = new WP_REST_Request( 'POST', '/revisions-extended/v1/posts/' . self::$post_id . '/revisions' );
+		$request->add_header( 'content-type', 'application/x-www-form-urlencoded' );
+		$params = array(
+			'title'  => 'Post title',
+			'status' => 'future',
+			'date'   => wp_date( 'Y-m-d H:i:s', strtotime( '+ 2 weeks' ) ),
+			'parent' => self::$post_id,
+		);
+		$request->set_body_params( $params );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+		$this->assertSame( 201, $response->get_status() );
+		$this->assertArrayHasKey( 'id', $data );
+
+		$created_id     = $data['id'];
+		$created_object = wp_get_post_revision( $created_id );
+		$this->assertInstanceOf( 'WP_Post', $created_object );
+		$this->check_revision_response( $data, $created_object );
+	}
+
+	public function test_context_param() {
+
+	}
+
+	public function test_get_item() {
+
+	}
+
+	public function test_update_item() {
+
+	}
+
+	public function test_delete_item() {
+
+	}
+
+	public function test_prepare_item() {
+
+	}
+
+	public function test_get_item_schema() {
+
+	}
+}
