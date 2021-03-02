@@ -71,7 +71,7 @@ export const getStatusDisplay = ( postStatus, date ) => {
 		);
 	}
 	if ( POST_STATUS_PENDING === postStatus ) {
-		return 'Pending';
+		return __( 'Pending', 'revisions-extended' );
 	}
 	return '';
 };
