@@ -20,7 +20,7 @@ $list_table->prepare_items();
 		if ( $post_id ) :
 			printf(
 				/* translators: %s: Link to post. */
-				wp_kses_post( __( 'Scheduled Updates for &#8220;%s&#8221;', 'revisions-extended' ) ),
+				wp_kses_post( __( 'Updates for &#8220;%s&#8221;', 'revisions-extended' ) ),
 				sprintf(
 					'<a href="%1$s">%2$s</a>',
 					esc_url( get_edit_post_link( $post_id ) ),
@@ -28,7 +28,7 @@ $list_table->prepare_items();
 				)
 			);
 			else :
-				esc_html_e( 'Scheduled Updates', 'revisions-extended' );
+				esc_html_e( 'Updates', 'revisions-extended' );
 			endif;
 			?>
 	</h1>
