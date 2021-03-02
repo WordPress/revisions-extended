@@ -21,7 +21,7 @@ const PostStatusTrashButton = ( { onDelete, id } ) => {
 		if ( error ) {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
-				__( 'Error deleting update.' ),
+				__( 'Error deleting update.', 'revisions-extended' ),
 				{
 					id: 'revisions-extended-delete-notice',
 				}

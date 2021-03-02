@@ -132,7 +132,7 @@ function add_updates_subpages() {
 
 		add_submenu_page(
 			$parent_slug,
-			__( 'Scheduled Updates', 'revisions-extended' ),
+			__( 'Updates', 'revisions-extended' ),
 			__( 'Updates', 'revisions-extended' ),
 			$post_type_object->cap->edit_posts,
 			$post_type . '-updates',

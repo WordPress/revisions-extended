@@ -323,7 +323,10 @@ class Revision_List_Table extends WP_List_Table {
 		$parent = get_post( $post->post_parent );
 
 		if ( ! $parent ) {
-			esc_html_e( 'Error: No parent.', 'revisions-extended' );
+			printf(
+				'<strong class="error-message">%s</strong>',
+				esc_html__( 'Error: No parent.', 'revisions-extended' )
+			);
 
 			return;
 		}
