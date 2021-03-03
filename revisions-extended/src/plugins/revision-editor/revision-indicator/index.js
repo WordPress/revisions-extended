@@ -39,23 +39,30 @@ const RevisionIndicator = () => {
 			sprintf(
 				// translators: %s: revision type.
 				__(
-					'You are currently editing a <b>%s update</b>.',
+					'You are currently editing a <strong>%s update</strong>.',
 					'revisions-extended'
 				),
 				getRevisionType
 			),
+			`[ `,
 			sprintf(
-				// translators: %1$s: url %2$s: post type.
-				__( '[ <a href="%1$s">Edit %2$s</a>', 'revisions-extended' ),
+				'<a href="%1$s">%2$s</a>',
 				getEditUrl( savedPost.parent ),
-				getTypeInfo(
-					`${ parentType }.labels.singular_name`
-				).toLowerCase()
+				sprintf(
+					// translators: %s is the singular label of a post type.
+					__( 'Edit original %s', 'revisions-extended' ),
+					getTypeInfo(
+						`${ parentType }.labels.singular_name`
+					).toLowerCase()
+				)
 			),
-			` | <a href="${ getCompareLink( savedPost.id ) }" />${ __(
-				'See changes',
-				'revisions-extended'
-			) }</a> ]`,
+			` | `,
+			sprintf(
+				'<a href="%1$s">%2$s</a>',
+				getCompareLink( savedPost.id ),
+				__( 'See changes', 'revisions-extended' )
+			),
+			` ]`,
 		];
 
 		dispatch( 'core/notices' ).createNotice( 'warning', notes.join( ' ' ), {
