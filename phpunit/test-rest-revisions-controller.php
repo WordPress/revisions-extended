@@ -154,7 +154,10 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 	public function test_create_item() {
 		wp_set_current_user( self::$editor_id );
 
-		$request = new WP_REST_Request( 'POST', '/revisions-extended/v1/posts/' . self::$post_id . '/revisions' );
+		$request = new WP_REST_Request(
+			'POST',
+			'/revisions-extended/v1/posts/' . self::$post_id . '/revisions'
+		);
 		$request->add_header( 'content-type', 'application/x-www-form-urlencoded' );
 		$params = array(
 			'title'  => 'Post title',
@@ -175,26 +178,91 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	public function test_context_param() {
-
+		// Collection.
+		$request  = new WP_REST_Request(
+			'OPTIONS',
+			'/revisions-extended/v1/posts/' . self::$post_id . '/revisions'
+		);
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+		$this->assertSame( 'view', $data['endpoints'][0]['args']['context']['default'] );
+		$this->assertSameSets( array( 'view', 'edit', 'embed' ), $data['endpoints'][0]['args']['context']['enum'] );
+		// Single.
+		$request  = new WP_REST_Request(
+			'OPTIONS',
+			'/revisions-extended/v1/posts/' . self::$post_id . '/revisions/' . self::$update_id
+		);
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+		$this->assertEmpty( $data );
 	}
 
 	public function test_get_item() {
-
+		wp_set_current_user( self::$editor_id );
+		$request  = new WP_REST_Request(
+			'GET',
+			'/revisions-extended/v1/posts/' . self::$post_id . '/revisions/' . self::$update_id
+		);
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_no_route', $response, 404 );
 	}
 
 	public function test_update_item() {
-
+		wp_set_current_user( self::$editor_id );
+		$request  = new WP_REST_Request(
+			'POST',
+			'/revisions-extended/v1/posts/' . self::$post_id . '/revisions/' . self::$update_id
+		);
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_no_route', $response, 404 );
 	}
 
 	public function test_delete_item() {
-
+		wp_set_current_user( self::$editor_id );
+		$request  = new WP_REST_Request(
+			'DELETE',
+			'/revisions-extended/v1/posts/' . self::$post_id . '/revisions/' . self::$update_id
+		);
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_no_route', $response, 404 );
 	}
 
 	public function test_prepare_item() {
-
+		wp_set_current_user( self::$editor_id );
+		$request  = new WP_REST_Request(
+			'GET',
+			'/revisions-extended/v1/posts/' . self::$post_id . '/revisions',
+			array(
+				'status' => 'future',
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+		$this->assertSame( 200, $response->get_status() );
+		$this->check_revision_response( $data[0], wp_get_post_revision( self::$update_id ) );
 	}
 
 	public function test_get_item_schema() {
-
+		$request    = new WP_REST_Request(
+			'OPTIONS',
+			'/revisions-extended/v1/posts/' . self::$post_id . '/revisions'
+		);
+		$response   = rest_get_server()->dispatch( $request );
+		$data       = $response->get_data();
+		$properties = $data['schema']['properties'];
+		$this->assertSame( 13, count( $properties ) );
+		$this->assertArrayHasKey( 'author', $properties );
+		$this->assertArrayHasKey( 'content', $properties );
+		$this->assertArrayHasKey( 'date', $properties );
+		$this->assertArrayHasKey( 'date_gmt', $properties );
+		$this->assertArrayHasKey( 'excerpt', $properties );
+		$this->assertArrayHasKey( 'guid', $properties );
+		$this->assertArrayHasKey( 'id', $properties );
+		$this->assertArrayHasKey( 'modified', $properties );
+		$this->assertArrayHasKey( 'modified_gmt', $properties );
+		$this->assertArrayHasKey( 'parent', $properties );
+		$this->assertArrayHasKey( 'slug', $properties );
+		$this->assertArrayHasKey( 'title', $properties );
+		$this->assertArrayHasKey( 'status', $properties );
 	}
 }
