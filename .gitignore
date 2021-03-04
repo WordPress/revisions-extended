@@ -1,4 +1,5 @@
 node_modules
 vendor
 .wp-env.override.json
+phpunit/phpunit.xml
 revisions-extended/build

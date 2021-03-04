@@ -4,13 +4,21 @@
 		"SCRIPT_DEBUG": true,
 		"ALTERNATE_WP_CRON": true
 	},
-	"phpVersion": "5.6",
 	"core": "WordPress/WordPress#master",
 	"plugins": [
 		"./revisions-extended",
-		"https://downloads.wordpress.org/plugin/gutenberg.10.0.0.zip"
+		"https://downloads.wordpress.org/plugin/gutenberg.10.0.2.zip"
 	],
 	"mappings": {
 		"wp-content/mu-plugins": "./wp-env/mu-plugins"
+	},
+	"env": {
+		"tests": {
+			"mappings": {
+				"vendor": "./vendor",
+				"phpunit": "./phpunit",
+				"phpunit.xml.dist": "./phpunit.xml.dist"
+			}
+		}
 	}
 }
