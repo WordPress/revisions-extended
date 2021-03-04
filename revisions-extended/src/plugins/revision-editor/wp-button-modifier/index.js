@@ -1,10 +1,4 @@
 /**
- * WordPress dependencies
- */
-import { useEffect, useState } from '@wordpress/element';
-import { subscribe } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import { useParentPost } from '../../../hooks';
@@ -20,28 +14,19 @@ const getWPButton = () => {
 };
 
 const WPButtonModifier = () => {
-	const [ typeUrl, setTypeUrl ] = useState();
 	const { type } = useParentPost();
 
-	subscribe( () => {
-		if ( ! typeUrl ) {
-			return;
-		}
+	if ( ! type ) {
+		return null;
+	}
 
-		const wpButtonElement = getWPButton();
+	const wpButtonElement = getWPButton();
 
-		if ( wpButtonElement && wpButtonElement.href !== typeUrl ) {
-			wpButtonElement.href = typeUrl;
-		}
-	} );
+	if ( ! wpButtonElement ) {
+		return null;
+	}
 
-	useEffect( () => {
-		if ( ! type ) {
-			return;
-		}
-
-		setTypeUrl( getAllRevisionUrl( type ) );
-	}, [ type ] );
+	wpButtonElement.href = getAllRevisionUrl( type );
 
 	return null;
 };
