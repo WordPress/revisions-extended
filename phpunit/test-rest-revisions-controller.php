@@ -15,20 +15,23 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 	protected static $page_id;
 
 	protected static $editor_id;
-	protected static $contributor_id;
+	protected static $author_id;
 
 	public static function wpSetUpBeforeClass( WP_UnitTest_Factory $factory ) {
 		self::$post_id = $factory->post->create();
-		self::$page_id = $factory->post->create( array( 'post_type' => 'page' ) );
+		self::$page_id = $factory->post->create( array(
+			'post_type'   => 'page',
+			'post_status' => 'draft',
+		) );
 
-		self::$editor_id      = $factory->user->create(
+		self::$editor_id = $factory->user->create(
 			array(
 				'role' => 'editor',
 			)
 		);
-		self::$contributor_id = $factory->user->create(
+		self::$author_id = $factory->user->create(
 			array(
-				'role' => 'contributor',
+				'role' => 'author',
 			)
 		);
 
@@ -71,7 +74,7 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		wp_delete_post( self::$page_id, true );
 
 		self::delete_user( self::$editor_id );
-		self::delete_user( self::$contributor_id );
+		self::delete_user( self::$author_id );
 	}
 
 	public function tearDown() {
@@ -163,7 +166,6 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 			'title'  => 'Post title',
 			'status' => 'future',
 			'date'   => wp_date( 'Y-m-d H:i:s', strtotime( '+ 2 weeks' ) ),
-			'parent' => self::$post_id,
 		);
 		$request->set_body_params( $params );
 		$response = rest_get_server()->dispatch( $request );
@@ -174,7 +176,46 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$created_id     = $data['id'];
 		$created_object = wp_get_post_revision( $created_id );
 		$this->assertInstanceOf( 'WP_Post', $created_object );
+		$this->assertEquals( self::$editor_id, $created_object->post_author );
 		$this->check_revision_response( $data, $created_object );
+	}
+
+	public function test_create_item_no_permission() {
+		wp_set_current_user( self::$author_id );
+
+		$request = new WP_REST_Request(
+			'POST',
+			'/revisions-extended/v1/posts/' . self::$post_id . '/revisions'
+		);
+		$request->add_header( 'content-type', 'application/x-www-form-urlencoded' );
+		$params = array(
+			'title'  => 'Post title',
+			'status' => 'future',
+			'date'   => wp_date( 'Y-m-d H:i:s', strtotime( '+ 2 weeks' ) ),
+		);
+		$request->set_body_params( $params );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertErrorResponse( 'rest_cannot_edit', $response, 403 );
+	}
+
+	public function test_create_item_parent_not_public() {
+		wp_set_current_user( self::$editor_id );
+
+		$request = new WP_REST_Request(
+			'POST',
+			'/revisions-extended/v1/pages/' . self::$page_id . '/revisions'
+		);
+		$request->add_header( 'content-type', 'application/x-www-form-urlencoded' );
+		$params = array(
+			'title'  => 'Page title',
+			'status' => 'future',
+			'date'   => wp_date( 'Y-m-d H:i:s', strtotime( '+ 2 weeks' ) ),
+		);
+		$request->set_body_params( $params );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertErrorResponse( 'rest_invalid_post', $response, 403 );
 	}
 
 	public function test_context_param() {
