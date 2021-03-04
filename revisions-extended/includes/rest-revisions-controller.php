@@ -150,6 +150,14 @@ class REST_Revisions_Controller extends WP_REST_Revisions_Controller {
 			return $parent;
 		}
 
+		if ( ! current_user_can( 'edit_post', $parent->ID ) ) {
+			return new WP_Error(
+				'rest_cannot_edit',
+				__( 'Sorry, you are not allowed to edit this post.', 'revisions-extended' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
+
 		return $this->parent_controller->create_item_permissions_check( $request );
 	}
 
