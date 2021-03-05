@@ -9,20 +9,27 @@ import {
 } from '@wordpress/element';
 
 /**
- * Module variables
+ * Internal dependencies
  */
-const OUR_BUTTON_ID = 'revisions-extended-button';
+import DropdownBtn from '../plugins/editor-modifications/dropdown-btn';
+
+/**
+ * Module constants
+ */
+const CONTAINER_ID = 'revision-button-container';
+
+let addedBtn = false;
 
 const getGutenbergButtonElement = () => {
 	return document.querySelector( '.editor-post-publish-button__button' );
 };
 
-const getOurButtonElement = () => {
-	return document.getElementById( OUR_BUTTON_ID );
-};
+const insertContainer = ( btnDomRef ) => {
+	const container = document.createElement( 'div' );
+	container.id = CONTAINER_ID;
 
-const showElement = ( el ) => ( el.style.display = 'block' );
-const hideElement = ( el ) => ( el.style.display = 'none' );
+	btnDomRef.parentElement.insertBefore( container, btnDomRef.nextSibling );
+};
 
 /**
  * Insert an html element to the right
@@ -35,41 +42,9 @@ const insertButton = ( btnDomRef, newNode ) => {
 		btnDomRef.parentElement.removeChild( newNode );
 	} catch ( ex ) {}
 
-	btnDomRef.parentElement.insertBefore( newNode, btnDomRef.nextSibling );
-};
+	insertContainer( btnDomRef );
 
-/**
- * Clones the button and updates its properties
- *
- * @param {HTMLElement} btnDomRef The gutenberg button dom reference
- * @param {Object} param
- * @param {string} param.text
- * @param {Function} param.callback
- */
-const cloneButton = ( btnDomRef, { text, callback } ) => {
-	const newNode = btnDomRef.cloneNode();
-
-	// Update some of the cloned properties
-	newNode.id = OUR_BUTTON_ID;
-	newNode.innerText = text ? text : btnDomRef.innerText;
-	newNode.setAttribute( 'aria-disabled', false );
-	newNode.addEventListener( 'click', callback );
-
-	// It will copy its hidden-ness
-	showElement( newNode );
-
-	return newNode;
-};
-
-/**
- * Removes itself from the DOM
- *
- * @param {HTMLElement} domNode HTML node to remove
- */
-const removeBtn = ( domNode ) => {
-	try {
-		domNode.parentElement.removeChild( domNode );
-	} catch ( ex ) {}
+	ReactDOM.render( newNode, document.getElementById( CONTAINER_ID ) );
 };
 
 /**
@@ -78,55 +53,22 @@ const removeBtn = ( domNode ) => {
  * @param {HTMLElement} gutenbergBtn The gutenberg button dom reference
  * @param {Object} btnState
  */
-const toggleBtnOn = ( gutenbergBtn, btnState ) => {
-	const newNode = cloneButton( gutenbergBtn, btnState );
-	insertButton( gutenbergBtn, newNode );
-
-	// Hide the gutenberg btn
-	hideElement( gutenbergBtn );
-};
-
-/**
- * Turns off our button and turns on Gutenberg's button
- *
- * @param {HTMLElement} gutenbergBtn The gutenberg button dom reference
- */
-const toggleBtnOff = ( gutenbergBtn ) => {
-	// Remove our button
-	removeBtn( getOurButtonElement() );
-
-	// Show the Gutenberg button
-	showElement( gutenbergBtn );
+const toggleBtnOn = ( gutenbergBtn, callback ) => {
+	insertButton( gutenbergBtn, <DropdownBtn onClick={ callback } /> );
 };
 
 const StateContext = createContext();
 
-export function InterfaceProvider( { children, btnText = false } ) {
-	const [ shouldIntercept, setIntercept ] = useState( false );
-	const [ gutenbergBtn, setGutenbergBtn ] = useState( false );
-	const [ btnState, setBtnDefaults ] = useState( {
-		text: btnText,
-		callback: () => {},
-	} );
-
-	useEffect( () => {
-		setGutenbergBtn( getGutenbergButtonElement() );
-	}, [] );
-
+export function InterfaceProvider( { children } ) {
 	return (
 		<StateContext.Provider
 			value={ {
-				setBtnDefaults: ( args ) => {
-					setBtnDefaults( { ...btnState, ...args } );
-				},
-				shouldIntercept,
-				setShouldIntercept: ( isChecked ) => {
-					if ( isChecked ) {
-						toggleBtnOn( gutenbergBtn, btnState );
-					} else {
-						toggleBtnOff( gutenbergBtn );
+				setBtnDefaults: ( { callback } ) => {
+					if ( callback && ! addedBtn ) {
+						toggleBtnOn( getGutenbergButtonElement(), callback );
+
+						addedBtn = true;
 					}
-					setIntercept( isChecked );
 				},
 			} }
 		>

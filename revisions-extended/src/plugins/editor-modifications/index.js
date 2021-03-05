@@ -9,8 +9,8 @@ import { registerPlugin } from '@wordpress/plugins';
  */
 import { ErrorBoundary } from '../../components';
 import UpdateButtonModifier from './update-button-modifier';
-import PluginPostStatusInfo from './plugin-post-status-info';
 import DocumentSettingsPanel from './document-settings-panel';
+
 
 import { pluginNamespace } from '../../utils';
 import { InterfaceProvider, TypesProvider, usePost } from '../../hooks';
@@ -29,7 +29,6 @@ const MainPlugin = () => {
 			>
 				<TypesProvider>
 					<UpdateButtonModifier />
-					<PluginPostStatusInfo />
 					<DocumentSettingsPanel />
 				</TypesProvider>
 			</InterfaceProvider>

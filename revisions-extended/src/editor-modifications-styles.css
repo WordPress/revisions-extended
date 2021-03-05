@@ -1,5 +1,10 @@
 /** Overrides **/
 
 .components-modal__screen-overlay {
-	background-color: rgba(255,255,255,0.95);
+	background-color: rgba( 255, 255, 255, 0.95 );
+}
+
+/* Used for the dropdown btn */
+.interface-interface-skeleton__header {
+	z-index: 10000;
 }
