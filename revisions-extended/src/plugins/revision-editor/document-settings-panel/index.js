@@ -17,7 +17,13 @@ import PostSchedule from './post-schedule';
 import PostStatusTrashButton from './post-status-trash-button';
 import PostStatusPublishCheckbox from './post-status-publish-checkbox';
 
-import { useInterface, useRevision, usePost } from '../../../hooks';
+import {
+	useInterface,
+	useRevision,
+	usePost,
+	useParentPost,
+} from '../../../hooks';
+import { WP_PUBLISH_STATUS } from '../../../settings';
 
 import { GUTENBERG_PLUGIN_NAMESPACE } from '../index';
 
@@ -32,6 +38,7 @@ const DocumentSettingsPanel = () => {
 	const { shouldIntercept, setShouldIntercept } = useInterface();
 	const { trash } = useRevision();
 	const { getEditedPostAttribute } = usePost();
+	const { status: parentStatus } = useParentPost();
 
 	useEffect( () => {
 		// Hide the default panel;
@@ -58,12 +65,14 @@ const DocumentSettingsPanel = () => {
 			<PanelRow>
 				<PostSchedule />
 			</PanelRow>
-			<PanelRow>
-				<PostStatusPublishCheckbox
-					toggled={ shouldIntercept }
-					onToggle={ setShouldIntercept }
-				/>
-			</PanelRow>
+			{ parentStatus === WP_PUBLISH_STATUS && (
+				<PanelRow>
+					<PostStatusPublishCheckbox
+						toggled={ shouldIntercept }
+						onToggle={ setShouldIntercept }
+					/>
+				</PanelRow>
+			) }
 			<PanelRow>
 				<PostStatusTrashButton
 					id={ getEditedPostAttribute( 'id' ) }
