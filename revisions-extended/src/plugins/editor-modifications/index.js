@@ -1,19 +1,24 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { registerPlugin } from '@wordpress/plugins';
 
 /**
  * Internal dependencies
  */
 import { ErrorBoundary } from '../../components';
-import UpdateButtonModifier from './update-button-modifier';
 import DocumentSettingsPanel from './document-settings-panel';
-
+import UpdateDropdownButton from './update-dropdown-button';
+import CreateConfirmWindow from './create-confirm-window';
+import CreateSidebar from './create-sidebar';
 
 import { pluginNamespace } from '../../utils';
 import { InterfaceProvider, TypesProvider, usePost } from '../../hooks';
+
+/**
+ * Module constants
+ */
+export const PLUGIN_NAME = `${ pluginNamespace }-main-plugin`;
 
 const MainPlugin = () => {
 	const { isPublished } = usePost();
@@ -24,11 +29,11 @@ const MainPlugin = () => {
 
 	return (
 		<ErrorBoundary>
-			<InterfaceProvider
-				btnText={ __( 'Create update', 'revisions-extended' ) }
-			>
+			<InterfaceProvider>
 				<TypesProvider>
-					<UpdateButtonModifier />
+					<CreateConfirmWindow />
+					<UpdateDropdownButton />
+					<CreateSidebar />
 					<DocumentSettingsPanel />
 				</TypesProvider>
 			</InterfaceProvider>
@@ -36,6 +41,6 @@ const MainPlugin = () => {
 	);
 };
 
-registerPlugin( `${ pluginNamespace }-main-plugin`, {
+registerPlugin( PLUGIN_NAME, {
 	render: MainPlugin,
 } );

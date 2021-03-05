@@ -32,11 +32,3 @@
 .dropdown-btn .components-popover__content {
 	min-width: 225px;
 }
-
-/* .components-modal__frame {
-	width: 250px;;
-} */
-
-.components-datetime__date-help-toggle {
-	display: none !important;
-}

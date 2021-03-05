@@ -7,7 +7,6 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { getRestApiUrl, getRestApiUrlV2 } from '../utils';
-
 import { POST_STATUS_SCHEDULED, POST_STATUS_PENDING } from '../settings';
 
 /**
