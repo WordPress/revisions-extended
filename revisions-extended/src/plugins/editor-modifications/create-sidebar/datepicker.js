@@ -21,9 +21,7 @@ const DatePicker = ( { date, onChange } ) => {
 	return (
 		<DateTimePicker
 			currentDate={ date }
-			onChange={ ( d ) => {
-				onChange( d );
-			} }
+			onChange={ onChange }
 			is12Hour={ is12HourTime }
 		/>
 	);

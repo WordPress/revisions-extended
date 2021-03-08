@@ -4,7 +4,7 @@
 import { __ } from '@wordpress/i18n';
 import { useState, useEffect } from '@wordpress/element';
 import { dispatch } from '@wordpress/data';
-import { isInTheFuture } from '@wordpress/date';
+import { getDate, isInTheFuture } from '@wordpress/date';
 import { PluginSidebar } from '@wordpress/edit-post';
 import { image } from '@wordpress/icons';
 import {
@@ -26,6 +26,7 @@ import {
 } from '../../../settings';
 import { usePost, useRevision, useTypes, useInterface } from '../../../hooks';
 import { PLUGIN_NAME } from '../index';
+import MinDateNotice from './min-date-notice';
 import './index.css';
 
 /**
@@ -37,7 +38,8 @@ const CREATE_SIDEBAR_FULL_NAMESPACE = `${ PLUGIN_NAME }/${ CREATE_SIDEBAR_NAME }
 
 const CreateSidebar = () => {
 	const [ saving, setSaving ] = useState();
-	const [ createDate, setCreateDate ] = useState( new Date() );
+	const [ createDate, setCreateDate ] = useState( getDate() );
+	const [ showMinDate, setShowMinDate ] = useState( false );
 	const { create } = useRevision();
 	const { savedPost, getEditedPostAttribute, clearPostEdits } = usePost();
 	const { fetchTypes } = useTypes();
@@ -130,11 +132,16 @@ const CreateSidebar = () => {
 						<PanelBody>
 							<DatePicker
 								date={ createDate }
-								onChange={ setCreateDate }
+								onChange={ ( date ) => {
+									setShowMinDate( false );
+									setCreateDate( date );
+								} }
 							/>
 						</PanelBody>
 					</Panel>
 					<PanelBody>
+						{ showMinDate && <MinDateNotice /> }
+
 						<Flex>
 							<FlexItem>
 								<Button isSecondary onClick={ closeSidebar }>
@@ -145,7 +152,16 @@ const CreateSidebar = () => {
 								<Button
 									isPrimary
 									disabled={ ! isInTheFuture( createDate ) }
-									onClick={ _savePost }
+									onClick={ () => {
+										// It's possible that user click the button before the
+										// disable state is triggered since the inputs work on blur and the user may not have
+										// blurred the input yet
+										if ( isInTheFuture( createDate ) ) {
+											_savePost();
+										} else {
+											setShowMinDate( true );
+										}
+									} }
 								>
 									{ __(
 										'Create update',
