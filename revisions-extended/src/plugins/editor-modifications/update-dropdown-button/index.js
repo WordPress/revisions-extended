@@ -1,6 +1,7 @@
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { dispatch } from '@wordpress/data';
 import { useEffect } from '@wordpress/element';
 import { MenuGroup, MenuItem } from '@wordpress/components';
@@ -21,7 +22,10 @@ const UpdateDropdownButton = () => {
 				render={ ( { onClose } ) => (
 					<MenuGroup>
 						<MenuItem
-							info="Publish changes in the future"
+							info={ __(
+								'Publish on a specific date',
+								'revisions-extended'
+							) }
 							onClick={ () => {
 								onClose();
 								dispatch(
@@ -31,7 +35,7 @@ const UpdateDropdownButton = () => {
 								);
 							} }
 						>
-							Schedule update
+							{ __( 'Schedule update', 'revisions-extended' ) }
 						</MenuItem>
 					</MenuGroup>
 				) }

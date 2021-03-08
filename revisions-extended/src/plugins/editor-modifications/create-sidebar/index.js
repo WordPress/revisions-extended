@@ -137,7 +137,7 @@ const CreateSidebar = () => {
 						<Flex>
 							<FlexItem>
 								<Button isSecondary onClick={ closeSidebar }>
-									Cancel
+									{ __( 'Cancel', 'revisions-extended' ) }
 								</Button>
 							</FlexItem>
 							<FlexItem>
@@ -146,7 +146,10 @@ const CreateSidebar = () => {
 									isBusy={ false }
 									onClick={ _savePost }
 								>
-									Create update
+									{ __(
+										'Create update',
+										'revisions-extended'
+									) }
 								</Button>
 							</FlexItem>
 						</Flex>

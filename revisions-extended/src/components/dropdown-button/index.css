@@ -36,5 +36,5 @@
 
 /* This extends the dropdown menu with to make it less cramped */
 .revisions-extended-dropdown-btn .components-popover__content {
-	min-width: 225px;
+	min-width: 250px;
 }

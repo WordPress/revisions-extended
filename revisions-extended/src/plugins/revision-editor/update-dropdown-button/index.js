@@ -55,13 +55,16 @@ const UpdateDropdownButton = () => {
 				render={ ( { onClose } ) => (
 					<MenuGroup>
 						<MenuItem
-							info="Update immediately"
+							info={ __(
+								'Apply these changes immediately',
+								'revisions-extended'
+							) }
 							onClick={ async () => {
 								onClose();
 								await _savePost();
 							} }
 						>
-							{ __( 'Publish Now', 'revisions-extended' ) }
+							{ __( 'Publish now', 'revisions-extended' ) }
 						</MenuItem>
 					</MenuGroup>
 				) }
