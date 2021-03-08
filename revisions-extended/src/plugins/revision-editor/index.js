@@ -12,7 +12,7 @@ import RevisionIndicator from './revision-indicator';
 import WPButtonModifier from './wp-button-modifier';
 import TabTextModifier from './tab-text-modifier';
 import UpdateDropdownButton from './update-dropdown-button';
-import PublishConfirmWindow from './publish-confirm-window';
+import PublishSuccessWindow from './publish-success-window';
 
 // The filter will run once on load
 import './wp-button-filter';
@@ -49,7 +49,7 @@ const PluginWrapper = () => {
 						<RevisionIndicator />
 						<WPButtonModifier />
 						<TabTextModifier />
-						<PublishConfirmWindow />
+						<PublishSuccessWindow />
 					</TypesProvider>
 				</ParentPostProvider>
 			</InterfaceProvider>

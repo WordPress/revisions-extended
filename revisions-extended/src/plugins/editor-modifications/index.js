@@ -9,7 +9,7 @@ import { registerPlugin } from '@wordpress/plugins';
 import { ErrorBoundary } from '../../components';
 import DocumentSettingsPanel from './document-settings-panel';
 import UpdateDropdownButton from './update-dropdown-button';
-import CreateConfirmWindow from './create-confirm-window';
+import CreateSuccessWindow from './create-success-window';
 import CreateSidebar from './create-sidebar';
 
 import { pluginNamespace } from '../../utils';
@@ -31,7 +31,7 @@ const MainPlugin = () => {
 		<ErrorBoundary>
 			<InterfaceProvider>
 				<TypesProvider>
-					<CreateConfirmWindow />
+					<CreateSuccessWindow />
 					<UpdateDropdownButton />
 					<CreateSidebar />
 					<DocumentSettingsPanel />
