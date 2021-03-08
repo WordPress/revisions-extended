@@ -1,11 +1,12 @@
-
-.dropdown-btn {
+.revisions-extended-dropdown-btn {
 	display: flex;
 	position: relative;
+	background: #64afd5;
+	border-radius: 0 2px 2px 0;
 	margin-right: 8px;
 }
 
-.dropdown-btn button {
+.revisions-extended-dropdown-btn button {
 	margin: 0 !important;
 }
 
@@ -13,22 +14,27 @@
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
 	margin-right: 0 !important;
+	border-right: 1px solid rgba( 255, 255, 255, 0.5 );
 }
 
-.dropdown-btn .dropdown-btn-toggle {
-	border-top-right-radius: 2px;
-	border-bottom-right-radius: 2px;
+.revisions-extended-dropdown-btn .revisions-extended-dropdown-btn-toggle {
+	border-radius: 0 2px 2px 0;
+}
+
+.revisions-extended-dropdown-btn .revisions-extended-dropdown-btn-toggle > button {
+	border-radius: 0 2px 2px 0;
 	border: 0;
 	background: #007cba;
 	color: #fff;
-	border-left: 1px solid rgba( 255, 255, 255, 0.5 );
+	margin-left: 1px !important;
 }
 
-.dropdown-btn .dropdown-btn-toggle svg {
+.revisions-extended-dropdown-btn .revisions-extended-dropdown-btn-toggle svg {
 	fill: #fff;
 	height: 16px;
 }
 
-.dropdown-btn .components-popover__content {
+/* This extends the dropdown menu with to make it less cramped */
+.revisions-extended-dropdown-btn .components-popover__content {
 	min-width: 225px;
 }

@@ -1,6 +1,7 @@
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { DropdownMenu } from '@wordpress/components';
 import { arrowDown } from '@wordpress/icons';
 
@@ -8,11 +9,11 @@ import './index.css';
 
 const UpdateDropdownButton = ( { render } ) => {
 	return (
-		<div className="dropdown-btn">
+		<div className="revisions-extended-dropdown-btn">
 			<DropdownMenu
-				className="dropdown-btn-toggle"
+				className="revisions-extended-dropdown-btn-toggle"
 				icon={ arrowDown }
-				label="Select a direction"
+				label={ __( 'Select an action', 'revisions-extended' ) }
 			>
 				{ ( { onClose } ) => render( { onClose } ) }
 			</DropdownMenu>
