@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 import { dispatch } from '@wordpress/data';
 import { PluginSidebar } from '@wordpress/edit-post';
 import { image } from '@wordpress/icons';
@@ -19,7 +19,10 @@ import {
  * Internal dependencies
  */
 import DatePicker from './datepicker';
-import { GUTENBERG_EDIT_POST_STORE } from '../../../settings';
+import {
+	GUTENBERG_EDIT_POST_STORE,
+	GUTENBERG_INTERFACE_STORE,
+} from '../../../settings';
 import { usePost, useRevision, useTypes, useInterface } from '../../../hooks';
 import { PLUGIN_NAME } from '../index';
 import './index.css';
@@ -37,6 +40,13 @@ const CreateSidebar = () => {
 	const { savedPost, getEditedPostAttribute, clearPostEdits } = usePost();
 	const { fetchTypes } = useTypes();
 	const { setState } = useInterface();
+
+	useEffect( () => {
+		dispatch( GUTENBERG_INTERFACE_STORE ).unpinItem(
+			GUTENBERG_EDIT_POST_STORE,
+			`${ PLUGIN_NAME }/${ CREATE_SIDEBAR_NAME }`
+		);
+	}, [] );
 
 	const closeSidebar = () => {
 		dispatch( GUTENBERG_EDIT_POST_STORE ).closeGeneralSidebar(
