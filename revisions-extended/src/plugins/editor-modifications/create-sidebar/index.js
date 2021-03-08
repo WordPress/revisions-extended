@@ -32,6 +32,7 @@ import './index.css';
  */
 export const CREATE_SIDEBAR_NAME = 'create-sidebar';
 const POST_AUTOSAVE_LOCK_ID = 'revisions-extended-lock';
+const CREATE_SIDEBAR_FULL_NAMESPACE = `${ PLUGIN_NAME }/${ CREATE_SIDEBAR_NAME }`;
 
 const CreateSidebar = () => {
 	const [ saving, setSaving ] = useState();
@@ -44,13 +45,13 @@ const CreateSidebar = () => {
 	useEffect( () => {
 		dispatch( GUTENBERG_INTERFACE_STORE ).unpinItem(
 			GUTENBERG_EDIT_POST_STORE,
-			`${ PLUGIN_NAME }/${ CREATE_SIDEBAR_NAME }`
+			CREATE_SIDEBAR_FULL_NAMESPACE
 		);
 	}, [] );
 
 	const closeSidebar = () => {
 		dispatch( GUTENBERG_EDIT_POST_STORE ).closeGeneralSidebar(
-			`${ PLUGIN_NAME }/${ CREATE_SIDEBAR_NAME }`
+			CREATE_SIDEBAR_FULL_NAMESPACE
 		);
 	};
 
