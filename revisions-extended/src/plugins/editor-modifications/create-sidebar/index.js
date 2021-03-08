@@ -4,6 +4,7 @@
 import { __ } from '@wordpress/i18n';
 import { useState, useEffect } from '@wordpress/element';
 import { dispatch } from '@wordpress/data';
+import { isInTheFuture } from '@wordpress/date';
 import { PluginSidebar } from '@wordpress/edit-post';
 import { image } from '@wordpress/icons';
 import {
@@ -143,7 +144,7 @@ const CreateSidebar = () => {
 							<FlexItem>
 								<Button
 									isPrimary
-									isBusy={ false }
+									disabled={ ! isInTheFuture( createDate ) }
 									onClick={ _savePost }
 								>
 									{ __(
