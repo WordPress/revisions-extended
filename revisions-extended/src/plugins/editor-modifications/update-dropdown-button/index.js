@@ -29,7 +29,7 @@ const UpdateDropdownButton = () => {
 					<MenuGroup>
 						<MenuItem
 							info={ __(
-								'Publish on a specific date',
+								'Schedule update for a specific time',
 								'revisions-extended'
 							) }
 							onClick={ () => {
@@ -51,7 +51,7 @@ const UpdateDropdownButton = () => {
 								);
 							} }
 						>
-							{ __( 'Schedule update', 'revisions-extended' ) }
+							{ __( 'Save for later', 'revisions-extended' ) }
 						</MenuItem>
 					</MenuGroup>
 				) }
