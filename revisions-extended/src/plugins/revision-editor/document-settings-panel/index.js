@@ -15,9 +15,8 @@ import { PanelRow } from '@wordpress/components';
  */
 import PostSchedule from './post-schedule';
 import PostStatusTrashButton from './post-status-trash-button';
-import PostStatusPublishCheckbox from './post-status-publish-checkbox';
 
-import { useInterface, useRevision, usePost } from '../../../hooks';
+import { useRevision, usePost } from '../../../hooks';
 
 import { GUTENBERG_PLUGIN_NAMESPACE } from '../index';
 
@@ -29,7 +28,6 @@ const STORE_KEY = 'core/edit-post';
 const PANEL_NAME = 'scheduled-revisions';
 
 const DocumentSettingsPanel = () => {
-	const { shouldIntercept, setShouldIntercept } = useInterface();
 	const { trash } = useRevision();
 	const { getEditedPostAttribute } = usePost();
 
@@ -57,12 +55,6 @@ const DocumentSettingsPanel = () => {
 		<PluginDocumentSettingPanel name={ PANEL_NAME }>
 			<PanelRow>
 				<PostSchedule />
-			</PanelRow>
-			<PanelRow>
-				<PostStatusPublishCheckbox
-					toggled={ shouldIntercept }
-					onToggle={ setShouldIntercept }
-				/>
 			</PanelRow>
 			<PanelRow>
 				<PostStatusTrashButton

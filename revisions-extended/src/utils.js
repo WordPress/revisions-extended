@@ -9,6 +9,7 @@ export const pluginNamespace = 'revisions-extended';
 export const pluginName = __( 'Revisions Extended', 'revisions-extended' );
 export const pluginCustomPostType = 'revision';
 import { POST_STATUS_SCHEDULED, POST_STATUS_PENDING } from './settings';
+const CONTAINER_ID = 'revision-button-container';
 
 export const getRestApiUrl = ( restBase, parentId ) => {
 	return `revisions-extended/v1/${ restBase }/${ parentId }/revisions`;
@@ -79,4 +80,30 @@ export const getStatusDisplay = ( postStatus, date ) => {
 export const clearLocalChanges = ( id ) => {
 	// There's gotta be a better approach
 	window.sessionStorage.removeItem( `wp-autosave-block-editor-post-${ id }` );
+};
+
+const insertContainer = ( btnDomRef ) => {
+	const container = document.createElement( 'div' );
+	container.id = CONTAINER_ID;
+
+	btnDomRef.parentElement.insertBefore( container, btnDomRef.nextSibling );
+};
+
+/**
+ * Insert an html element to the right
+ *
+ * @param {HTMLElement} newNode Element to be added
+ */
+export const insertButton = ( newNode ) => {
+	const btnDomRef = document.querySelector(
+		'.editor-post-publish-button__button'
+	);
+
+	if ( ! btnDomRef ) {
+		return;
+	}
+	insertContainer( btnDomRef );
+
+	/* eslint-disable no-undef*/
+	ReactDOM.render( newNode, document.getElementById( CONTAINER_ID ) );
 };

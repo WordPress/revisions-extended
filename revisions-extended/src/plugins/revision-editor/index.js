@@ -1,7 +1,6 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { registerPlugin } from '@wordpress/plugins';
 
 /**
@@ -9,10 +8,11 @@ import { registerPlugin } from '@wordpress/plugins';
  */
 import { ErrorBoundary } from '../../components';
 import DocumentSettingsPanel from './document-settings-panel';
-import UpdateButtonModifier from './update-button-modifier';
 import RevisionIndicator from './revision-indicator';
 import WPButtonModifier from './wp-button-modifier';
 import TabTextModifier from './tab-text-modifier';
+import UpdateDropdownButton from './update-dropdown-button';
+import PublishSuccessWindow from './publish-success-window';
 
 // The filter will run once on load
 import './wp-button-filter';
@@ -41,16 +41,15 @@ const PluginWrapper = () => {
 
 	return (
 		<ErrorBoundary>
-			<InterfaceProvider
-				btnText={ __( 'Publish', 'revisions-extended' ) }
-			>
+			<InterfaceProvider>
 				<ParentPostProvider links={ savedPost._links }>
 					<TypesProvider>
+						<UpdateDropdownButton />
 						<DocumentSettingsPanel />
-						<UpdateButtonModifier />
 						<RevisionIndicator />
 						<WPButtonModifier />
 						<TabTextModifier />
+						<PublishSuccessWindow />
 					</TypesProvider>
 				</ParentPostProvider>
 			</InterfaceProvider>

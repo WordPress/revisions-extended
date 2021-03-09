@@ -37,6 +37,43 @@ export const usePost = () => {
 
 			savePost: dispatch( GUTENBERG_EDITOR_STORE ).savePost,
 			editPost: dispatch( GUTENBERG_EDITOR_STORE ).editPost,
+
+			/**
+			 * Clear the current post edits to avoid triggering dirty state
+			 */
+
+			clearPostEdits: async ( savedPost ) => {
+				const entity = {
+					kind: 'postType',
+					name: savedPost.type,
+					id: savedPost.id,
+				};
+
+				const edits = select( 'core' ).getEntityRecordEdits(
+					entity.kind,
+					entity.name,
+					entity.id
+				);
+
+				if ( ! edits ) {
+					return;
+				}
+
+				const clearedEdits = {};
+
+				// Setting them to undefined will effectively clear them.
+				Object.keys( edits ).forEach( ( e ) => {
+					clearedEdits[ e ] = undefined;
+				} );
+
+				return await dispatch( 'core' ).editEntityRecord(
+					entity.kind,
+					entity.name,
+					entity.id,
+					clearedEdits,
+					{ undoIgnore: true }
+				);
+			},
 		};
 	}, [] );
 };
