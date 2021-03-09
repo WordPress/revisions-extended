@@ -122,7 +122,7 @@ const CreateSidebar = () => {
 	return (
 		<PluginSidebar
 			name={ CREATE_SIDEBAR_NAME }
-			title={ __( 'Schedule Update', 'revisions-extended' ) }
+			title={ __( 'Save for later', 'revisions-extended' ) }
 			icon={ calendar }
 			isPinnable={ false }
 		>
@@ -174,7 +174,7 @@ const CreateSidebar = () => {
 									} }
 								>
 									{ __(
-										'Create update',
+										'Save update',
 										'revisions-extended'
 									) }
 								</Button>

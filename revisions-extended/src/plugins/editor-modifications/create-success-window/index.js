@@ -30,7 +30,7 @@ const CreateConfirmWindow = () => {
 
 	return (
 		<ConfirmWindow
-			title="Revisions Extended"
+			title={ __( 'Update saved', 'revisions-extended' ) }
 			notice={
 				<Notice status="success" isDismissible={ false }>
 					{ newRevision.status === POST_STATUS_SCHEDULED ? (
@@ -58,7 +58,7 @@ const CreateConfirmWindow = () => {
 			links={ [
 				{
 					text: __(
-						'Continue editing your update.',
+						'Continue editing your update',
 						'revisions-extended'
 					),
 					href: getEditUrl( newRevision.id ),
@@ -66,7 +66,7 @@ const CreateConfirmWindow = () => {
 				{
 					text: sprintf(
 						// translators: %s: post type.
-						__( 'Edit original %s.', 'revisions-extended' ),
+						__( 'Edit original %s', 'revisions-extended' ),
 						getTypeInfo(
 							`${ savedPost.type }.labels.singular_name`
 						).toLowerCase()
@@ -76,7 +76,7 @@ const CreateConfirmWindow = () => {
 				{
 					text: sprintf(
 						// translators: %s: post type.
-						__( 'View all %s updates.', 'revisions-extended' ),
+						__( 'View all %s updates', 'revisions-extended' ),
 						getTypeInfo(
 							`${ savedPost.type }.labels.singular_name`
 						).toLowerCase()
