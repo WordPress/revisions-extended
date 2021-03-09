@@ -6,7 +6,7 @@ import { useState, useEffect } from '@wordpress/element';
 import { dispatch } from '@wordpress/data';
 import { getDate, isInTheFuture } from '@wordpress/date';
 import { PluginSidebar } from '@wordpress/edit-post';
-import { image } from '@wordpress/icons';
+import { calendar } from '@wordpress/icons';
 import {
 	Panel,
 	PanelBody,
@@ -43,7 +43,10 @@ const CreateSidebar = () => {
 	const { create } = useRevision();
 	const { savedPost, getEditedPostAttribute, clearPostEdits } = usePost();
 	const { fetchTypes } = useTypes();
-	const { setState } = useInterface();
+	const {
+		state: { activeComplementaryAreaBefore },
+		setState,
+	} = useInterface();
 
 	useEffect( () => {
 		dispatch( GUTENBERG_INTERFACE_STORE ).unpinItem(
@@ -53,9 +56,15 @@ const CreateSidebar = () => {
 	}, [] );
 
 	const closeSidebar = () => {
-		dispatch( GUTENBERG_EDIT_POST_STORE ).closeGeneralSidebar(
-			CREATE_SIDEBAR_FULL_NAMESPACE
-		);
+		if ( activeComplementaryAreaBefore ) {
+			dispatch( GUTENBERG_EDIT_POST_STORE ).openGeneralSidebar(
+				activeComplementaryAreaBefore
+			);
+		} else {
+			dispatch( GUTENBERG_EDIT_POST_STORE ).closeGeneralSidebar(
+				CREATE_SIDEBAR_FULL_NAMESPACE
+			);
+		}
 	};
 
 	const _savePost = async () => {
@@ -114,7 +123,8 @@ const CreateSidebar = () => {
 		<PluginSidebar
 			name={ CREATE_SIDEBAR_NAME }
 			title={ __( 'Schedule Update', 'revisions-extended' ) }
-			icon={ image }
+			icon={ calendar }
+			isPinnable={ false }
 		>
 			{ saving && (
 				<Flex
