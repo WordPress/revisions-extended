@@ -82,6 +82,17 @@ export const clearLocalChanges = ( id ) => {
 	window.sessionStorage.removeItem( `wp-autosave-block-editor-post-${ id }` );
 };
 
+/**
+ * Removes the button container if it exists
+ */
+const maybeRemoveContainer = () => {
+	const container = document.getElementById( CONTAINER_ID );
+
+	if ( container && container.parentElement ) {
+		container.parentElement.removeChild( container );
+	}
+};
+
 const insertContainer = ( btnDomRef ) => {
 	const container = document.createElement( 'div' );
 	container.id = CONTAINER_ID;
@@ -90,7 +101,7 @@ const insertContainer = ( btnDomRef ) => {
 };
 
 /**
- * Insert an html element to the right
+ * Insert an html element to the right.
  *
  * @param {HTMLElement} newNode Element to be added
  */
@@ -102,6 +113,10 @@ export const insertButton = ( newNode ) => {
 	if ( ! btnDomRef ) {
 		return;
 	}
+
+	// We may re-insert the same button if it state's changes, ie: disabled -> enabled
+	maybeRemoveContainer();
+
 	insertContainer( btnDomRef );
 
 	/* eslint-disable no-undef*/

@@ -17,14 +17,16 @@ import {
 import { CREATE_SIDEBAR_NAME } from '../create-sidebar';
 import { PLUGIN_NAME } from '../index';
 import { insertButton } from '../../../utils';
-import { useInterface } from '../../../hooks';
+import { useInterface, usePost } from '../../../hooks';
 
 const UpdateDropdownButton = () => {
 	const { setState } = useInterface();
+	const { isEditedPostDirty } = usePost();
 
 	useEffect( () => {
 		insertButton(
 			<DropDownButton
+				disabled={ ! isEditedPostDirty() }
 				render={ ( { onClose } ) => (
 					<MenuGroup>
 						<MenuItem
@@ -57,7 +59,7 @@ const UpdateDropdownButton = () => {
 				) }
 			/>
 		);
-	}, [] );
+	}, [ isEditedPostDirty() ] );
 
 	return null;
 };
