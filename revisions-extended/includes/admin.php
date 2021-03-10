@@ -159,6 +159,8 @@ function pre_render_updates_subpage() {
 
 	add_screen_option( 'per_page' );
 
+	add_updates_help_tabs();
+
 	$action = wp_unslash( filter_input( INPUT_GET, 'action' ) );
 	if ( ! $action || '-1' === $action ) {
 		$action = wp_unslash( filter_input( INPUT_GET, 'action2' ) );
@@ -282,6 +284,62 @@ function render_updates_subpage() {
 	}
 
 	require get_views_path() . 'edit-revisions.php';
+}
+
+/**
+ * Add help tabs to the Updates subpage.
+ *
+ * @return void
+ */
+function add_updates_help_tabs() {
+	$screen = get_current_screen();
+
+	$screen->add_help_tab(
+		array(
+			'id'      => 'overview',
+			'title'   => __( 'Overview', 'revisions-extended' ),
+			'content' =>
+				'<p>' . __( 'Updates are changes to existing published posts that haven&#8217;t gone live yet.', 'revisions-extended' ) . '</p>' .
+				'<p>' . __( 'You can customize the display of this screen to suit your workflow, similar to posts and pages.', 'revisions-extended' ) . '</p>',
+		)
+	);
+
+	$screen->add_help_tab(
+		array(
+			'id'      => 'screen-content',
+			'title'   => __( 'Screen Content', 'revisions-extended' ),
+			'content' =>
+				'<p>' . __( 'You can customize the display of this screen&#8217;s contents:', 'revisions-extended' ) . '</p>' .
+				'<ul>' .
+					'<li>' . __( 'You can decide how many updates to list per screen using the Screen Options tab.', 'revisions-extended' ) . '</li>' .
+					'<li>' . __( 'You can sort the updates list in different ways by clicking any of the column headers that display as links.', 'revisions-extended' ) . '</li>' .
+				'</ul>' .
+				'<p>' . __( 'If an update has a &#8220;Suspended&#8221; state, it means that it can&#8217;t be published because the parent post isn&#8217;t currently published. It can, however, still be edited.', 'revisions-extended' ) . '</p>',
+		)
+	);
+
+	$screen->add_help_tab(
+		array(
+			'id'      => 'action-links',
+			'title'   => __( 'Available actions', 'revisions-extended' ),
+			'content' =>
+				'<p>' . __( 'Hovering over a row in the updates list will display action links that allow you to manage your update. You can perform the following actions:', 'revisions-extended' ) . '</p>' .
+				'<ul>' .
+					'<li>' . __( '<strong>Edit</strong> takes you to the editing screen for that update. You can also reach that screen by clicking on the update title.', 'revisions-extended' ) . '</li>' .
+					'<li>' . __( '<strong>Compare</strong> takes you to a screen that shows the differences between the current live content in a post and the content in the update.', 'revisions-extended' ) . '</li>' .
+					'<li>' . __( '<strong>Delete Permanently</strong> deletes the update. This action can&#8217;t be undone.', 'revisions-extended' ) . '</li>' .
+				'</ul>',
+		)
+	);
+
+	$screen->add_help_tab(
+		array(
+			'id'      => 'bulk-actions',
+			'title'   => __( 'Bulk actions', 'revisions-extended' ),
+			'content' =>
+				'<p>' . __( 'You can publish or delete multiple updates at once. Select the posts you want to act on using the checkboxes, then select the action you want to take from the Bulk actions menu and click Apply.' ) . '</p>',
+		)
+	);
 }
 
 /**
