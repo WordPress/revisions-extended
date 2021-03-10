@@ -608,13 +608,23 @@ function filter_display_post_states( $post_states, $post ) {
 		$revisions = get_post_revisions( $post, $args );
 
 		if ( ! empty( $revisions ) ) {
-			$post_states['has_updates'] = _nx(
-				'Has Update',
-				'Has Updates',
-				count( $revisions ),
-				'post status',
-				'revisions-extended'
-			);
+			if ( 'publish' !== get_post_status( $post ) ) {
+				$post_states['updates'] = _nx(
+					'Update Suspended',
+					'Updates Suspended',
+					count( $revisions ),
+					'post status',
+					'revisions-extended'
+				);
+			} else {
+				$post_states['updates'] = _nx(
+					'Update',
+					'Updates',
+					count( $revisions ),
+					'post status',
+					'revisions-extended'
+				);
+			}
 		}
 	}
 
