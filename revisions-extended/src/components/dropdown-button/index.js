@@ -5,15 +5,18 @@ import { __ } from '@wordpress/i18n';
 import { DropdownMenu } from '@wordpress/components';
 import { arrowDown } from '@wordpress/icons';
 
-import './index.css';
+import './index.scss';
 
-const UpdateDropdownButton = ( { render } ) => {
+const DropdownButton = ( { render, disabled } ) => {
 	return (
 		<div className="revisions-extended-dropdown-btn">
 			<DropdownMenu
 				className="revisions-extended-dropdown-btn-toggle"
 				icon={ arrowDown }
 				label={ __( 'Select an action', 'revisions-extended' ) }
+				toggleProps={ {
+					disabled,
+				} }
 			>
 				{ ( { onClose } ) => render( { onClose } ) }
 			</DropdownMenu>
@@ -21,4 +24,4 @@ const UpdateDropdownButton = ( { render } ) => {
 	);
 };
 
-export default UpdateDropdownButton;
+export default DropdownButton;

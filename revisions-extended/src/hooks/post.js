@@ -34,6 +34,7 @@ export const usePost = () => {
 			getEditedPostAttribute: store.getEditedPostAttribute,
 			getCurrentPostAttribute: store.getCurrentPostAttribute,
 			didPostSaveRequestSucceed: store.didPostSaveRequestSucceed,
+			isEditedPostDirty: store.isEditedPostDirty,
 
 			savePost: dispatch( GUTENBERG_EDITOR_STORE ).savePost,
 			editPost: dispatch( GUTENBERG_EDITOR_STORE ).editPost,
