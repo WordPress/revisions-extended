@@ -16,7 +16,7 @@ import { PanelRow } from '@wordpress/components';
 import PostSchedule from './post-schedule';
 import PostStatusTrashButton from './post-status-trash-button';
 
-import { useRevision, usePost } from '../../../hooks';
+import { useRevision, usePost, useParentPost } from '../../../hooks';
 
 import { GUTENBERG_PLUGIN_NAMESPACE } from '../index';
 
@@ -30,6 +30,7 @@ const PANEL_NAME = 'scheduled-revisions';
 const DocumentSettingsPanel = () => {
 	const { trash } = useRevision();
 	const { getEditedPostAttribute } = usePost();
+	const { type: parentType } = useParentPost();
 
 	useEffect( () => {
 		// Hide the default panel;
@@ -59,6 +60,7 @@ const DocumentSettingsPanel = () => {
 			<PanelRow>
 				<PostStatusTrashButton
 					id={ getEditedPostAttribute( 'id' ) }
+					parentType={ parentType }
 					onDelete={ trash }
 				/>
 			</PanelRow>
