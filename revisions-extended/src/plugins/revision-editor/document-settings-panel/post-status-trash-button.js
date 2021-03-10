@@ -9,7 +9,12 @@ import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 
-const PostStatusTrashButton = ( { onDelete, id } ) => {
+/**
+ * Internal dependencies
+ */
+import { getAllRevisionUrl } from '../../../utils';
+
+const PostStatusTrashButton = ( { onDelete, id, parentType } ) => {
 	const [ isBusy, setBusy ] = useState( false );
 
 	const deleteUpdate = async () => {
@@ -29,11 +34,7 @@ const PostStatusTrashButton = ( { onDelete, id } ) => {
 		}
 
 		if ( data ) {
-			if ( document.referrer.length > 0 ) {
-				window.location.href = document.referrer;
-			} else {
-				window.location.reload();
-			}
+			window.location.href = getAllRevisionUrl( parentType );
 		}
 	};
 
