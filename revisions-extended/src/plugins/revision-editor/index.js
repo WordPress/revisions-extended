@@ -9,6 +9,7 @@ import { registerPlugin } from '@wordpress/plugins';
 import { ErrorBoundary } from '../../components';
 import DocumentSettingsPanel from './document-settings-panel';
 import RevisionIndicator from './revision-indicator';
+import NotPublishableIndicator from './not-publishable-indicator';
 import WPButtonModifier from './wp-button-modifier';
 import TabTextModifier from './tab-text-modifier';
 import UpdateDropdownButton from './update-dropdown-button';
@@ -47,6 +48,7 @@ const PluginWrapper = () => {
 						<UpdateDropdownButton />
 						<DocumentSettingsPanel />
 						<RevisionIndicator />
+						<NotPublishableIndicator />
 						<WPButtonModifier />
 						<TabTextModifier />
 						<PublishSuccessWindow />
