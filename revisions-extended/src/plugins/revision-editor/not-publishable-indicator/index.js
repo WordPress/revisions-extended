@@ -46,7 +46,7 @@ const NotPublishableIndicator = () => {
 						),
 						typeInfo
 					),
-				].join( '' )
+				].join( ' ' )
 			);
 		}
 	}, [ type, loadedTypes ] );
