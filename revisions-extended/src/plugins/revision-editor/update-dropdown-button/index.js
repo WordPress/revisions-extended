@@ -10,13 +10,20 @@ import { MenuGroup, MenuItem } from '@wordpress/components';
  * Internal dependencies
  */
 import { DropDownButton } from '../../../components';
-import { usePost, useInterface, useRevision } from '../../../hooks';
+import {
+	usePost,
+	useInterface,
+	useRevision,
+	useParentPost,
+} from '../../../hooks';
 import { insertButton } from '../../../utils';
+import { WP_PUBLISH_STATUS } from '../../../settings';
 
 const UpdateDropdownButton = () => {
 	const { savedPost, didPostSaveRequestSucceed, savePost } = usePost();
 	const { publish } = useRevision();
 	const { setState } = useInterface();
+	const { status: parentStatus } = useParentPost();
 
 	const _savePost = async () => {
 		// Save the post first
@@ -63,6 +70,7 @@ const UpdateDropdownButton = () => {
 								onClose();
 								await _savePost();
 							} }
+							disabled={ parentStatus !== WP_PUBLISH_STATUS }
 						>
 							{ __( 'Publish now', 'revisions-extended' ) }
 						</MenuItem>
