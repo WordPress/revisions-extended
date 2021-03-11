@@ -3,7 +3,7 @@
 namespace RevisionsExtended\Revision;
 
 use WP_Error, WP_Post, WP_Post_Type, WP_Query;
-use function RevisionsExtended\Post_Status\get_revision_statuses;
+use function RevisionsExtended\Post_Status\get_revision_status_slugs;
 use function RevisionsExtended\Post_Status\validate_revision_status;
 
 defined( 'WPINC' ) || die();
@@ -316,7 +316,7 @@ function get_edit_revision_link( $revision_id ) {
  * @return string|null
  */
 function filter_pre_wp_unique_post_slug( $override, $slug, $post_ID, $post_status, $post_type ) {
-	$statuses = wp_list_pluck( get_revision_statuses(), 'name' );
+	$statuses = get_revision_status_slugs();
 
 	if ( 'revision' === $post_type && in_array( $post_status, $statuses, true ) ) {
 		$override = $slug;

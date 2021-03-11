@@ -28,6 +28,15 @@ function get_revision_statuses() {
 }
 
 /**
+ * Get an array of revision-specific post status slugs.
+ *
+ * @return array
+ */
+function get_revision_status_slugs() {
+	return wp_list_pluck( get_revision_statuses(), 'name' );
+}
+
+/**
  * Check if a given status is a valid revision status.
  *
  * Note that this does not include the 'inherit' status used by the Core revision system.

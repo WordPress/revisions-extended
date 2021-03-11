@@ -6,6 +6,7 @@ use WP_List_Table, WP_Post, WP_Query;
 use function RevisionsExtended\Admin\get_updates_subpage_url;
 use function RevisionsExtended\Admin\get_compare_url;
 use function RevisionsExtended\Post_Status\get_revision_statuses;
+use function RevisionsExtended\Post_Status\get_revision_status_slugs;
 use function RevisionsExtended\Revision\get_edit_revision_link;
 use function RevisionsExtended\Revision\get_revisions_by_parent_type;
 
@@ -63,7 +64,7 @@ class Revision_List_Table extends WP_List_Table {
 		$parent_id = filter_input( INPUT_GET, 'p', FILTER_VALIDATE_INT );
 
 		$query_args = array(
-			'post_status'    => wp_list_pluck( get_revision_statuses(), 'name' ),
+			'post_status'    => get_revision_status_slugs(),
 			'posts_per_page' => $per_page,
 			'orderby'        => $orderby ?: 'date ID',
 			'order'          => $order ?: 'asc',
