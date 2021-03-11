@@ -20,7 +20,9 @@ function get_revision_statuses() {
 	return array_intersect_key(
 		$stati,
 		array(
-			'future' => true,
+			'draft'   => true,
+			'future'  => true,
+			'pending' => true,
 		)
 	);
 }
