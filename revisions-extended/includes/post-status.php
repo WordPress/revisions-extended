@@ -46,7 +46,7 @@ function get_revision_status_slugs() {
  * @return bool
  */
 function validate_revision_status( $status ) {
-	$statuses = wp_list_pluck( get_revision_statuses(), 'name' );
+	$status_slugs = get_revision_status_slugs();
 
-	return in_array( $status, $statuses, true );
+	return in_array( $status, $status_slugs, true );
 }
