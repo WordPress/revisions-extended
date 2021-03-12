@@ -44,16 +44,18 @@ const DocumentSettingsPanel = () => {
 				const sortedRevisions = data.sort( revisionSort );
 
 				if ( sortedRevisions.length > 0 ) {
+					const typeDisplayName = getTypeInfo(
+						`${ savedPost.type }.labels.singular_name`
+					).toLowerCase();
+
 					dispatch( 'core/notices' ).createWarningNotice(
 						sprintf(
-							// translators: %s: post type singular name.
+							// translators: %s: post type singular label.
 							__(
 								'This %s has a scheduled update that will replace any changes that you make here.',
 								'revisions-extended'
 							),
-							getTypeInfo(
-								`${ savedPost.type }.labels.singular_name`
-							).toLowerCase()
+							typeDisplayName
 						),
 						{
 							isDismissible: true,
@@ -69,9 +71,13 @@ const DocumentSettingsPanel = () => {
 									url: `${ getAllRevisionUrl(
 										savedPost.type
 									) }&p=${ savedPost.id }`,
-									label: __(
-										'See all updates',
-										'revisions-extended'
+									label: sprintf(
+										// translators: %s: post type singular label.
+										__(
+											'See all updates for this %s',
+											'revisions-extended'
+										),
+										typeDisplayName
 									),
 								},
 							],
