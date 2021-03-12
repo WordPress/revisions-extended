@@ -78,7 +78,7 @@ const UpdateDropdownButton = () => {
 				) }
 			/>
 		);
-	}, [] );
+	}, [ parentStatus ] );
 
 	return null;
 };
