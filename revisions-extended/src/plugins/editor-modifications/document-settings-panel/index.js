@@ -8,13 +8,18 @@ import { useEffect, useState, useMemo } from 'react';
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { dispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
 import { RevisionList } from '../../../components';
 import { useRevision, usePost, useTypes } from '../../../hooks';
-import { getEditUrl, getStatusDisplay } from '../../../utils';
+import {
+	getEditUrl,
+	getStatusDisplay,
+	getAllRevisionUrl,
+} from '../../../utils';
 
 const DocumentSettingsPanel = () => {
 	const [ revisions, setRevisions ] = useState( [] );
@@ -36,7 +41,45 @@ const DocumentSettingsPanel = () => {
 			}
 
 			if ( data ) {
-				setRevisions( data );
+				const sortedRevisions = data.sort( revisionSort );
+
+				if ( sortedRevisions.length > 0 ) {
+					dispatch( 'core/notices' ).createWarningNotice(
+						sprintf(
+							// translators: %s: post type singular name.
+							__(
+								'This %s has a scheduled update that will replace any changes that you make here.',
+								'revisions-extended'
+							),
+							getTypeInfo(
+								`${ savedPost.type }.labels.singular_name`
+							).toLowerCase()
+						),
+						{
+							isDismissible: true,
+							actions: [
+								{
+									url: getEditUrl( sortedRevisions[ 0 ].id ),
+									label: __(
+										'Edit latest update',
+										'revisions-extended'
+									),
+								},
+								{
+									url: `${ getAllRevisionUrl(
+										savedPost.type
+									) }&p=${ savedPost.id }`,
+									label: __(
+										'See all updates',
+										'revisions-extended'
+									),
+								},
+							],
+						}
+					);
+				}
+
+				setRevisions( sortedRevisions );
 			}
 		};
 
@@ -75,10 +118,9 @@ const DocumentSettingsPanel = () => {
 		};
 	};
 
-	const mappedRevisions = useMemo(
-		() => revisions.sort( revisionSort ).map( revisionMap ),
-		[ revisions ]
-	);
+	const mappedRevisions = useMemo( () => revisions.map( revisionMap ), [
+		revisions,
+	] );
 
 	if ( revisions.length < 1 ) {
 		return null;
