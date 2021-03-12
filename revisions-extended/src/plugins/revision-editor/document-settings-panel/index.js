@@ -16,34 +16,41 @@ import { PanelRow } from '@wordpress/components';
 import PostSchedule from './post-schedule';
 import PostStatusTrashButton from './post-status-trash-button';
 
-import { useRevision, usePost, useParentPost } from '../../../hooks';
+import { useRevision, usePost, useParentPost, useTypes } from '../../../hooks';
 
 import { GUTENBERG_PLUGIN_NAMESPACE } from '../index';
+import { GUTENBERG_EDIT_POST_STORE } from '../../../settings';
 
 /**
  * Module Constants
  */
 
-const STORE_KEY = 'core/edit-post';
 const PANEL_NAME = 'scheduled-revisions';
 
 const DocumentSettingsPanel = () => {
 	const { trash } = useRevision();
 	const { getEditedPostAttribute } = usePost();
 	const { type: parentType } = useParentPost();
+	const { getTypeInfo } = useTypes();
 
 	useEffect( () => {
 		// Hide the default panel;
-		dispatch( STORE_KEY ).removeEditorPanel( 'post-status' );
+		dispatch( GUTENBERG_EDIT_POST_STORE ).removeEditorPanel(
+			'post-status'
+		);
 
 		// Make sure we turn on our panel
 		const togglePanelOn = async () => {
-			const isToggledOn = await select( STORE_KEY ).isEditorPanelOpened(
+			const isToggledOn = await select(
+				GUTENBERG_EDIT_POST_STORE
+			).isEditorPanelOpened(
 				`${ GUTENBERG_PLUGIN_NAMESPACE }/${ PANEL_NAME }`
 			);
 
 			if ( ! isToggledOn ) {
-				await dispatch( STORE_KEY ).toggleEditorPanelOpened(
+				await dispatch(
+					GUTENBERG_EDIT_POST_STORE
+				).toggleEditorPanelOpened(
 					`${ GUTENBERG_PLUGIN_NAMESPACE }/${ PANEL_NAME }`
 				);
 			}
@@ -51,6 +58,20 @@ const DocumentSettingsPanel = () => {
 
 		togglePanelOn();
 	}, [] );
+
+	useEffect( () => {
+		if ( ! parentType ) {
+			return;
+		}
+
+		const supportsEditor = getTypeInfo( `${ parentType }.supports.editor` );
+
+		if ( ! supportsEditor ) {
+			dispatch( GUTENBERG_EDIT_POST_STORE ).removeEditorPanel(
+				'post-excerpt'
+			);
+		}
+	}, [ parentType ] );
 
 	return (
 		<PluginDocumentSettingPanel name={ PANEL_NAME }>
