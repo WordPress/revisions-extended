@@ -20,6 +20,74 @@ import {
 	getStatusDisplay,
 	getAllRevisionUrl,
 } from '../../../utils';
+import { GUTENBERG_NOTICE_STORE } from '../../../settings';
+
+/**
+ * Displays a notice to the user about an existing update to the current post.
+ *
+ * @param {string} typeDisplayName The singular name of the post type
+ * @param {number} postId The id of the post
+ */
+const dispatchSingleUpdateNotice = ( typeDisplayName, postId ) => {
+	dispatch( GUTENBERG_NOTICE_STORE ).createWarningNotice(
+		sprintf(
+			// translators: %s: post type singular label.
+			__(
+				'This %s has an update that could overwrite any changes that you make here.',
+				'revisions-extended'
+			),
+			typeDisplayName
+		),
+		{
+			isDismissible: true,
+			actions: [
+				{
+					url: getEditUrl( postId ),
+					label: __( 'Edit update', 'revisions-extended' ),
+				},
+			],
+		}
+	);
+};
+
+/**
+ * Displays a notice to the user about multiple existing updates to the current post.
+ *
+ * @param {string} typeDisplayName The singular name of the post type
+ * @param {Object} savedPost
+ * @param {string} savedPost.type The post type
+ * @param {string} savedPost.id The post id
+ */
+const dispatchMultipleUpdateNotice = ( typeDisplayName, savedPost ) => {
+	dispatch( GUTENBERG_NOTICE_STORE ).createWarningNotice(
+		sprintf(
+			// translators: %s: post type singular label.
+			__(
+				'This %s has updates that could overwrite any changes that you make here.',
+				'revisions-extended'
+			),
+			typeDisplayName
+		),
+		{
+			isDismissible: true,
+			actions: [
+				{
+					url: `${ getAllRevisionUrl( savedPost.type ) }&p=${
+						savedPost.id
+					}`,
+					label: sprintf(
+						// translators: %s: post type singular label.
+						__(
+							'See all updates for this %s',
+							'revisions-extended'
+						),
+						typeDisplayName
+					),
+				},
+			],
+		}
+	);
+};
 
 const DocumentSettingsPanel = () => {
 	const [ revisions, setRevisions ] = useState( [] );
@@ -48,41 +116,17 @@ const DocumentSettingsPanel = () => {
 						`${ savedPost.type }.labels.singular_name`
 					).toLowerCase();
 
-					dispatch( 'core/notices' ).createWarningNotice(
-						sprintf(
-							// translators: %s: post type singular label.
-							__(
-								'This %s has a scheduled update that will replace any changes that you make here.',
-								'revisions-extended'
-							),
-							typeDisplayName
-						),
-						{
-							isDismissible: true,
-							actions: [
-								{
-									url: getEditUrl( sortedRevisions[ 0 ].id ),
-									label: __(
-										'Edit latest update',
-										'revisions-extended'
-									),
-								},
-								{
-									url: `${ getAllRevisionUrl(
-										savedPost.type
-									) }&p=${ savedPost.id }`,
-									label: sprintf(
-										// translators: %s: post type singular label.
-										__(
-											'See all updates for this %s',
-											'revisions-extended'
-										),
-										typeDisplayName
-									),
-								},
-							],
-						}
-					);
+					if ( sortedRevisions.length === 1 ) {
+						dispatchSingleUpdateNotice(
+							typeDisplayName,
+							sortedRevisions[ 0 ].id
+						);
+					} else {
+						dispatchMultipleUpdateNotice(
+							typeDisplayName,
+							savedPost
+						);
+					}
 				}
 
 				setRevisions( sortedRevisions );
