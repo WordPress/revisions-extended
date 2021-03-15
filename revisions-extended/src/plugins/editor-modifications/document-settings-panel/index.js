@@ -56,7 +56,7 @@ const dispatchSingleUpdateNotice = ( typeDisplayName, postId ) => {
  * @param {string} typeDisplayName The singular name of the post type
  * @param {Object} savedPost
  * @param {string} savedPost.type The post type
- * @param {string} savedPost.id The post id
+ * @param {number} savedPost.id The post id
  */
 const dispatchMultipleUpdateNotice = ( typeDisplayName, savedPost ) => {
 	dispatch( GUTENBERG_NOTICE_STORE ).createWarningNotice(
