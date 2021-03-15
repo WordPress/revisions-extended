@@ -8,13 +8,86 @@ import { useEffect, useState, useMemo } from 'react';
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { dispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
 import { RevisionList } from '../../../components';
 import { useRevision, usePost, useTypes } from '../../../hooks';
-import { getEditUrl, getStatusDisplay } from '../../../utils';
+import {
+	getEditUrl,
+	getStatusDisplay,
+	getAllRevisionUrl,
+} from '../../../utils';
+import { GUTENBERG_NOTICE_STORE } from '../../../settings';
+
+/**
+ * Displays a notice to the user about an existing update to the current post.
+ *
+ * @param {string} typeDisplayName The singular name of the post type
+ * @param {number} postId The id of the post
+ */
+const dispatchSingleUpdateNotice = ( typeDisplayName, postId ) => {
+	dispatch( GUTENBERG_NOTICE_STORE ).createWarningNotice(
+		sprintf(
+			// translators: %s: post type singular label.
+			__(
+				'This %s has an update that could overwrite any changes that you make here.',
+				'revisions-extended'
+			),
+			typeDisplayName
+		),
+		{
+			isDismissible: true,
+			actions: [
+				{
+					url: getEditUrl( postId ),
+					label: __( 'Edit update', 'revisions-extended' ),
+				},
+			],
+		}
+	);
+};
+
+/**
+ * Displays a notice to the user about multiple existing updates to the current post.
+ *
+ * @param {string} typeDisplayName The singular name of the post type
+ * @param {Object} savedPost
+ * @param {string} savedPost.type The post type
+ * @param {number} savedPost.id The post id
+ */
+const dispatchMultipleUpdateNotice = ( typeDisplayName, savedPost ) => {
+	dispatch( GUTENBERG_NOTICE_STORE ).createWarningNotice(
+		sprintf(
+			// translators: %s: post type singular label.
+			__(
+				'This %s has updates that could overwrite any changes that you make here.',
+				'revisions-extended'
+			),
+			typeDisplayName
+		),
+		{
+			isDismissible: true,
+			actions: [
+				{
+					url: `${ getAllRevisionUrl( savedPost.type ) }&p=${
+						savedPost.id
+					}`,
+					label: sprintf(
+						// translators: %s: post type singular label.
+						__(
+							'See all updates for this %s',
+							'revisions-extended'
+						),
+						typeDisplayName
+					),
+				},
+			],
+		}
+	);
+};
 
 const DocumentSettingsPanel = () => {
 	const [ revisions, setRevisions ] = useState( [] );
@@ -36,7 +109,27 @@ const DocumentSettingsPanel = () => {
 			}
 
 			if ( data ) {
-				setRevisions( data );
+				const sortedRevisions = data.sort( revisionSort );
+
+				if ( sortedRevisions.length > 0 ) {
+					const typeDisplayName = getTypeInfo(
+						`${ savedPost.type }.labels.singular_name`
+					).toLowerCase();
+
+					if ( sortedRevisions.length === 1 ) {
+						dispatchSingleUpdateNotice(
+							typeDisplayName,
+							sortedRevisions[ 0 ].id
+						);
+					} else {
+						dispatchMultipleUpdateNotice(
+							typeDisplayName,
+							savedPost
+						);
+					}
+				}
+
+				setRevisions( sortedRevisions );
 			}
 		};
 
@@ -75,10 +168,9 @@ const DocumentSettingsPanel = () => {
 		};
 	};
 
-	const mappedRevisions = useMemo(
-		() => revisions.sort( revisionSort ).map( revisionMap ),
-		[ revisions ]
-	);
+	const mappedRevisions = useMemo( () => revisions.map( revisionMap ), [
+		revisions,
+	] );
 
 	if ( revisions.length < 1 ) {
 		return null;
