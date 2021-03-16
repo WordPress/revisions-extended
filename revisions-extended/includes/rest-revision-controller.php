@@ -315,6 +315,29 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 	}
 
 	/**
+	 * Gets an array of fields to be included on the response.
+	 *
+	 * @param WP_Post $post Post object.
+	 * @param string  $context String representing the context.
+	 *
+	 * @return WP_Response Response object
+	 */
+	public function filter_response_by_context( $post, $context ) {
+
+		if ( ! empty( $post['parent'] ) ) {
+			$parent_post_type = get_post_type( $post['parent'] );
+
+			if ( post_type_supports( $parent_post_type, 'excerpt' ) ) {
+				add_post_type_support( $post['type'], 'excerpt' );
+			} else {
+				remove_post_type_support( $post['type'], 'excerpt' );
+			}
+		}
+
+		return rest_filter_response_by_context( $post, $this->get_item_schema(), $context );
+	}
+
+	/**
 	 * Retrieves the revision's schema, conforming to JSON Schema.
 	 *
 	 * @return array Item schema data.
