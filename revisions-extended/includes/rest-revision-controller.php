@@ -325,9 +325,11 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 	public function filter_response_by_context( $post, $context ) {
 
 		if ( ! empty( $post['parent'] ) ) {
-			$parent = get_post( $post['parent'] );
+			$parent_post_type = get_post_type( $post['parent'] );
 
-			if ( ! post_type_supports( $parent->post_type, 'excerpt' ) ) {
+			if ( post_type_supports( $parent_post_type, 'excerpt' ) ) {
+				add_post_type_support( $post['type'], 'excerpt' );
+			} else {
 				remove_post_type_support( $post['type'], 'excerpt' );
 			}
 		}
