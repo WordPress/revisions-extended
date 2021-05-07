@@ -4,6 +4,8 @@ A WordPress plugin, developed for WordPress.org, that enables revisions ("update
 
 ![An example of an update getting scheduled.](https://make.wordpress.org/meta/files/2021/03/updates-demo-2021-03-11-1024x579.gif)
 
+[More information](https://make.wordpress.org/meta/tag/revisions-extended/)
+
 ## Development Setup
 
 1. `npm install`
