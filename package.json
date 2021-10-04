@@ -1,6 +1,6 @@
 {
 	"name": "revisions-extended",
-	"version": "0.1-beta",
+	"version": "0.1.0-beta",
 	"description": "Extended functionality for the WordPress revision system.",
 	"author": "WordPress.org",
 	"license": "GPL-2.0-or-later",

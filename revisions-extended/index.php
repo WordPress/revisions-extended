@@ -3,7 +3,7 @@
  * Plugin name:       Revisions Extended
  * Plugin URI:        https://github.com/WordPress/revisions-extended
  * Description:       [Experimental] Extends the functionality of WP's revisioning system to allow for scheduled post updates.
- * Version:           0.1-beta
+ * Version:           0.1.0-beta
  * Requires at least: 5.7
  * Author:            WordPress.org
  * Author URI:        http://wordpress.org/
