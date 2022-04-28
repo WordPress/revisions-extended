@@ -151,7 +151,7 @@ function get_revisions_by_parent_type( $parent_post_type, $args = array(), $wp_q
  * @access private
  *
  * @param int|WP_Post|array|null $post     Post ID, post object OR post array.
- * @param bool                   $autosave Optional. Is the revision an autosave?
+ * @param bool                   $autosave Optional. Whether the revision is an autosave.
  *
  * @return int|WP_Error WP_Error if error, new revision ID if success. (Change from Core.)
  */
@@ -358,7 +358,7 @@ function short_circuit_default_revisions_list_table() {
 	global $typenow;
 
 	if ( 'revision' === $typenow ) {
-		wp_die( __( 'Sorry, you are not allowed to list revisions this way.', 'revisions-extended' ) );
+		wp_die( esc_html__( 'Sorry, you are not allowed to list revisions this way.', 'revisions-extended' ) );
 	}
 }
 

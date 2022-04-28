@@ -223,7 +223,7 @@ class Revision_List_Table extends WP_List_Table {
 			<label class="screen-reader-text" for="cb-select-<?php echo esc_attr( $post->ID ); ?>">
 				<?php
 				/* translators: %s: Post title. */
-				printf( __( 'Select %s', 'revisions-extended' ), _draft_or_post_title() );
+				printf( esc_html__( 'Select %s', 'revisions-extended' ), esc_html( _draft_or_post_title() ) );
 				?>
 			</label>
 			<input
@@ -237,9 +237,9 @@ class Revision_List_Table extends WP_List_Table {
 				<span class="screen-reader-text">
 				<?php
 				printf(
-				/* translators: %s: Post title. */
-					__( '&#8220;%s&#8221; is locked', 'revisions-extended' ),
-					_draft_or_post_title( $post )
+					/* translators: %s: Post title. */
+					esc_html__( '&#8220;%s&#8221; is locked', 'revisions-extended' ),
+					esc_html( _draft_or_post_title( $post ) )
 				);
 				?>
 				</span>
@@ -272,6 +272,7 @@ class Revision_List_Table extends WP_List_Table {
 				$locked_text   = '';
 			}
 
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Strings are escaped above.
 			echo '<div class="locked-info"><span class="locked-avatar">' . $locked_avatar . '</span> <span class="locked-text">' . $locked_text . "</span></div>\n";
 		}
 
@@ -285,12 +286,12 @@ class Revision_List_Table extends WP_List_Table {
 				esc_url( get_edit_revision_link( $post->ID ) ),
 				/* translators: %s: Post title. */
 				esc_attr( sprintf( __( '&#8220;%s&#8221; (Edit)', 'revisions-extended' ), $title ) ),
-				$title
+				esc_html( $title )
 			);
 		} else {
 			printf(
 				'<span>%s</span>',
-				$title
+				esc_html( $title )
 			);
 		}
 
@@ -309,7 +310,7 @@ class Revision_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function column_author( $post ) {
-		echo get_the_author_meta( 'nicename', $post->post_author );
+		echo esc_html( get_the_author_meta( 'nicename', $post->post_author ) );
 	}
 
 	/**
@@ -341,12 +342,12 @@ class Revision_List_Table extends WP_List_Table {
 				esc_url( get_edit_post_link( $parent ) ),
 				/* translators: %s: Post title. */
 				esc_attr( sprintf( __( '&#8220;%s&#8221; (Edit)', 'revisions-extended' ), $title ) ),
-				$title
+				esc_html( $title )
 			);
 		} else {
 			printf(
 				'<span>%s</span>',
-				$title
+				esc_html( $title )
 			);
 		}
 
@@ -407,9 +408,9 @@ class Revision_List_Table extends WP_List_Table {
 					/* translators: 1: Post date, 2: Post time. */
 					esc_html__( '%1$s at %2$s', 'revisions-extended' ),
 					/* translators: Post date format. See https://www.php.net/manual/datetime.format.php */
-					get_the_time( __( 'Y/m/d', 'revisions-extended' ), $post ),
+					esc_html( get_the_time( __( 'Y/m/d', 'revisions-extended' ), $post ) ),
 					/* translators: Post time format. See https://www.php.net/manual/datetime.format.php */
-					get_the_time( __( 'g:i a', 'revisions-extended' ), $post )
+					esc_html( get_the_time( __( 'g:i a', 'revisions-extended' ), $post ) )
 				);
 				break;
 		}
@@ -425,11 +426,11 @@ class Revision_List_Table extends WP_List_Table {
 	public function column_modified( $post ) {
 		printf(
 			/* translators: 1: Post date, 2: Post time. */
-			__( '%1$s at %2$s', 'revisions-extended' ),
+			esc_html__( '%1$s at %2$s', 'revisions-extended' ),
 			/* translators: Post date format. See https://www.php.net/manual/datetime.format.php */
-			get_the_modified_time( __( 'Y/m/d', 'revisions-extended' ), $post ),
+			esc_html( get_the_modified_time( __( 'Y/m/d', 'revisions-extended' ), $post ) ),
 			/* translators: Post time format. See https://www.php.net/manual/datetime.format.php */
-			get_the_modified_time( __( 'g:i a', 'revisions-extended' ), $post )
+			esc_html( get_the_modified_time( __( 'g:i a', 'revisions-extended' ), $post ) )
 		);
 	}
 
