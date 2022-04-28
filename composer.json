@@ -14,12 +14,19 @@
 			"dealerdirect/phpcodesniffer-composer-installer": true
 		}
 	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/WordPress/wporg-repo-tools"
+		}
+	],
 	"require-dev": {
-		"dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.7",
 		"wp-coding-standards/wpcs": "2.*",
 		"phpcompatibility/phpcompatibility-wp": "*",
-		"phpunit/phpunit": "^7",
-		"wp-phpunit/wp-phpunit": "^5.6"
+		"phpunit/phpunit": "7.5.20",
+		"wp-phpunit/wp-phpunit": "^5.9",
+		"wporg/wporg-repo-tools": "dev-trunk"
 	},
 	"scripts": {
 		"format": "phpcbf -p",
