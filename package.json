@@ -6,12 +6,21 @@
 	"license": "GPL-2.0-or-later",
 	"private": true,
 	"dependencies": {
-		"@wordpress/env": "^4.2.1",
+		"@wordpress/env": "^4.6",
 		"@wordpress/icons": "^2.9.0"
 	},
+	"devDependencies": {
+		"@wordpress/date": "^3.13.1",
+		"@wordpress/i18n": "^3.18.0",
+		"@wordpress/scripts": "^12.6.1",
+		"@wordpress/url": "^2.21.2"
+	},
 	"scripts": {
+		"setup:tools": "npm install && composer install && TEXTDOMAIN=revisions-extended composer exec update-configs",
+		"update:tools": "composer update && TEXTDOMAIN=revisions-extended composer exec update-configs",
 		"wp-env": "wp-env",
-		"setup": "composer install",
+		"env": "wp-env start",
+		"env:stop": "wp-env stop",
 		"lint:php": "composer run lint",
 		"format:php": "composer run format",
 		"build": "wp-scripts build revisions-extended/src/editor-modifications.js revisions-extended/src/revision-editor.js --output-path=revisions-extended/build/",
@@ -19,11 +28,5 @@
 		"lint:js": "wp-scripts lint-js",
 		"test:unit": "wp-scripts test-unit-js",
 		"test:php": "wp-env run phpunit 'phpunit -c /var/www/html/phpunit.xml.dist --verbose'"
-	},
-	"devDependencies": {
-		"@wordpress/date": "^3.13.1",
-		"@wordpress/i18n": "^3.18.0",
-		"@wordpress/scripts": "^12.6.1",
-		"@wordpress/url": "^2.21.2"
 	}
 }
