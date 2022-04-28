@@ -22,11 +22,12 @@
 	],
 	"require-dev": {
 		"dealerdirect/phpcodesniffer-composer-installer": "^0.7",
-		"wp-coding-standards/wpcs": "2.*",
 		"phpcompatibility/phpcompatibility-wp": "*",
 		"phpunit/phpunit": "7.5.20",
+		"wp-coding-standards/wpcs": "2.*",
 		"wp-phpunit/wp-phpunit": "^5.9",
-		"wporg/wporg-repo-tools": "dev-trunk"
+		"wporg/wporg-repo-tools": "dev-trunk",
+		"yoast/phpunit-polyfills": "^1.0"
 	},
 	"scripts": {
 		"format": "phpcbf -p",
