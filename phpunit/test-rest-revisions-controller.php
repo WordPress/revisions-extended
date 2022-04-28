@@ -19,10 +19,12 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 
 	public static function wpSetUpBeforeClass( WP_UnitTest_Factory $factory ) {
 		self::$post_id = $factory->post->create();
-		self::$page_id = $factory->post->create( array(
-			'post_type'   => 'page',
-			'post_status' => 'draft',
-		) );
+		self::$page_id = $factory->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_status' => 'draft',
+			)
+		);
 
 		self::$editor_id = $factory->user->create(
 			array(
@@ -56,13 +58,15 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 			)
 		);
 
-		self::$update_id = $factory->post->create( array(
-			'post_type'   => 'revision',
-			'post_status' => 'future',
-			'post_date'   => wp_date( 'Y-m-d H:i:s', strtotime( '+ 1 week' ) ),
-			'post_parent' => self::$post_id,
-			'post_author' => self::$editor_id,
-		) );
+		self::$update_id = $factory->post->create(
+			array(
+				'post_type'   => 'revision',
+				'post_status' => 'future',
+				'post_date'   => wp_date( 'Y-m-d H:i:s', strtotime( '+ 1 week' ) ),
+				'post_parent' => self::$post_id,
+				'post_author' => self::$editor_id,
+			)
+		);
 
 		wp_set_current_user( 0 );
 	}
@@ -86,7 +90,7 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 	 * Modified from WP_Test_REST_Revisions_Controller::check_get_revision_response.
 	 *
 	 * @param WP_REST_Response|array $response
-	 * @param WP_Post $revision
+	 * @param WP_Post                $revision
 	 */
 	protected function check_revision_response( $response, $revision ) {
 		if ( $response instanceof WP_REST_Response ) {
