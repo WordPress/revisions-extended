@@ -8,7 +8,7 @@
 	"dependencies": {
 		"@wordpress/env": "^4.6",
 		"@wordpress/icons": "^2.9.0",
-		"@wordpress/scripts": "^12.6.1"
+		"@wordpress/scripts": "^22.5.0"
 	},
 	"devDependencies": {
 		"@wordpress/date": "^3.13.1",
