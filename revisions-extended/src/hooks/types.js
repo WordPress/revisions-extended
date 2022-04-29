@@ -35,7 +35,7 @@ export function TypesProvider( { children } ) {
 				const res = await fetchTypes();
 
 				setTypes( res );
-			} catch ( ex ) {
+			} catch ( exception ) {
 				setError( true );
 			}
 			setLoading( false );
@@ -46,6 +46,7 @@ export function TypesProvider( { children } ) {
 
 	return (
 		<StateContext.Provider
+			// eslint-disable-next-line object-shorthand
 			value={ {
 				loading,
 				loaded: ! loading && ! error && Object.keys( types ).length > 0,

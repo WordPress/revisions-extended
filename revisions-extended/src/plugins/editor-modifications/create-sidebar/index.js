@@ -56,7 +56,8 @@ const CreateSidebar = () => {
 	const _savePost = async () => {
 		const noticeDispatch = dispatch( 'core/notices' );
 
-		// We have to refetch because the context is obliterated because this function has been associated to the html element.
+		// We have to refetch because the context is obliterated
+		// because this function has been associated to the html element.
 		const types = await fetchTypes();
 
 		if ( ! types ) {
@@ -140,8 +141,8 @@ const CreateSidebar = () => {
 									disabled={ ! isInTheFuture( createDate ) }
 									onClick={ () => {
 										// It's possible that user click the button before the
-										// disable state is triggered since the inputs work on blur and the user may not have
-										// blurred the input yet
+										// disable state is triggered since the inputs work on blur
+										// and the user may not have blurred the input yet
 										if ( isInTheFuture( createDate ) ) {
 											_savePost();
 										} else {

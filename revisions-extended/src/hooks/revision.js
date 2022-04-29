@@ -12,18 +12,18 @@ import { POST_STATUS_PENDING, POST_STATUS_SCHEDULED } from '../settings';
 /**
  * This function normalizes the apiFetch response
  *
- * @param {Function} fn Asynchronous api call
+ * @param {Function} func Asynchronous api call
  *
  * @return {Object} Response object
  */
-const executeFetch = async ( fn ) => {
+const executeFetch = async ( func ) => {
 	try {
 		return {
-			data: await fn(),
+			data: await func(),
 		};
-	} catch ( ex ) {
+	} catch ( exception ) {
 		return {
-			error: ex,
+			error: exception,
 		};
 	}
 };
@@ -116,8 +116,8 @@ const useRevision = () => {
 	};
 
 	return {
-		get,
-		create,
+		get: get,
+		create: create,
 		trash: trashRevision,
 		publish: publishRevision,
 	};

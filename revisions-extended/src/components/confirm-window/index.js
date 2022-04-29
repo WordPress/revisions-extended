@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 import { Modal, __experimentalText as Text } from '@wordpress/components';
 
 /**
@@ -14,13 +15,13 @@ import './index.css';
 const ConfirmWindow = ( { title, notice, links } ) => {
 	const { savedPost } = usePost();
 
-	const onLeave = ( e ) => {
-		e.preventDefault();
+	const onLeave = ( event ) => {
+		event.preventDefault();
 
 		// Clear out any weird autosaves.
 		clearLocalChanges( savedPost.id );
 
-		window.location.href = e.target.href;
+		window.location.href = event.target.href;
 	};
 
 	return (

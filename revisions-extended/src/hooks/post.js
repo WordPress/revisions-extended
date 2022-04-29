@@ -1,3 +1,4 @@
+/* eslint-disable object-shorthand */
 /**
  * WordPress dependencies
  */
@@ -54,8 +55,8 @@ export const usePost = () => {
 				const clearedEdits = {};
 
 				// Setting them to undefined will effectively clear them.
-				Object.keys( edits ).forEach( ( e ) => {
-					clearedEdits[ e ] = undefined;
+				Object.keys( edits ).forEach( ( edit ) => {
+					clearedEdits[ edit ] = undefined;
 				} );
 
 				return await dispatch( 'core' ).editEntityRecord(

@@ -123,7 +123,7 @@ const DocumentSettingsPanel = () => {
 	const getAuthorName = ( revision ) => {
 		try {
 			return revision._embedded.author[ 0 ].slug;
-		} catch ( e ) {}
+		} catch ( exception ) {}
 	};
 
 	const getAuthorString = ( revision ) => {

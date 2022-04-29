@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 import { DateTimePicker } from '@wordpress/components';
+// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 import { __experimentalGetSettings } from '@wordpress/date';
 
 const DatePicker = ( { date, onChange } ) => {
