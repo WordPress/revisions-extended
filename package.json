@@ -7,12 +7,12 @@
 	"private": true,
 	"dependencies": {
 		"@wordpress/env": "^4.6",
-		"@wordpress/icons": "^2.9.0"
+		"@wordpress/icons": "^2.9.0",
+		"@wordpress/scripts": "^12.6.1"
 	},
 	"devDependencies": {
 		"@wordpress/date": "^3.13.1",
 		"@wordpress/i18n": "^3.18.0",
-		"@wordpress/scripts": "^12.6.1",
 		"@wordpress/url": "^2.21.2"
 	},
 	"scripts": {
