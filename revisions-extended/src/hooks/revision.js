@@ -31,9 +31,9 @@ const executeFetch = async ( fn ) => {
 /**
  * Get all the post revisions for a specific post type
  *
- * @param {Object} data - Data sent to api
+ * @param {Object} data          - Data sent to api
  * @param {string} data.restBase - The rest_base from the post type.
- * @param {string} data.postId - The id of the post.
+ * @param {string} data.postId   - The id of the post.
  * @param {string} status
  * @return {Object} Api response
  */
@@ -52,9 +52,9 @@ const getPostRevisions = async ( { restBase, postId }, status ) => {
 /**
  * Creates a revision for a specific post type
  *
- * @param {Object} data Data sent to api
+ * @param {Object} data          Data sent to api
  * @param {string} data.restBase - The rest_base from the post type.
- * @param {string} data.postId - The id of the post.
+ * @param {string} data.postId   - The id of the post.
  * @param {string} status
  *
  * @return {Object} Api response

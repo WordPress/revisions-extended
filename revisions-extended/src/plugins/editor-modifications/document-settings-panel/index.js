@@ -26,7 +26,7 @@ import { GUTENBERG_NOTICE_STORE } from '../../../settings';
  * Displays a notice to the user about an existing update to the current post.
  *
  * @param {string} typeDisplayName The singular name of the post type
- * @param {number} postId The id of the post
+ * @param {number} postId          The id of the post
  */
 const dispatchSingleUpdateNotice = ( typeDisplayName, postId ) => {
 	dispatch( GUTENBERG_NOTICE_STORE ).createWarningNotice(
@@ -55,8 +55,8 @@ const dispatchSingleUpdateNotice = ( typeDisplayName, postId ) => {
  *
  * @param {string} typeDisplayName The singular name of the post type
  * @param {Object} savedPost
- * @param {string} savedPost.type The post type
- * @param {number} savedPost.id The post id
+ * @param {string} savedPost.type  The post type
+ * @param {number} savedPost.id    The post id
  */
 const dispatchMultipleUpdateNotice = ( typeDisplayName, savedPost ) => {
 	dispatch( GUTENBERG_NOTICE_STORE ).createWarningNotice(
