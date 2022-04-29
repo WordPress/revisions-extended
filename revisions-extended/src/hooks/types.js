@@ -6,12 +6,7 @@ import { get } from 'lodash';
 /**
  * WordPress dependencies
  */
-import {
-	createContext,
-	useContext,
-	useEffect,
-	useState,
-} from '@wordpress/element';
+import { createContext, useContext, useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
 const StateContext = createContext();

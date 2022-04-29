@@ -10,11 +10,7 @@ import { Notice } from '@wordpress/components';
 import './min-date.css';
 
 const MinDateNotice = () => (
-	<Notice
-		className="revisions-extended-min-date-notice"
-		status="warning"
-		isDismissible={ false }
-	>
+	<Notice className="revisions-extended-min-date-notice" status="warning" isDismissible={ false }>
 		{ __( 'The date must be in the future.', 'revisions-extended' ) }
 	</Notice>
 );

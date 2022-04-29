@@ -18,14 +18,9 @@ import PublishSuccessWindow from './publish-success-window';
 // The filter will run once on load
 import './wp-button-filter';
 
-import { pluginNamespace, getEditUrl } from '../../utils';
+import { getEditUrl, pluginNamespace } from '../../utils';
 
-import {
-	InterfaceProvider,
-	ParentPostProvider,
-	TypesProvider,
-	usePost,
-} from '../../hooks';
+import { InterfaceProvider, ParentPostProvider, TypesProvider, usePost } from '../../hooks';
 
 /**
  * Module Constants

@@ -2,12 +2,8 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { PanelRow, Dropdown, Button } from '@wordpress/components';
-import {
-	PostSchedule as PostScheduleForm,
-	PostScheduleLabel,
-	PostScheduleCheck,
-} from '@wordpress/editor';
+import { Button, Dropdown, PanelRow } from '@wordpress/components';
+import { PostScheduleCheck, PostSchedule as PostScheduleForm, PostScheduleLabel } from '@wordpress/editor';
 
 export function PostSchedule() {
 	return (

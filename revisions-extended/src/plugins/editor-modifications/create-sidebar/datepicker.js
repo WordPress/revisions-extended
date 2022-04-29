@@ -18,13 +18,7 @@ const DatePicker = ( { date, onChange } ) => {
 			.join( '' ) // Reverse the string and test for "a" not followed by a slash
 	);
 
-	return (
-		<DateTimePicker
-			currentDate={ date }
-			onChange={ onChange }
-			is12Hour={ is12HourTime }
-		/>
-	);
+	return <DateTimePicker currentDate={ date } onChange={ onChange } is12Hour={ is12HourTime } />;
 };
 
 export default DatePicker;

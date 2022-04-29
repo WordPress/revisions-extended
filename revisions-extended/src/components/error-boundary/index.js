@@ -21,10 +21,7 @@ class ErrorBoundary extends Component {
 
 	componentDidCatch() {
 		dispatch( 'core/notices' ).createWarningNotice(
-			__(
-				'Something went wrong with the "Revisions Extended" plugin.',
-				'revisions-extended'
-			)
+			__( 'Something went wrong with the "Revisions Extended" plugin.', 'revisions-extended' )
 		);
 	}
 

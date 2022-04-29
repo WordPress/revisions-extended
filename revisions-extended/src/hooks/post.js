@@ -7,11 +7,7 @@ import { dispatch, useSelect } from '@wordpress/data';
  * Internal dependencies
  */
 import { pluginCustomPostType } from '../utils';
-import {
-	POST_STATUS_PENDING,
-	POST_STATUS_SCHEDULED,
-	GUTENBERG_EDITOR_STORE,
-} from '../settings';
+import { GUTENBERG_EDITOR_STORE, POST_STATUS_PENDING, POST_STATUS_SCHEDULED } from '../settings';
 
 export const usePost = () => {
 	return useSelect( ( select ) => {
@@ -21,8 +17,7 @@ export const usePost = () => {
 		const postStatus = store.getEditedPostAttribute( 'status' );
 		const isRevision =
 			postType === pluginCustomPostType &&
-			( postStatus === POST_STATUS_PENDING ||
-				postStatus === POST_STATUS_SCHEDULED );
+			( postStatus === POST_STATUS_PENDING || postStatus === POST_STATUS_SCHEDULED );
 
 		return {
 			isRevision,
@@ -50,11 +45,7 @@ export const usePost = () => {
 					id: savedPost.id,
 				};
 
-				const edits = select( 'core' ).getEntityRecordEdits(
-					entity.kind,
-					entity.name,
-					entity.id
-				);
+				const edits = select( 'core' ).getEntityRecordEdits( entity.kind, entity.name, entity.id );
 
 				if ( ! edits ) {
 					return;

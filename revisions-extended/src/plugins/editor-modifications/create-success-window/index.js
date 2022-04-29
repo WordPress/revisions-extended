@@ -10,12 +10,8 @@ import { Fragment } from '@wordpress/element';
  */
 import { ConfirmWindow } from '../../../components';
 import { POST_STATUS_SCHEDULED } from '../../../settings';
-import {
-	getEditUrl,
-	getFormattedDate,
-	getAllRevisionUrl,
-} from '../../../utils';
-import { useTypes, useInterface, usePost } from '../../../hooks';
+import { getAllRevisionUrl, getEditUrl, getFormattedDate } from '../../../utils';
+import { useInterface, usePost, useTypes } from '../../../hooks';
 
 const CreateConfirmWindow = () => {
 	const {
@@ -36,40 +32,25 @@ const CreateConfirmWindow = () => {
 					{ newRevision.status === POST_STATUS_SCHEDULED ? (
 						<Fragment>
 							<span>
-								{ __(
-									'Successfully saved your update for publish on:',
-									'revisions-extended'
-								) }
+								{ __( 'Successfully saved your update for publish on:', 'revisions-extended' ) }
 							</span>
-							<b style={ { display: 'block' } }>
-								{ getFormattedDate( newRevision.date ) }
-							</b>
+							<b style={ { display: 'block' } }>{ getFormattedDate( newRevision.date ) }</b>
 						</Fragment>
 					) : (
-						<span>
-							{ __(
-								'Successfully saved your update.',
-								'revisions-extended'
-							) }
-						</span>
+						<span>{ __( 'Successfully saved your update.', 'revisions-extended' ) }</span>
 					) }
 				</Notice>
 			}
 			links={ [
 				{
-					text: __(
-						'Continue editing your update',
-						'revisions-extended'
-					),
+					text: __( 'Continue editing your update', 'revisions-extended' ),
 					href: getEditUrl( newRevision.id ),
 				},
 				{
 					text: sprintf(
 						// translators: %s: post type.
 						__( 'Edit original %s', 'revisions-extended' ),
-						getTypeInfo(
-							`${ savedPost.type }.labels.singular_name`
-						).toLowerCase()
+						getTypeInfo( `${ savedPost.type }.labels.singular_name` ).toLowerCase()
 					),
 					href: getEditUrl( savedPost.id ),
 				},
@@ -77,9 +58,7 @@ const CreateConfirmWindow = () => {
 					text: sprintf(
 						// translators: %s: post type.
 						__( 'View all %s updates', 'revisions-extended' ),
-						getTypeInfo(
-							`${ savedPost.type }.labels.singular_name`
-						).toLowerCase()
+						getTypeInfo( `${ savedPost.type }.labels.singular_name` ).toLowerCase()
 					),
 					href: getAllRevisionUrl( savedPost.type ),
 				},

@@ -7,7 +7,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { getRestApiUrl, getRestApiUrlV2 } from '../utils';
-import { POST_STATUS_SCHEDULED, POST_STATUS_PENDING } from '../settings';
+import { POST_STATUS_PENDING, POST_STATUS_SCHEDULED } from '../settings';
 
 /**
  * This function normalizes the apiFetch response
@@ -40,10 +40,7 @@ const executeFetch = async ( fn ) => {
 const getPostRevisions = async ( { restBase, postId }, status ) => {
 	return await executeFetch( async () => {
 		return await apiFetch( {
-			path: `${ getRestApiUrl(
-				restBase,
-				postId
-			) }?status=${ status }&_embed`,
+			path: `${ getRestApiUrl( restBase, postId ) }?status=${ status }&_embed`,
 			method: 'GET',
 		} );
 	} );
@@ -114,9 +111,7 @@ const useRevision = () => {
 	};
 
 	const create = async ( data ) => {
-		const status = data.changingToScheduled
-			? POST_STATUS_SCHEDULED
-			: POST_STATUS_PENDING;
+		const status = data.changingToScheduled ? POST_STATUS_SCHEDULED : POST_STATUS_PENDING;
 		return await createRevision( data, status );
 	};
 

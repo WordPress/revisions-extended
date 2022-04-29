@@ -2,29 +2,19 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { dispatch } from '@wordpress/data';
 import { getDate, isInTheFuture } from '@wordpress/date';
 import { PluginSidebar } from '@wordpress/edit-post';
 import { calendar } from '@wordpress/icons';
-import {
-	Panel,
-	PanelBody,
-	Button,
-	Flex,
-	FlexItem,
-	Spinner,
-} from '@wordpress/components';
+import { Button, Flex, FlexItem, Panel, PanelBody, Spinner } from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
 import DatePicker from './datepicker';
-import {
-	GUTENBERG_EDIT_POST_STORE,
-	GUTENBERG_INTERFACE_STORE,
-} from '../../../settings';
-import { usePost, useRevision, useTypes, useInterface } from '../../../hooks';
+import { GUTENBERG_EDIT_POST_STORE, GUTENBERG_INTERFACE_STORE } from '../../../settings';
+import { useInterface, usePost, useRevision, useTypes } from '../../../hooks';
 import { PLUGIN_NAME } from '../index';
 import MinDateNotice from './min-date-notice';
 import './index.css';
@@ -57,13 +47,9 @@ const CreateSidebar = () => {
 
 	const closeSidebar = () => {
 		if ( activeComplementaryAreaBefore ) {
-			dispatch( GUTENBERG_EDIT_POST_STORE ).openGeneralSidebar(
-				activeComplementaryAreaBefore
-			);
+			dispatch( GUTENBERG_EDIT_POST_STORE ).openGeneralSidebar( activeComplementaryAreaBefore );
 		} else {
-			dispatch( GUTENBERG_EDIT_POST_STORE ).closeGeneralSidebar(
-				CREATE_SIDEBAR_FULL_NAMESPACE
-			);
+			dispatch( GUTENBERG_EDIT_POST_STORE ).closeGeneralSidebar( CREATE_SIDEBAR_FULL_NAMESPACE );
 		}
 	};
 
@@ -76,10 +62,7 @@ const CreateSidebar = () => {
 		if ( ! types ) {
 			noticeDispatch.createNotice(
 				'error',
-				__(
-					'Error creating update: missing post type info.',
-					'revisions-extended'
-				)
+				__( 'Error creating update: missing post type info.', 'revisions-extended' )
 			);
 		}
 
@@ -101,10 +84,7 @@ const CreateSidebar = () => {
 		setSaving( false );
 
 		if ( error ) {
-			noticeDispatch.createNotice(
-				'error',
-				__( 'Error creating update.', 'revisions-extended' )
-			);
+			noticeDispatch.createNotice( 'error', __( 'Error creating update.', 'revisions-extended' ) );
 
 			await editorDispatch.unlockPostAutosaving( POST_AUTOSAVE_LOCK_ID );
 		}
@@ -127,11 +107,7 @@ const CreateSidebar = () => {
 			isPinnable={ false }
 		>
 			{ saving && (
-				<Flex
-					align="center"
-					justify="center"
-					className="revisions-extended-sidebar-spinner"
-				>
+				<Flex align="center" justify="center" className="revisions-extended-sidebar-spinner">
 					<Spinner />
 				</Flex>
 			) }
@@ -173,10 +149,7 @@ const CreateSidebar = () => {
 										}
 									} }
 								>
-									{ __(
-										'Save update',
-										'revisions-extended'
-									) }
+									{ __( 'Save update', 'revisions-extended' ) }
 								</Button>
 							</FlexItem>
 						</Flex>
