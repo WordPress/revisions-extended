@@ -15,7 +15,7 @@ import { Button, Flex, FlexItem, Panel, PanelBody, Spinner } from '@wordpress/co
 import DatePicker from './datepicker';
 import { GUTENBERG_EDIT_POST_STORE, GUTENBERG_INTERFACE_STORE } from '../../../settings';
 import { useInterface, usePost, useRevision, useTypes } from '../../../hooks';
-import { PLUGIN_NAME } from '../index';
+import { PLUGIN_NAME } from '../constants';
 import MinDateNotice from './min-date-notice';
 import './index.css';
 

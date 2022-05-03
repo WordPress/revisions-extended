@@ -5,15 +5,15 @@
 	"author": "WordPress.org",
 	"license": "GPL-2.0-or-later",
 	"private": true,
-	"dependencies": {
-		"@wordpress/env": "^4.6",
-		"@wordpress/icons": "^2.9.0",
-		"@wordpress/scripts": "^22.5.0"
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"@wordpress/date": "^3.13.1",
 		"@wordpress/i18n": "^3.18.0",
-		"@wordpress/url": "^2.21.2"
+		"@wordpress/url": "^2.21.2",
+		"@wordpress/env": "^4.6",
+		"@wordpress/icons": "^2.9.0",
+		"@wordpress/scripts": "^22.5.0",
+		"lodash": "^4.17.21"
 	},
 	"scripts": {
 		"setup:tools": "npm install && composer install && TEXTDOMAIN=revisions-extended composer exec update-configs",

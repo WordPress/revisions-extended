@@ -1,13 +1,9 @@
 /**
- * External dependencies
- */
-import { useEffect } from 'react';
-
-/**
  * WordPress dependencies
  */
 import { dispatch, select } from '@wordpress/data';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { useEffect } from '@wordpress/element';
 import { PanelRow } from '@wordpress/components';
 
 /**

@@ -1,13 +1,9 @@
 /**
- * External dependencies
- */
-import { useEffect, useMemo, useState } from 'react';
-
-/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { useEffect, useMemo, useState } from '@wordpress/element';
 import { dispatch } from '@wordpress/data';
 
 /**

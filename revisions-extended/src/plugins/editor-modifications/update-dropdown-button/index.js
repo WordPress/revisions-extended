@@ -12,7 +12,7 @@ import { MenuGroup, MenuItem } from '@wordpress/components';
 import { DropDownButton } from '../../../components';
 import { GUTENBERG_EDIT_POST_STORE, GUTENBERG_INTERFACE_STORE } from '../../../settings';
 import { CREATE_SIDEBAR_NAME } from '../create-sidebar';
-import { PLUGIN_NAME } from '../index';
+import { PLUGIN_NAME } from '../constants';
 import { insertButton } from '../../../utils';
 import { useInterface, usePost } from '../../../hooks';
 

@@ -11,14 +11,8 @@ import DocumentSettingsPanel from './document-settings-panel';
 import UpdateDropdownButton from './update-dropdown-button';
 import CreateSuccessWindow from './create-success-window';
 import CreateSidebar from './create-sidebar';
-
-import { pluginNamespace } from '../../utils';
 import { InterfaceProvider, TypesProvider, usePost } from '../../hooks';
-
-/**
- * Module constants
- */
-export const PLUGIN_NAME = `${ pluginNamespace }-main-plugin`;
+import { PLUGIN_NAME } from './constants';
 
 const MainPlugin = () => {
 	const { isPublished } = usePost();

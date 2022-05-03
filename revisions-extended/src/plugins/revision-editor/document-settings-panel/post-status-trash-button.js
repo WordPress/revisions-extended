@@ -1,10 +1,7 @@
 /**
- * External dependencies
- */
-import { useState } from 'react';
-/**
  * WordPress dependencies
  */
+import { useState } from '@wordpress/element';
 import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';

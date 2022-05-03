@@ -1,11 +1,7 @@
 /**
- * External dependencies
- */
-import { useEffect } from 'react';
-
-/**
  * WordPress Dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { dispatch } from '@wordpress/data';
 
