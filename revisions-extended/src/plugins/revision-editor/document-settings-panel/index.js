@@ -1,13 +1,9 @@
 /**
- * External dependencies
- */
-import { useEffect } from 'react';
-
-/**
  * WordPress dependencies
  */
-import { select, dispatch } from '@wordpress/data';
+import { dispatch, select } from '@wordpress/data';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { useEffect } from '@wordpress/element';
 import { PanelRow } from '@wordpress/components';
 
 /**
@@ -16,7 +12,7 @@ import { PanelRow } from '@wordpress/components';
 import PostSchedule from './post-schedule';
 import PostStatusTrashButton from './post-status-trash-button';
 
-import { useRevision, usePost, useParentPost } from '../../../hooks';
+import { useParentPost, usePost, useRevision } from '../../../hooks';
 
 import { GUTENBERG_PLUGIN_NAMESPACE } from '../index';
 

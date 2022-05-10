@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 import { Modal, __experimentalText as Text } from '@wordpress/components';
 
 /**
@@ -14,33 +15,23 @@ import './index.css';
 const ConfirmWindow = ( { title, notice, links } ) => {
 	const { savedPost } = usePost();
 
-	const onLeave = ( e ) => {
-		e.preventDefault();
+	const onLeave = ( event ) => {
+		event.preventDefault();
 
 		// Clear out any weird autosaves.
 		clearLocalChanges( savedPost.id );
 
-		window.location.href = e.target.href;
+		window.location.href = event.target.href;
 	};
 
 	return (
-		<Modal
-			title={ title }
-			icons="plugins"
-			isDismissible={ false }
-			className="confirm-window"
-		>
+		<Modal title={ title } icons="plugins" isDismissible={ false } className="confirm-window">
 			{ notice }
 			<div className="confirm-window__content">
 				<Text variant="title.small" as="h3">
 					{ __( 'Next Steps', 'revisions-extended' ) }
 				</Text>
-				<Text as="h4">
-					{ __(
-						'Select one of the following actions:',
-						'revisions-extended'
-					) }
-				</Text>
+				<Text as="h4">{ __( 'Select one of the following actions:', 'revisions-extended' ) }</Text>
 				<ul>
 					{ links.map( ( i ) => (
 						<li key={ i.href }>

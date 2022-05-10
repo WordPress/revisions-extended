@@ -6,12 +6,7 @@ import { get } from 'lodash';
 /**
  * WordPress dependencies
  */
-import {
-	createContext,
-	useContext,
-	useEffect,
-	useState,
-} from '@wordpress/element';
+import { createContext, useContext, useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
 const StateContext = createContext();
@@ -40,7 +35,7 @@ export function TypesProvider( { children } ) {
 				const res = await fetchTypes();
 
 				setTypes( res );
-			} catch ( ex ) {
+			} catch ( exception ) {
 				setError( true );
 			}
 			setLoading( false );
@@ -51,6 +46,7 @@ export function TypesProvider( { children } ) {
 
 	return (
 		<StateContext.Provider
+			// eslint-disable-next-line object-shorthand
 			value={ {
 				loading,
 				loaded: ! loading && ! error && Object.keys( types ).length > 0,

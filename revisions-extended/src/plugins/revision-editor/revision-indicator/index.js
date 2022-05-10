@@ -1,11 +1,7 @@
 /**
- * External dependencies
- */
-import { useEffect } from 'react';
-
-/**
  * WordPress Dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { dispatch } from '@wordpress/data';
 
@@ -13,9 +9,9 @@ import { dispatch } from '@wordpress/data';
  * Internal dependencies
  */
 
-import { usePost, useParentPost, useTypes } from '../../../hooks';
+import { useParentPost, usePost, useTypes } from '../../../hooks';
 import { POST_STATUS_SCHEDULED } from '../../../settings';
-import { getEditUrl, getCompareLink } from '../../../utils';
+import { getCompareLink, getEditUrl } from '../../../utils';
 
 /**
  * Module Constants
@@ -38,10 +34,7 @@ const RevisionIndicator = () => {
 		const notes = [
 			sprintf(
 				// translators: %s: revision type.
-				__(
-					'You are currently editing a <strong>%s update</strong>.',
-					'revisions-extended'
-				),
+				__( 'You are currently editing a <strong>%s update</strong>.', 'revisions-extended' ),
 				getRevisionType
 			),
 			`[ `,
@@ -51,9 +44,7 @@ const RevisionIndicator = () => {
 				sprintf(
 					// translators: %s is the singular label of a post type.
 					__( 'Edit original %s', 'revisions-extended' ),
-					getTypeInfo(
-						`${ parentType }.labels.singular_name`
-					).toLowerCase()
+					getTypeInfo( `${ parentType }.labels.singular_name` ).toLowerCase()
 				)
 			),
 			` | `,

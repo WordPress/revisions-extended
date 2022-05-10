@@ -17,9 +17,7 @@ let tabBtnElement;
 const getElement = () => {
 	if ( tabBtnElement ) return tabBtnElement;
 
-	return document.querySelector(
-		'.edit-post-sidebar__panel-tabs ul li:first-child button'
-	);
+	return document.querySelector( '.edit-post-sidebar__panel-tabs ul li:first-child button' );
 };
 
 const TabTextModifier = () => {

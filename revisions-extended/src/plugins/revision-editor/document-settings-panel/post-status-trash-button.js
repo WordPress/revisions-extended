@@ -1,10 +1,7 @@
 /**
- * External dependencies
- */
-import { useState } from 'react';
-/**
  * WordPress dependencies
  */
+import { useState } from '@wordpress/element';
 import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
@@ -39,10 +36,7 @@ const PostStatusTrashButton = ( { onDelete, id, parentType } ) => {
 	};
 
 	const onTrashClick = () => {
-		const message = __(
-			'Are you sure you want to delete this update?',
-			'revisions-extended'
-		);
+		const message = __( 'Are you sure you want to delete this update?', 'revisions-extended' );
 
 		// eslint-disable-next-line no-alert
 		if ( window.confirm( message ) ) {
@@ -51,12 +45,7 @@ const PostStatusTrashButton = ( { onDelete, id, parentType } ) => {
 	};
 
 	return (
-		<Button
-			onClick={ onTrashClick }
-			isTertiary
-			isDestructive
-			isBusy={ isBusy }
-		>
+		<Button onClick={ onTrashClick } isTertiary isDestructive isBusy={ isBusy }>
 			{ __( 'Delete permanently', 'revisions-extended' ) }
 		</Button>
 	);

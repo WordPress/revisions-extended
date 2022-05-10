@@ -8,7 +8,9 @@ use WP_Post, WP_REST_Posts_Controller, WP_REST_Request, WP_REST_Response;
 
 defined( 'WPINC' ) || die();
 
-
+/**
+ * Tests for the REST controller.
+ */
 class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 	protected static $post_id;
 	protected static $update_id;
@@ -17,12 +19,21 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 	protected static $editor_id;
 	protected static $author_id;
 
+	/**
+	 * Set up posts and users before running any tests.
+	 *
+	 * @param WP_UnitTest_Factory $factory
+	 *
+	 * @return void
+	 */
 	public static function wpSetUpBeforeClass( WP_UnitTest_Factory $factory ) {
 		self::$post_id = $factory->post->create();
-		self::$page_id = $factory->post->create( array(
-			'post_type'   => 'page',
-			'post_status' => 'draft',
-		) );
+		self::$page_id = $factory->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_status' => 'draft',
+			)
+		);
 
 		self::$editor_id = $factory->user->create(
 			array(
@@ -56,17 +67,24 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 			)
 		);
 
-		self::$update_id = $factory->post->create( array(
-			'post_type'   => 'revision',
-			'post_status' => 'future',
-			'post_date'   => wp_date( 'Y-m-d H:i:s', strtotime( '+ 1 week' ) ),
-			'post_parent' => self::$post_id,
-			'post_author' => self::$editor_id,
-		) );
+		self::$update_id = $factory->post->create(
+			array(
+				'post_type'   => 'revision',
+				'post_status' => 'future',
+				'post_date'   => wp_date( 'Y-m-d H:i:s', strtotime( '+ 1 week' ) ),
+				'post_parent' => self::$post_id,
+				'post_author' => self::$editor_id,
+			)
+		);
 
 		wp_set_current_user( 0 );
 	}
 
+	/**
+	 * Tear down posts and users after running all tests.
+	 *
+	 * @return void
+	 */
 	public static function wpTearDownAfterClass() {
 		// Also deletes revisions.
 		wp_delete_post( self::$post_id, true );
@@ -77,16 +95,25 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		self::delete_user( self::$author_id );
 	}
 
+	/**
+	 * Reset between each test.
+	 *
+	 * @return void
+	 */
 	public function tearDown() {
 		parent::tearDown();
 		wp_set_current_user( 0 );
 	}
 
 	/**
+	 * Helper function to test response objects.
+	 *
 	 * Modified from WP_Test_REST_Revisions_Controller::check_get_revision_response.
 	 *
 	 * @param WP_REST_Response|array $response
-	 * @param WP_Post $revision
+	 * @param WP_Post                $revision
+	 *
+	 * @return void
 	 */
 	protected function check_revision_response( $response, $revision ) {
 		if ( $response instanceof WP_REST_Response ) {
@@ -130,12 +157,22 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertSame( $rendered_title, $response['title']['rendered'] );
 	}
 
+	/**
+	 * Test that routes have been registered.
+	 *
+	 * @return void
+	 */
 	public function test_register_routes() {
 		$routes = rest_get_server()->get_routes();
 		$this->assertArrayHasKey( '/revisions-extended/v1/posts/(?P<parent>[\d]+)/revisions', $routes );
 		$this->assertArrayHasKey( '/revisions-extended/v1/pages/(?P<parent>[\d]+)/revisions', $routes );
 	}
 
+	/**
+	 * Test getting a collection.
+	 *
+	 * @return void
+	 */
 	public function test_get_items() {
 		wp_set_current_user( self::$editor_id );
 		$request  = new WP_REST_Request(
@@ -154,6 +191,11 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->check_revision_response( $data[0], wp_get_post_revision( self::$update_id ) );
 	}
 
+	/**
+	 * Test creating a revision.
+	 *
+	 * @return void
+	 */
 	public function test_create_item() {
 		wp_set_current_user( self::$editor_id );
 
@@ -180,6 +222,11 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->check_revision_response( $data, $created_object );
 	}
 
+	/**
+	 * Test creating a revision with insufficient permissions.
+	 *
+	 * @return void
+	 */
 	public function test_create_item_no_permission() {
 		wp_set_current_user( self::$author_id );
 
@@ -199,6 +246,11 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertErrorResponse( 'rest_cannot_edit', $response, 403 );
 	}
 
+	/**
+	 * Test creating a revision for a post that's not public.
+	 *
+	 * @return void
+	 */
 	public function test_create_item_parent_not_public() {
 		wp_set_current_user( self::$editor_id );
 
@@ -218,6 +270,13 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertErrorResponse( 'rest_invalid_post', $response, 403 );
 	}
 
+	/**
+	 * Test getting the schema for collections and single items.
+	 *
+	 * There shouldn't be a schema for the single item in this endpoint.
+	 *
+	 * @return void
+	 */
 	public function test_context_param() {
 		// Collection.
 		$request  = new WP_REST_Request(
@@ -238,6 +297,13 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertEmpty( $data );
 	}
 
+	/**
+	 * Test getting a single revision.
+	 *
+	 * This shouldn't be possible on this endpoint.
+	 *
+	 * @return void
+	 */
 	public function test_get_item() {
 		wp_set_current_user( self::$editor_id );
 		$request  = new WP_REST_Request(
@@ -248,6 +314,13 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertErrorResponse( 'rest_no_route', $response, 404 );
 	}
 
+	/**
+	 * Test updating a single revision.
+	 *
+	 * This shouldn't be possible on this endpoint.
+	 *
+	 * @return void
+	 */
 	public function test_update_item() {
 		wp_set_current_user( self::$editor_id );
 		$request  = new WP_REST_Request(
@@ -258,6 +331,13 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertErrorResponse( 'rest_no_route', $response, 404 );
 	}
 
+	/**
+	 * Test deleting a single revision.
+	 *
+	 * This shouldn't be possible on this endpoint.
+	 *
+	 * @return void
+	 */
 	public function test_delete_item() {
 		wp_set_current_user( self::$editor_id );
 		$request  = new WP_REST_Request(
@@ -268,6 +348,11 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertErrorResponse( 'rest_no_route', $response, 404 );
 	}
 
+	/**
+	 * Test the response structure of a single item.
+	 *
+	 * @return void
+	 */
 	public function test_prepare_item() {
 		wp_set_current_user( self::$editor_id );
 		$request  = new WP_REST_Request(
@@ -283,6 +368,11 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->check_revision_response( $data[0], wp_get_post_revision( self::$update_id ) );
 	}
 
+	/**
+	 * Test the schema of an item from a response.
+	 *
+	 * @return void
+	 */
 	public function test_get_item_schema() {
 		$request    = new WP_REST_Request(
 			'OPTIONS',

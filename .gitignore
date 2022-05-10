@@ -1,5 +1,15 @@
 node_modules
 vendor
+
+revisions-extended/build
+
+# Allow local overrides.
 .wp-env.override.json
 phpunit/phpunit.xml
-revisions-extended/build
+phpcs.xml
+
+# Configs from wporg-repo-tools.
+.eslintrc.js
+.prettierrc.js
+.stylelintrc
+phpcs.xml.dist

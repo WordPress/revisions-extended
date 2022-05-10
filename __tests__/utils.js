@@ -9,15 +9,11 @@ describe( 'Utils', () => {
 	} );
 
 	it( 'Should return post revision list', () => {
-		expect( getAllRevisionUrl( 'post' ) ).toEqual(
-			'edit.php?page=post-updates'
-		);
+		expect( getAllRevisionUrl( 'post' ) ).toEqual( 'edit.php?page=post-updates' );
 	} );
 
 	it( 'Should return custom post type revision list', () => {
-		expect( getAllRevisionUrl( 'custom' ) ).toEqual(
-			'edit.php?post_type=custom&page=custom-updates'
-		);
+		expect( getAllRevisionUrl( 'custom' ) ).toEqual( 'edit.php?post_type=custom&page=custom-updates' );
 	} );
 
 	it( 'Should return full formed edit url', () => {

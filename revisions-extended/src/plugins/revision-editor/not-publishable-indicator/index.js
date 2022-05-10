@@ -1,11 +1,7 @@
 /**
- * External dependencies
- */
-import { useEffect } from 'react';
-
-/**
  * WordPress Dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { dispatch } from '@wordpress/data';
 
@@ -24,18 +20,13 @@ const NotPublishableIndicator = () => {
 		if ( ! type || ! loadedTypes ) return;
 
 		if ( status !== WP_PUBLISH_STATUS ) {
-			const typeInfo = getTypeInfo(
-				`${ type }.labels.singular_name`
-			).toLowerCase();
+			const typeInfo = getTypeInfo( `${ type }.labels.singular_name` ).toLowerCase();
 
 			dispatch( 'core/notices' ).createErrorNotice(
 				[
 					sprintf(
 						// translators: %s is the singular label of a post type.
-						__(
-							'The original %s is not published.',
-							'revisions-extended'
-						),
+						__( 'The original %s is not published.', 'revisions-extended' ),
 						typeInfo
 					),
 					sprintf(

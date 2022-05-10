@@ -10,12 +10,7 @@ import { MenuGroup, MenuItem } from '@wordpress/components';
  * Internal dependencies
  */
 import { DropDownButton } from '../../../components';
-import {
-	usePost,
-	useInterface,
-	useRevision,
-	useParentPost,
-} from '../../../hooks';
+import { useInterface, useParentPost, usePost, useRevision } from '../../../hooks';
 import { insertButton } from '../../../utils';
 import { WP_PUBLISH_STATUS } from '../../../settings';
 
@@ -32,10 +27,7 @@ const UpdateDropdownButton = () => {
 		if ( ! didPostSaveRequestSucceed() ) {
 			dispatch( 'core/notices' ).createNotice(
 				'error',
-				__(
-					'Error saving update before publish.',
-					'revisions-extended'
-				)
+				__( 'Error saving update before publish.', 'revisions-extended' )
 			);
 			return;
 		}
@@ -62,10 +54,7 @@ const UpdateDropdownButton = () => {
 				render={ ( { onClose } ) => (
 					<MenuGroup>
 						<MenuItem
-							info={ __(
-								'Apply these changes immediately',
-								'revisions-extended'
-							) }
+							info={ __( 'Apply these changes immediately', 'revisions-extended' ) }
 							onClick={ async () => {
 								onClose();
 								await _savePost();

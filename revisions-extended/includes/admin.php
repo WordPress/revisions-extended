@@ -193,7 +193,8 @@ function pre_render_updates_subpage() {
 		}
 
 		if ( ! empty( $remove_args ) ) {
-			wp_safe_redirect( remove_query_arg( $remove_args, $_SERVER['REQUEST_URI'] ) );
+			$request_uri = filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_VALIDATE_URL );
+			wp_safe_redirect( remove_query_arg( $remove_args, wp_unslash( $request_uri ) ) );
 		}
 	}
 }
@@ -237,6 +238,7 @@ function render_updates_subpage() {
 					break;
 				case 'deleted':
 					$notices['success'][] = sprintf(
+						// translators: A number of posts.
 						_n(
 							'%d update permanently deleted.',
 							'%d updates permanently deleted.',
@@ -248,6 +250,7 @@ function render_updates_subpage() {
 					break;
 				case 'not_deleted':
 					$notices['error'][] = sprintf(
+						// translators: A number of posts.
 						_n(
 							'%d update could not be deleted.',
 							'%d updates could not be deleted.',
@@ -259,6 +262,7 @@ function render_updates_subpage() {
 					break;
 				case 'published':
 					$notices['success'][] = sprintf(
+						// translators: A number of posts.
 						_n(
 							'%d update published.',
 							'%d updates published.',
@@ -270,6 +274,7 @@ function render_updates_subpage() {
 					break;
 				case 'not_published':
 					$notices['error'][] = sprintf(
+						// translators: A number of posts.
 						_n(
 							'%d update could not be published.',
 							'%d updates could not be published.',
@@ -337,7 +342,7 @@ function add_updates_help_tabs() {
 			'id'      => 'bulk-actions',
 			'title'   => __( 'Bulk actions', 'revisions-extended' ),
 			'content' =>
-				'<p>' . __( 'You can publish or delete multiple updates at once. Select the posts you want to act on using the checkboxes, then select the action you want to take from the Bulk actions menu and click Apply.' ) . '</p>',
+				'<p>' . __( 'You can publish or delete multiple updates at once. Select the posts you want to act on using the checkboxes, then select the action you want to take from the Bulk actions menu and click Apply.', 'revisions-extended' ) . '</p>',
 		)
 	);
 }
@@ -572,7 +577,7 @@ function prepare_compare_data( $revision_id ) {
 /**
  * Get the full admin URL for compare updates screen for a given revision.
  *
- * @param string $parent_post_type
+ * @param int $revision_id
  *
  * @return string
  */

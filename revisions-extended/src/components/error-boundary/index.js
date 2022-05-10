@@ -1,11 +1,7 @@
 /**
- * External dependencies
- */
-import { Component } from 'react';
-
-/**
  * WordPress dependencies
  */
+import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { dispatch } from '@wordpress/data';
 
@@ -21,10 +17,7 @@ class ErrorBoundary extends Component {
 
 	componentDidCatch() {
 		dispatch( 'core/notices' ).createWarningNotice(
-			__(
-				'Something went wrong with the "Revisions Extended" plugin.',
-				'revisions-extended'
-			)
+			__( 'Something went wrong with the "Revisions Extended" plugin.', 'revisions-extended' )
 		);
 	}
 

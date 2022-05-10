@@ -11,7 +11,7 @@ export function InterfaceProvider( { children } ) {
 	return (
 		<StateContext.Provider
 			value={ {
-				state,
+				state: state,
 				setState: ( newState ) => {
 					setState( {
 						...state,

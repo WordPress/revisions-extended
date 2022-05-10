@@ -8,8 +8,8 @@ import { Notice } from '@wordpress/components';
  * Internal dependencies
  */
 import { ConfirmWindow } from '../../../components';
-import { getEditUrl, getAllRevisionUrl } from '../../../utils';
-import { usePost, useTypes, useParentPost, useInterface } from '../../../hooks';
+import { getAllRevisionUrl, getEditUrl } from '../../../utils';
+import { useInterface, useParentPost, usePost, useTypes } from '../../../hooks';
 
 const PublishConfirmWindow = () => {
 	const { getTypeInfo } = useTypes();
@@ -28,10 +28,7 @@ const PublishConfirmWindow = () => {
 			title={ __( 'Revisions Extended', 'revisions-extended' ) }
 			notice={
 				<Notice status="success" isDismissible={ false }>
-					{ __(
-						'Successfully published your update.',
-						'revisions-extended'
-					) }
+					{ __( 'Successfully published your update.', 'revisions-extended' ) }
 				</Notice>
 			}
 			links={ [
@@ -39,9 +36,7 @@ const PublishConfirmWindow = () => {
 					text: sprintf(
 						// translators: %s: post type.
 						__( 'View published %s.', 'revisions-extended' ),
-						getTypeInfo(
-							`${ parentType }.labels.singular_name`
-						).toLowerCase()
+						getTypeInfo( `${ parentType }.labels.singular_name` ).toLowerCase()
 					),
 					href: `/?p=${ savedPost.parent }`,
 				},
@@ -49,9 +44,7 @@ const PublishConfirmWindow = () => {
 					text: sprintf(
 						// translators: %s: post type.
 						__( 'Edit original %s.', 'revisions-extended' ),
-						getTypeInfo(
-							`${ parentType }.labels.singular_name`
-						).toLowerCase()
+						getTypeInfo( `${ parentType }.labels.singular_name` ).toLowerCase()
 					),
 					href: getEditUrl( savedPost.parent ),
 				},
@@ -59,9 +52,7 @@ const PublishConfirmWindow = () => {
 					text: sprintf(
 						// translators: %s: post type.
 						__( 'View all %s updates.', 'revisions-extended' ),
-						getTypeInfo(
-							`${ parentType }.labels.singular_name`
-						).toLowerCase()
+						getTypeInfo( `${ parentType }.labels.singular_name` ).toLowerCase()
 					),
 					href: getAllRevisionUrl( parentType ),
 				},

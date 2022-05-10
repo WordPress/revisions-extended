@@ -7,23 +7,23 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { getRestApiUrl, getRestApiUrlV2 } from '../utils';
-import { POST_STATUS_SCHEDULED, POST_STATUS_PENDING } from '../settings';
+import { POST_STATUS_PENDING, POST_STATUS_SCHEDULED } from '../settings';
 
 /**
  * This function normalizes the apiFetch response
  *
- * @param {Function} fn Asynchronous api call
+ * @param {Function} func Asynchronous api call
  *
  * @return {Object} Response object
  */
-const executeFetch = async ( fn ) => {
+const executeFetch = async ( func ) => {
 	try {
 		return {
-			data: await fn(),
+			data: await func(),
 		};
-	} catch ( ex ) {
+	} catch ( exception ) {
 		return {
-			error: ex,
+			error: exception,
 		};
 	}
 };
@@ -31,19 +31,16 @@ const executeFetch = async ( fn ) => {
 /**
  * Get all the post revisions for a specific post type
  *
- * @param {Object} data - Data sent to api
+ * @param {Object} data          - Data sent to api
  * @param {string} data.restBase - The rest_base from the post type.
- * @param {string} data.postId - The id of the post.
+ * @param {string} data.postId   - The id of the post.
  * @param {string} status
  * @return {Object} Api response
  */
 const getPostRevisions = async ( { restBase, postId }, status ) => {
 	return await executeFetch( async () => {
 		return await apiFetch( {
-			path: `${ getRestApiUrl(
-				restBase,
-				postId
-			) }?status=${ status }&_embed`,
+			path: `${ getRestApiUrl( restBase, postId ) }?status=${ status }&_embed`,
 			method: 'GET',
 		} );
 	} );
@@ -52,9 +49,9 @@ const getPostRevisions = async ( { restBase, postId }, status ) => {
 /**
  * Creates a revision for a specific post type
  *
- * @param {Object} data Data sent to api
+ * @param {Object} data          Data sent to api
  * @param {string} data.restBase - The rest_base from the post type.
- * @param {string} data.postId - The id of the post.
+ * @param {string} data.postId   - The id of the post.
  * @param {string} status
  *
  * @return {Object} Api response
@@ -114,15 +111,13 @@ const useRevision = () => {
 	};
 
 	const create = async ( data ) => {
-		const status = data.changingToScheduled
-			? POST_STATUS_SCHEDULED
-			: POST_STATUS_PENDING;
+		const status = data.changingToScheduled ? POST_STATUS_SCHEDULED : POST_STATUS_PENDING;
 		return await createRevision( data, status );
 	};
 
 	return {
-		get,
-		create,
+		get: get,
+		create: create,
 		trash: trashRevision,
 		publish: publishRevision,
 	};

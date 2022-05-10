@@ -1,12 +1,7 @@
 /**
  * WordPress dependencies
  */
-import {
-	createContext,
-	useContext,
-	useEffect,
-	useState,
-} from '@wordpress/element';
+import { createContext, useContext, useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
 const StateContext = createContext();
@@ -17,7 +12,7 @@ export function ParentPostProvider( { children, links } ) {
 	const getHref = () => {
 		try {
 			return links.parent[ 0 ].href;
-		} catch ( ex ) {}
+		} catch ( exception ) {}
 	};
 
 	useEffect( () => {
@@ -28,6 +23,7 @@ export function ParentPostProvider( { children, links } ) {
 		 */
 		const getParentPost = async ( url ) => {
 			try {
+				// eslint-disable-next-line object-shorthand
 				const postParent = await apiFetch( {
 					url,
 					method: 'GET',
@@ -36,7 +32,7 @@ export function ParentPostProvider( { children, links } ) {
 				setParent( {
 					...postParent,
 				} );
-			} catch ( ex ) {
+			} catch ( exception ) {
 				// TO DO: Maybe consider add a default object since the ui depends on the type
 			}
 		};

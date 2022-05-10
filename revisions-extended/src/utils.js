@@ -8,7 +8,7 @@ import { addQueryArgs } from '@wordpress/url';
 export const pluginNamespace = 'revisions-extended';
 export const pluginName = __( 'Revisions Extended', 'revisions-extended' );
 export const pluginCustomPostType = 'revision';
-import { POST_STATUS_SCHEDULED, POST_STATUS_PENDING } from './settings';
+import { POST_STATUS_PENDING, POST_STATUS_SCHEDULED } from './settings';
 const CONTAINER_ID = 'revision-button-container';
 
 export const getRestApiUrl = ( restBase, parentId ) => {
@@ -106,9 +106,7 @@ const insertContainer = ( btnDomRef ) => {
  * @param {HTMLElement} newNode Element to be added
  */
 export const insertButton = ( newNode ) => {
-	const btnDomRef = document.querySelector(
-		'.editor-post-publish-button__button'
-	);
+	const btnDomRef = document.querySelector( '.editor-post-publish-button__button' );
 
 	if ( ! btnDomRef ) {
 		return;

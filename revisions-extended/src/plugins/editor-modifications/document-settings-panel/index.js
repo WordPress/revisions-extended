@@ -1,32 +1,24 @@
 /**
- * External dependencies
- */
-import { useEffect, useState, useMemo } from 'react';
-
-/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { useEffect, useMemo, useState } from '@wordpress/element';
 import { dispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
 import { RevisionList } from '../../../components';
-import { useRevision, usePost, useTypes } from '../../../hooks';
-import {
-	getEditUrl,
-	getStatusDisplay,
-	getAllRevisionUrl,
-} from '../../../utils';
+import { usePost, useRevision, useTypes } from '../../../hooks';
+import { getAllRevisionUrl, getEditUrl, getStatusDisplay } from '../../../utils';
 import { GUTENBERG_NOTICE_STORE } from '../../../settings';
 
 /**
  * Displays a notice to the user about an existing update to the current post.
  *
  * @param {string} typeDisplayName The singular name of the post type
- * @param {number} postId The id of the post
+ * @param {number} postId          The id of the post
  */
 const dispatchSingleUpdateNotice = ( typeDisplayName, postId ) => {
 	dispatch( GUTENBERG_NOTICE_STORE ).createWarningNotice(
@@ -55,32 +47,24 @@ const dispatchSingleUpdateNotice = ( typeDisplayName, postId ) => {
  *
  * @param {string} typeDisplayName The singular name of the post type
  * @param {Object} savedPost
- * @param {string} savedPost.type The post type
- * @param {number} savedPost.id The post id
+ * @param {string} savedPost.type  The post type
+ * @param {number} savedPost.id    The post id
  */
 const dispatchMultipleUpdateNotice = ( typeDisplayName, savedPost ) => {
 	dispatch( GUTENBERG_NOTICE_STORE ).createWarningNotice(
 		sprintf(
 			// translators: %s: post type singular label.
-			__(
-				'This %s has updates that could overwrite any changes that you make here.',
-				'revisions-extended'
-			),
+			__( 'This %s has updates that could overwrite any changes that you make here.', 'revisions-extended' ),
 			typeDisplayName
 		),
 		{
 			isDismissible: true,
 			actions: [
 				{
-					url: `${ getAllRevisionUrl( savedPost.type ) }&p=${
-						savedPost.id
-					}`,
+					url: `${ getAllRevisionUrl( savedPost.type ) }&p=${ savedPost.id }`,
 					label: sprintf(
 						// translators: %s: post type singular label.
-						__(
-							'See all updates for this %s',
-							'revisions-extended'
-						),
+						__( 'See all updates for this %s', 'revisions-extended' ),
 						typeDisplayName
 					),
 				},
@@ -117,15 +101,9 @@ const DocumentSettingsPanel = () => {
 					).toLowerCase();
 
 					if ( sortedRevisions.length === 1 ) {
-						dispatchSingleUpdateNotice(
-							typeDisplayName,
-							sortedRevisions[ 0 ].id
-						);
+						dispatchSingleUpdateNotice( typeDisplayName, sortedRevisions[ 0 ].id );
 					} else {
-						dispatchMultipleUpdateNotice(
-							typeDisplayName,
-							savedPost
-						);
+						dispatchMultipleUpdateNotice( typeDisplayName, savedPost );
 					}
 				}
 
@@ -136,13 +114,12 @@ const DocumentSettingsPanel = () => {
 		runQuery();
 	}, [ loadedTypes ] );
 
-	const revisionSort = ( a, b ) =>
-		new Date( a.date_gmt ) - new Date( b.date_gmt );
+	const revisionSort = ( a, b ) => new Date( a.date_gmt ) - new Date( b.date_gmt );
 
 	const getAuthorName = ( revision ) => {
 		try {
 			return revision._embedded.author[ 0 ].slug;
-		} catch ( e ) {}
+		} catch ( exception ) {}
 	};
 
 	const getAuthorString = ( revision ) => {
@@ -159,7 +136,7 @@ const DocumentSettingsPanel = () => {
 		return {
 			text: sprintf(
 				// translators: %1s: revision id, %2s: author name .
-				__( 'Update #%1$s %2$s' ),
+				__( 'Update #%1$s %2$s', 'revisions-extended' ),
 				i.id,
 				getAuthorString( i )
 			),
@@ -168,9 +145,7 @@ const DocumentSettingsPanel = () => {
 		};
 	};
 
-	const mappedRevisions = useMemo( () => revisions.map( revisionMap ), [
-		revisions,
-	] );
+	const mappedRevisions = useMemo( () => revisions.map( revisionMap ), [ revisions ] );
 
 	if ( revisions.length < 1 ) {
 		return null;
