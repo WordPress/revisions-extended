@@ -13,7 +13,7 @@ import { DropDownButton } from '../../../components';
 import { GUTENBERG_EDIT_POST_STORE, GUTENBERG_INTERFACE_STORE } from '../../../settings';
 import { CREATE_SIDEBAR_NAME } from '../create-sidebar';
 import { PLUGIN_NAME } from '../constants';
-import { insertButton } from '../../../utils';
+import { insertButton, toggleEditPostHeaderVisibilityOff } from '../../../utils';
 import { useInterface, usePost } from '../../../hooks';
 
 const UpdateDropdownButton = () => {
@@ -30,6 +30,8 @@ const UpdateDropdownButton = () => {
 							info={ __( 'Schedule update for a specific time', 'revisions-extended' ) }
 							onClick={ () => {
 								onClose();
+
+								toggleEditPostHeaderVisibilityOff();
 
 								// If the sidebar was open, we'll want to reopen it if they close
 								setState( {

@@ -120,3 +120,34 @@ export const insertButton = ( newNode ) => {
 	/* eslint-disable no-undef*/
 	ReactDOM.render( newNode, document.getElementById( CONTAINER_ID ) );
 };
+
+/**
+ * This unsets the `overflow` property on the edit-post-header element.
+ * This is a hack to fix the issue where the dropdown menu is hidden.
+ *
+ * see: https://github.com/WordPress/revisions-extended/issues/121
+ */
+export const toggleEditPostHeaderVisibilityOn = () => {
+	const header = document.querySelector( '.edit-post-header' );
+
+	if ( ! header ) {
+		return;
+	}
+
+	header.style.overflow = 'unset';
+};
+
+/**
+ * This reset the `overflow` property on the edit-post-header element to 'hidden'.
+ *
+ * see: https://github.com/WordPress/revisions-extended/issues/121
+ */
+export const toggleEditPostHeaderVisibilityOff = () => {
+	const header = document.querySelector( '.edit-post-header' );
+
+	if ( ! header ) {
+		return;
+	}
+
+	header.style.overflow = 'hidden';
+};
