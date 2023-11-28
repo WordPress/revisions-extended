@@ -206,7 +206,7 @@ function put_post_revision( $post = null, $autosave = false ) {
 		 * @since 6.4.0 The post_id parameter was added.
 		 *
 		 * @param int $revision_id Post revision ID.
-   		 * @param int $post_id     Post ID.
+		 * @param int $post_id     Post ID.
 		 */
 		do_action( '_wp_put_post_revision', $revision_id, $post['post_parent'] );
 	}
