@@ -100,7 +100,7 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 	 *
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		wp_set_current_user( 0 );
 	}
