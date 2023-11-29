@@ -100,7 +100,7 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 	 *
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		wp_set_current_user( 0 );
 	}
@@ -381,7 +381,7 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$response   = rest_get_server()->dispatch( $request );
 		$data       = $response->get_data();
 		$properties = $data['schema']['properties'];
-		$this->assertSame( 13, count( $properties ) );
+		$this->assertSame( 14, count( $properties ) );
 		$this->assertArrayHasKey( 'author', $properties );
 		$this->assertArrayHasKey( 'content', $properties );
 		$this->assertArrayHasKey( 'date', $properties );
@@ -389,6 +389,7 @@ class Test_REST_Revisions_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertArrayHasKey( 'excerpt', $properties );
 		$this->assertArrayHasKey( 'guid', $properties );
 		$this->assertArrayHasKey( 'id', $properties );
+		$this->assertArrayHasKey( 'meta', $properties );
 		$this->assertArrayHasKey( 'modified', $properties );
 		$this->assertArrayHasKey( 'modified_gmt', $properties );
 		$this->assertArrayHasKey( 'parent', $properties );
