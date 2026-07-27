@@ -50,7 +50,7 @@ function fail_if_died( $message ) {
 		$message = $message->get_error_message();
 	}
 
-	throw new Exception( 'WordPress died: ' . $message );
+	throw new Exception( 'WordPress died: ' . esc_html( $message ) );
 }
 tests_add_filter( 'wp_die_handler', 'fail_if_died' );
 
