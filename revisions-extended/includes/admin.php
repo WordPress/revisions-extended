@@ -41,7 +41,7 @@ function enqueue_admin_assets( $hook_suffix ) {
 		$parent_screen = add_query_arg( 'post_type', $typenow, $parent_screen );
 	}
 
-	$post_type = $typenow ?: 'post';
+	$post_type = $typenow ? $typenow : 'post';
 
 	switch ( $hook_suffix ) {
 		case 'admin_page_compare-updates':
@@ -58,7 +58,7 @@ function enqueue_admin_assets( $hook_suffix ) {
 
 			wp_enqueue_style(
 				'revisions-extended-compare-updates',
-				plugins_url( 'assets/compare-updates.css', dirname( __FILE__, 1 ) ),
+				plugins_url( 'assets/compare-updates.css', __DIR__ ),
 				array(),
 				filemtime( get_assets_path() . 'compare-updates.css' )
 			);
@@ -67,7 +67,7 @@ function enqueue_admin_assets( $hook_suffix ) {
 		case get_plugin_page_hookname( "$post_type-updates", $parent_screen ):
 			wp_enqueue_style(
 				'revisions-extended-edit-revisions',
-				plugins_url( 'assets/edit-revisions.css', dirname( __FILE__, 1 ) ),
+				plugins_url( 'assets/edit-revisions.css', __DIR__ ),
 				array(),
 				filemtime( get_assets_path() . 'edit-revisions.css' )
 			);
@@ -83,7 +83,7 @@ function enqueue_admin_assets( $hook_suffix ) {
 function enqueue_block_editor_assets() {
 	global $typenow;
 
-	$post_type = $typenow ?: 'post';
+	$post_type = $typenow ? $typenow : 'post';
 
 	$handles = array();
 	if ( 'revision' === $post_type ) {
@@ -98,7 +98,7 @@ function enqueue_block_editor_assets() {
 		if ( ! empty( $asset ) ) {
 			wp_enqueue_script(
 				"revisions-extended-$handle-script",
-				plugins_url( "build/$handle.js", dirname( __FILE__, 1 ) ),
+				plugins_url( "build/$handle.js", __DIR__ ),
 				$asset['dependencies'],
 				$asset['version'],
 				false
@@ -106,7 +106,7 @@ function enqueue_block_editor_assets() {
 
 			wp_enqueue_style(
 				"revisions-extended-$handle-style",
-				plugins_url( "build/$handle.css", dirname( __FILE__, 1 ) ),
+				plugins_url( "build/$handle.css", __DIR__ ),
 				array(),
 				$asset['version']
 			);
@@ -406,12 +406,12 @@ function handle_bulk_edit_actions( $action ) {
 			}
 
 			if ( $result ) {
-				$edited ++;
+				$edited++;
 			} else {
-				$not_edited ++;
+				$not_edited++;
 			}
 		} else {
-			$not_edited ++;
+			$not_edited++;
 		}
 	}
 

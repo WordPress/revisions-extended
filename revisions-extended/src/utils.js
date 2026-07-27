@@ -118,11 +118,9 @@ export const insertButton = ( newNode ) => {
 
 	insertContainer( btnDomRef );
 
-
 	const root = createRoot( document.getElementById( CONTAINER_ID ) );
 
 	root.render( newNode );
-
 };
 
 /**

@@ -27,6 +27,13 @@ jobs:
       - name: Lint PHP
         run: npm run lint:php
 
+      # The pinned @wordpress/env spawns the docker-compose v1 binary, which
+      # GitHub removed from hosted runners; alias it to Compose v2.
+      - name: Shim docker-compose
+        run: |
+          printf '#!/bin/sh\nexec docker compose "$@"\n' | sudo tee /usr/local/bin/docker-compose > /dev/null
+          sudo chmod +x /usr/local/bin/docker-compose
+
       - name: Run PHP unit tests
         run: |
           npm run env

@@ -29,7 +29,7 @@ class Revision_List_Table extends WP_List_Table {
 	 */
 	public function __construct( $args = array() ) {
 		global $typenow;
-		$this->parent_post_type = $typenow ?: 'post';
+		$this->parent_post_type = $typenow ? $typenow : 'post';
 
 		parent::__construct( $args );
 	}
@@ -65,8 +65,8 @@ class Revision_List_Table extends WP_List_Table {
 		$query_args = array(
 			'post_status'    => wp_list_pluck( get_revision_statuses(), 'name' ),
 			'posts_per_page' => $per_page,
-			'orderby'        => $orderby ?: 'date ID',
-			'order'          => $order ?: 'asc',
+			'orderby'        => $orderby ? $orderby : 'date ID',
+			'order'          => $order ? $order : 'asc',
 		);
 
 		if ( $search ) {

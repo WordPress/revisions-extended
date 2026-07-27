@@ -93,7 +93,7 @@ class REST_Revision_Controller extends WP_REST_Posts_Controller {
 	 */
 	protected function get_valid_endpoint_args( $method ) {
 		$revision_fields   = array_map(
-			function( $item ) {
+			function ( $item ) {
 				return str_replace( 'post_', '', $item );
 			},
 			array_keys( _wp_post_revision_fields() )
