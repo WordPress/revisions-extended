@@ -370,6 +370,7 @@ function handle_bulk_edit_actions( $action ) {
 	check_admin_referer( "bulk-{$screen->base}" );
 
 	$valid_actions = array( 'delete', 'publish' );
+	$required_cap  = ( 'delete' === $action ) ? 'delete_post' : 'edit_post';
 	$items         = filter_input( INPUT_GET, 'bulk_edit', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY );
 	$query_args    = array();
 	$edited        = 0;
@@ -391,7 +392,7 @@ function handle_bulk_edit_actions( $action ) {
 	foreach ( $items as $revision_id ) {
 		$revision = wp_get_post_revision( $revision_id );
 
-		if ( $revision ) {
+		if ( $revision && current_user_can( $required_cap, $revision->ID ) ) {
 			switch ( $action ) {
 				case 'delete':
 					$result = wp_delete_post_revision( $revision );
